@@ -3233,3 +3233,39 @@ msgstr "Nächste Seite"
 #: contacthub/includes/class-contacthub-plugin.php
 msgid "Trash and bulk actions"
 msgstr "Papierkorb und Massenaktionen"
+
+#: contacthub/includes/class-contacthub-github-updater.php
+msgid "ContactHub Plus updates require a valid CONTACTHUB_PLUS_GITHUB_TOKEN in wp-config.php. The plugin remains usable without update access."
+msgstr "ContactHub-Plus-Updates benötigen einen gültigen CONTACTHUB_PLUS_GITHUB_TOKEN in wp-config.php. Das Plugin bleibt ohne Updatezugang nutzbar."
+
+#: contacthub/includes/class-contacthub-github-updater.php
+msgid "The GitHub update service could not be reached. Please try again later."
+msgstr "Der GitHub-Updatedienst ist nicht erreichbar. Bitte versuchen Sie es später erneut."
+
+#: contacthub/includes/class-contacthub-github-updater.php
+msgid "GitHub denied update access. Check the repository permission and token expiry in wp-config.php."
+msgstr "GitHub hat den Updatezugriff abgelehnt. Prüfen Sie die Repository-Berechtigung und den Ablauf des Tokens in wp-config.php."
+
+#: contacthub/includes/class-contacthub-github-updater.php
+msgid "No valid published GitHub release with matching update metadata and plugin ZIP was found."
+msgstr "Es wurde kein gültiges veröffentlichtes GitHub-Release mit passenden Update-Metadaten und Plugin-ZIP gefunden."
+
+#: contacthub/includes/class-contacthub-github-updater.php
+msgid "This update requires a newer WordPress, PHP, or active ContactHub Basic version. Update those requirements first."
+msgstr "Dieses Update benötigt eine neuere WordPress-, PHP- oder aktive ContactHub-Basic-Version. Aktualisieren Sie zuerst diese Voraussetzungen."
+
+#: contacthub/includes/class-contacthub-github-updater.php
+msgid "The update ZIP failed integrity, plugin directory, version, or requirement validation. Nothing was installed."
+msgstr "Die Prüfung von Integrität, Plugin-Verzeichnis, Version oder Voraussetzungen des Update-ZIPs ist fehlgeschlagen. Es wurde nichts installiert."
+
+#: contacthub/includes/class-contacthub-github-updater.php
+msgid "GitHub updates are disabled for this plugin."
+msgstr "GitHub-Updates sind für dieses Plugin deaktiviert."
+
+#: contacthub/includes/class-contacthub-github-updater.php
+msgid "Published GitHub release for the ContactHub test phase. Automatic updates require administrator opt-in in the WordPress Plugins screen."
+msgstr "Veröffentlichtes GitHub-Release für die ContactHub-Testphase. Automatische Updates müssen von einem Administrator in der WordPress-Pluginverwaltung aktiviert werden."
+
+#: contacthub/includes/class-contacthub-github-updater.php
+msgid "Check for updates"
+msgstr "Nach Updates suchen"

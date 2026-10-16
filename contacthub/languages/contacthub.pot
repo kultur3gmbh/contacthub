@@ -3233,3 +3233,39 @@ msgstr ""
 #: contacthub/includes/class-contacthub-plugin.php
 msgid "Trash and bulk actions"
 msgstr ""
+
+#: contacthub/includes/class-contacthub-github-updater.php
+msgid "ContactHub Plus updates require a valid CONTACTHUB_PLUS_GITHUB_TOKEN in wp-config.php. The plugin remains usable without update access."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-github-updater.php
+msgid "The GitHub update service could not be reached. Please try again later."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-github-updater.php
+msgid "GitHub denied update access. Check the repository permission and token expiry in wp-config.php."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-github-updater.php
+msgid "No valid published GitHub release with matching update metadata and plugin ZIP was found."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-github-updater.php
+msgid "This update requires a newer WordPress, PHP, or active ContactHub Basic version. Update those requirements first."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-github-updater.php
+msgid "The update ZIP failed integrity, plugin directory, version, or requirement validation. Nothing was installed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-github-updater.php
+msgid "GitHub updates are disabled for this plugin."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-github-updater.php
+msgid "Published GitHub release for the ContactHub test phase. Automatic updates require administrator opt-in in the WordPress Plugins screen."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-github-updater.php
+msgid "Check for updates"
+msgstr ""

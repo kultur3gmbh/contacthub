@@ -23,8 +23,27 @@ require_once CONTACTHUB_PATH . 'includes/class-contacthub-modules.php';
 require_once CONTACTHUB_PATH . 'includes/class-contacthub-schema.php';
 require_once CONTACTHUB_PATH . 'includes/class-contacthub-store.php';
 require_once CONTACTHUB_PATH . 'includes/class-contacthub-trash.php';
+require_once CONTACTHUB_PATH . 'includes/class-contacthub-github-updater.php';
 require_once CONTACTHUB_PATH . 'includes/class-contacthub-registration.php';
 require_once CONTACTHUB_PATH . 'includes/class-contacthub-my-account.php';
+
+add_action(
+	'plugins_loaded',
+	static function () {
+		new ContactHub_GitHub_Updater(
+			array(
+				'slug'       => 'contacthub',
+				'name'       => 'ContactHub Basic',
+				'repo'       => 'contacthub',
+				'zip_prefix' => 'contacthub-basic',
+				'plugin'     => plugin_basename( CONTACTHUB_FILE ),
+				'version'    => CONTACTHUB_VERSION,
+				'enabled'    => 'CONTACTHUB_GITHUB_UPDATES',
+			)
+		);
+	},
+	20
+);
 
 add_action( 'plugins_loaded', array( 'ContactHub_Plugin', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactHub_Trash', 'boot' ), 30 );
