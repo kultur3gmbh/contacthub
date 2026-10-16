@@ -10,8 +10,8 @@ A user-friendly contact and company CRM for WordPress with a free WooCommerce cu
 == Changelog ==
 
 = 0.14.8 =
-* Added an optional modern ContactHub checkout based on WooCommerce checkout logic, with active-theme or neutral ContactHub presentation.
-* Added configurable guest account registration and optional newsletter or marketing consent with double opt-in in ContactHub and Groundhogg data modes.
+* Added stable extension contracts that let ContactHub Plus provide optional checkout consent while preserving standalone ContactHub and Groundhogg data modes.
+* Kept the free WooCommerce integration focused on customers, addresses, orders, invoices, and customer totals; cart and checkout presentation remain Plus features.
 * Replaced the visible Trash column label and row text links in people and company lists with compact accessible trash-icon buttons.
 
 = 0.14.6 =

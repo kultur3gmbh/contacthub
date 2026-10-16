@@ -15,13 +15,12 @@ if command -v php >/dev/null 2>&1; then
   php tests/woocommerce-import.php || status=1
   php tests/groundhogg-migration-source.php || status=1
   php tests/marketing-status-icons.php || status=1
-  php tests/woocommerce-checkout.php || status=1
   php tests/github-updater.php || status=1
   php tests/github-updater.php --plus || status=1
 elif command -v python3 >/dev/null 2>&1; then
   echo "PHP CLI is unavailable; running the offline structural fallback."
   python3 tools/check_php_structure.py contacthub tests || status=1
-  echo "SKIPPED: PHP trash, WooCommerce import, Groundhogg migration, marketing status icon, WooCommerce checkout, and updater behavior tests require PHP CLI."
+  echo "SKIPPED: PHP trash, WooCommerce import, Groundhogg migration, marketing status icon, and updater behavior tests require PHP CLI."
 else
   echo "PHP or Python 3 is required for source validation." >&2
   status=1
@@ -46,6 +45,11 @@ fi
 
 if ! grep -q "Text Domain: contacthub$" contacthub/contacthub.php; then
   echo "ContactHub Basic text domain is missing or unexpected." >&2
+  status=1
+fi
+
+if [[ -e contacthub/includes/class-contacthub-woocommerce.php || -e contacthub/assets/contacthub-checkout.css ]]; then
+  echo "WooCommerce cart and checkout presentation belongs to ContactHub Plus, not Basic." >&2
   status=1
 fi
 
