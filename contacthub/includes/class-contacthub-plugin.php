@@ -1535,7 +1535,6 @@ final class ContactHub_Plugin {
 		echo self::sortable_heading( __( 'First name', 'contacthub' ), 'first_name', $orderby, $order, $customer_filter, $search );
 		echo self::sortable_heading( __( 'Last name', 'contacthub' ), 'last_name', $orderby, $order, $customer_filter, $search );
 		echo __( '<th><span class="screen-reader-text">Actions</span></th>', 'contacthub' );
-		if ( ContactHub_Trash::available() ) echo '<th class="contacthub-trash-column"><span class="screen-reader-text">' . esc_html__( 'Trash', 'contacthub' ) . '</span></th>';
 		echo __( '<th>Email</th><th>Phone</th>', 'contacthub' );
 		if ( $companies_enabled ) {
 			echo self::sortable_heading( __( 'Company', 'contacthub' ), 'company', $orderby, $order, $customer_filter, $search );
@@ -1558,8 +1557,11 @@ final class ContactHub_Plugin {
 			$view_url = add_query_arg( 'ansicht', 'anzeigen', $edit_url );
 			$display_name = trim( $first_name . ' ' . $last_name );
 			echo '<tr class="contacthub-person-data-row"><th class="check-column" scope="row"><input type="checkbox" class="contacthub-person-select" value="' . esc_attr( $id ) . '" aria-label="' . esc_attr( ( $display_name ?: __( 'Unnamed person', 'contacthub' ) ) . __( ' select', 'contacthub' ) ) . '"></th><td class="contacthub-first-name"><strong>' . esc_html( $first_name ?: '—' ) . '</strong></td><td class="contacthub-last-name"><strong>' . esc_html( $last_name ?: '—' ) . '</strong></td>';
-			echo '<td><div class="contacthub-person-actions"><a class="contacthub-person-row-action" href="' . esc_url( $edit_url ) . __( '" aria-label="Edit person" title="Edit person"><span class="dashicons dashicons-edit" aria-hidden="true"></span></a><a class="contacthub-person-row-action" href="', 'contacthub' ) . esc_url( $view_url ) . __( '" aria-label="View person" title="View person"><span class="dashicons dashicons-visibility" aria-hidden="true"></span></a></div></td>', 'contacthub' );
-			self::render_trash_link( 'contacts', $id, true );
+			echo '<td><div class="contacthub-person-actions"><a class="contacthub-person-row-action" href="' . esc_url( $edit_url ) . __( '" aria-label="Edit person" title="Edit person"><span class="dashicons dashicons-edit" aria-hidden="true"></span></a><a class="contacthub-person-row-action" href="', 'contacthub' ) . esc_url( $view_url ) . __( '" aria-label="View person" title="View person"><span class="dashicons dashicons-visibility" aria-hidden="true"></span></a>', 'contacthub' );
+			if ( ContactHub_Trash::available() ) {
+				echo self::trash_button_html( 'contacts', $id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper escapes all dynamic values.
+			}
+			echo '</div></td>';
 			$email = self::value( $contact, array( 'email' ) );
 			echo '<td><div class="contacthub-list-email"><span>' . esc_html( $email ?: '—' ) . '</span>';
 			if ( is_email( $email ) ) {
@@ -1755,6 +1757,11 @@ final class ContactHub_Plugin {
 			return;
 		}
 		echo '<p><a class="button" href="' . esc_url( ContactHub_Trash::url( $entity, 0, true ) ) . '">' . esc_html( $label ) . '</a></p>';
+	}
+
+	private static function trash_button_html( $entity, $id ) {
+		$label = __( 'Move to Trash', 'contacthub' );
+		return '<a class="button contacthub-trash-row-action" href="' . esc_url( ContactHub_Trash::url( $entity, $id, false ) ) . '" aria-label="' . esc_attr( $label ) . '" title="' . esc_attr( $label ) . '"><span class="dashicons dashicons-trash" aria-hidden="true"></span><span class="screen-reader-text">' . esc_html( $label ) . '</span></a>';
 	}
 
 	private static function render_index() {
