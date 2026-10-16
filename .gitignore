@@ -1,0 +1,32 @@
+.DS_Store
+.idea/
+.vscode/
+.env
+.env.*
+!.env.example
+
+# Generated releases and reports
+dist/
+outputs/
+coverage/
+
+# Local research copies and temporary migration helpers
+work/
+
+# Dependency directories, should they be added later
+vendor/
+node_modules/
+__pycache__/
+*.pyc
+
+# Local WordPress test installations
+.wordpress/
+wordpress/
+wp-tests-config.php
+
+# Logs and secrets
+*.log
+*.key
+*.pem
+auth.json
+

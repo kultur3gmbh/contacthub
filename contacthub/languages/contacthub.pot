@@ -1,0 +1,3167 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: ContactHub 0.14.0\n"
+"Report-Msgid-Bugs-To: https://kultur3.com/\n"
+"POT-Creation-Date: 2026-10-16 09:00+0200\n"
+"PO-Revision-Date: 2026-10-16 09:00+0200\n"
+"Last-Translator: Kultur3 GmbH\n"
+"Language-Team: German\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Domain: contacthub\n"
+
+#: contacthub/includes/class-contacthub-plugin.php:1309
+msgid " and copied to the WooCommerce billing address"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2558
+msgid " attended</span></div>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1499 contacthub/includes/class-contacthub-plugin.php:1757
+msgid " entries</span></div>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:456 contacthub/includes/class-contacthub-plugin.php:481 contacthub/includes/class-contacthub-plugin.php:566
+msgid " Note: "
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2845
+msgid " save</button>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1552
+msgid " select"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1330
+msgid " was saved."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1553
+msgid "\" aria-label=\"Edit person\" title=\"Edit person\"><span class=\"dashicons dashicons-edit\" aria-hidden=\"true\"></span></a><a class=\"contacthub-person-row-action\" href=\""
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2748
+msgid "\" aria-label=\"Remove tag from this person\">&times;</button></span>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2567
+msgid "\" aria-label=\"View event details\" title=\"View event details\"><span class=\"dashicons dashicons-visibility\"></span></button></td>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2877
+msgid "\" aria-label=\"View invoice PDF\" title=\"View invoice PDF\"><span class=\"dashicons dashicons-media-document\"></span></a>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2875
+msgid "\" aria-label=\"View order information\" title=\"View order information\"><span class=\"dashicons dashicons-visibility\"></span></button>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1553
+msgid "\" aria-label=\"View person\" title=\"View person\"><span class=\"dashicons dashicons-visibility\" aria-hidden=\"true\"></span></a></div></td>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2877
+msgid "\" data-title=\"Invoice for order #"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3703
+msgid "\" placeholder=\"Phone number\"></span>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1511
+msgid "\" placeholder=\"Search by name or email\"><button class=\"button\">Search</button>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1758
+msgid "\" placeholder=\"Search company name\"><button class=\"button\">Search</button>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2537
+msgid "\" tabindex=\"-1\">Activities</button></div>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2534
+msgid "\" tabindex=\"-1\">Events <span class=\"contacthub-count\">"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2693
+msgid "\"><div class=\"contacthub-toolbar\"><h2>Marketing &amp; consent</h2>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2997
+msgid "\"><h2>Edit customer roles</h2><p>Multiple WordPress roles are supported. Start typing and select a suggested role. Changes immediately affect this user account's permissions.</p>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2711
+msgid "\">Edit marketing consent</h2>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2471
+msgid "\">Edit</a>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2444 contacthub/includes/class-contacthub-plugin.php:2612
+msgid "\">Next →</a>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2572
+msgid "\">Open order</a>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1760
+msgid "\">Show all</a>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2609
+msgid "\">← Back</a>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2440
+msgid "\">← Back</a> "
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2468
+msgid "\">← Companies overview</a>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:573
+#, php-format
+msgid "%1$d changed, %2$d already marketable, %3$d skipped due to unsubscribe or blocked status, %4$d failed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:690
+#, php-format
+msgid "%1$d contacts, %2$d companies, %3$d tags, %4$d tag assignments, %5$d skipped, %6$d errors. Completed: %7$s"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:528
+#, php-format
+msgid "%1$d new, %2$d updated, %3$d mailings, %4$d skipped, %5$d errors. Completed: %6$s"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:452
+#, php-format
+msgid "%1$d of %2$d ContactHub database tables are present. Schema version: %3$s."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:619
+#, php-format
+msgid "%1$d people · created on %2$s"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:526
+#, php-format
+msgid "%1$d subscribers and %2$d historical mailings were found. No data has been changed yet."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:486
+#, php-format
+msgid "%1$d unique customers found: %2$d new and %3$d already present. No data has been changed yet."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1224
+#, php-format
+msgid "%1$s Edited by: %2$s."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:456 contacthub/includes/class-contacthub-plugin.php:476
+#, php-format
+msgid "%1$s on %2$s. Source: %3$s. Edited by: %4$s.%5$s"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:303
+#, php-format
+msgid "%d contacts can be assigned from the library. Confirm to apply the changes."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:303
+#, php-format
+msgid "%d missing salutations were assigned."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:200
+#, php-format
+msgid "%d people selected"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2589
+#, php-format
+msgid "%d sent"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:652 contacthub/includes/class-contacthub-registration.php:656
+#, php-format
+msgid "%s theme style"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2659 contacthub/includes/class-contacthub-plugin.php:3762 contacthub/includes/class-contacthub-registration.php:305 contacthub/includes/class-contacthub-registration.php:1076
+msgid "--- Please select ---"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:199
+msgid "1 person selected"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3013
+msgid "</button><button type=\"button\" class=\"button contacthub-close-user-account\">Cancel</button></div></div></div>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2754
+msgid "</div></div></div><p class=\"description contacthub-tag-autosave-note\">Selecting a tag saves it immediately for this contact. Press Enter to create a new tag.</p>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2966
+msgid "</div></div><div class=\"contacthub-role-picker-message\" aria-live=\"polite\"></div></div>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1098
+msgid "</div><table><thead><tr><th>Item</th><th class=\"num\">Quantity</th><th class=\"num\">Total</th></tr></thead><tbody>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1498
+msgid "</p></div><button type=\"button\" class=\"button button-primary contacthub-heading-action contacthub-open-new-person\">Add person</button></div>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2494
+msgid "</section><section class=\"contacthub-card\"><h2>Billing address</h2>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1093
+msgid "</strong></div><div><span>Invoice number</span><strong>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1093
+msgid "</strong></div><div><span>Payment method</span><strong>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3810
+msgid "</strong><span class=\"contacthub-vat-check\" title=\"Successfully validated through EU VIES\""
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2578
+msgid "</tbody></table><p class=\"description\">Events are assigned by matching the attendee email address stored by Event Tickets.</p>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2899
+msgid "</tbody><tfoot><tr><th colspan=\"6\">Grand total</th><td><strong>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2475
+msgid "<aside><section class=\"contacthub-card contacthub-master-data\"><h2>Master data</h2>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2992
+msgid "<button type=\"button\" class=\"button button-small contacthub-open-roles\">Edit customer roles</button>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2981
+msgid "<button type=\"button\" class=\"button button-small contacthub-open-user-account\" data-mode=\"create\">Create user account</button>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2976
+msgid "<button type=\"button\" class=\"button button-small contacthub-open-user-account\" data-mode=\"link\">Link existing account</button>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2701
+msgid "<button type=\"button\" class=\"button contacthub-open-consent\">Edit consent</button>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1094
+msgid "<div class=\"addresses\"><section><h2>Billing address</h2><p>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1767
+msgid "<div class=\"contacthub-empty\"><span class=\"dashicons dashicons-building\"></span><h3>No companies found</h3><p>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1743
+msgid "<div class=\"contacthub-heading\"><div><p class=\"contacthub-eyebrow\">CRM</p><h1>Companies</h1><p>A unified view of companies, contacts, orders, and invoices.</p></div><button type=\"button\" class=\"button button-primary contacthub-heading-action contacthub-open-new-company\">Add company</button></div>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1498
+msgid "<div class=\"contacthub-heading\"><div><p class=\"contacthub-eyebrow\">CRM</p><h1>People</h1><p>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2632
+msgid "<div class=\"contacthub-modal-message\" aria-live=\"polite\"></div><div class=\"contacthub-modal-actions\"><button type=\"button\" class=\"button button-primary contacthub-save-bulk\">Enable with confirmation</button><button type=\"button\" class=\"button contacthub-close-bulk\">Cancel</button></div>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2718
+msgid "<div class=\"contacthub-modal-message\" aria-live=\"polite\"></div><div class=\"contacthub-modal-actions\"><button type=\"button\" class=\"button button-primary contacthub-save-consent\">Save with confirmation</button><button type=\"button\" class=\"button contacthub-close-consent\">Cancel</button></div>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2671
+msgid "<div class=\"contacthub-modal-message\" aria-live=\"polite\"></div><div class=\"contacthub-modal-actions\"><button type=\"button\" class=\"button button-primary contacthub-save-new-person\">Create person</button><button type=\"button\" class=\"button contacthub-close-new-person\">Cancel</button></div>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2999
+msgid "<div class=\"contacthub-modal-message\"></div><div class=\"contacthub-modal-actions\"><button type=\"button\" class=\"button button-primary contacthub-save-roles\">Save roles</button><button type=\"button\" class=\"button contacthub-close-roles\">Cancel</button></div></div></div>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2558
+msgid "<div class=\"contacthub-toolbar\"><h2>Events</h2><span class=\"contacthub-count\">"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2972
+msgid "<div class=\"contacthub-user-account\"><span>WordPress user account</span>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1093
+msgid "<div class=\"facts\"><div><span>Order date</span><strong>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1747
+msgid "<div class=\"notice notice-warning inline\"><p><strong>Diagnostics:</strong> Not all required extensions were detected: "
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3580
+msgid "<div><span></span><strong>No company notes yet</strong><p>Groundhogg currently provides no notes for this company.</p></div>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3076
+msgid "<div><span></span><strong>No contact notes yet</strong><p>Groundhogg currently provides no notes for this person.</p></div>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1758
+msgid "<form class=\"contacthub-search\" method=\"get\"><input type=\"hidden\" name=\"page\" value=\"contacthub-firmen\"><label class=\"screen-reader-text\" for=\"contacthub-company-search\">Search companies</label><input id=\"contacthub-company-search\" type=\"search\" name=\"s\" value=\""
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2625
+msgid "<h2 id=\"contacthub-bulk-title\">Enable marketable status for multiple people</h2>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3074
+msgid "<h2>Activities <span class=\"contacthub-count\">"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2762
+msgid "<h2>Addresses</h2>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2854
+msgid "<h2>Orders &amp; invoices <span class=\"contacthub-count\">"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1092
+msgid "<header><div><span class=\"eyebrow\">WooCommerce order</span><h1>Order #"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2962
+msgid "<input type=\"text\" class=\"contacthub-token-input contacthub-role-input\" placeholder=\"Search WordPress roles\" aria-label=\"Search WordPress roles\" autocomplete=\"off\"></div><div class=\"contacthub-token-suggestions contacthub-role-suggestions\" role=\"listbox\" hidden>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2750
+msgid "<input type=\"text\" class=\"contacthub-token-input contacthub-tag-input\" placeholder=\"Search or create a tag\" aria-label=\"Search or create a tag\" autocomplete=\"off\"></div><div class=\"contacthub-token-suggestions contacthub-tag-suggestions\" role=\"listbox\" hidden>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3011
+msgid "<label class=\"contacthub-confirm\"><input type=\"checkbox\" class=\"contacthub-account-invite\" checked> <span>Send an invitation to set the password.</span></label>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2631
+msgid "<label class=\"contacthub-confirm\"><input type=\"checkbox\" class=\"contacthub-bulk-confirmed\"> <span>I confirm that explicit marketing consent exists for every selected person.</span></label>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2717
+msgid "<label class=\"contacthub-confirm\"><input type=\"checkbox\" class=\"contacthub-consent-confirmed\"> <span>I confirm that explicit consent has been given.</span></label>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1511
+msgid "<label class=\"screen-reader-text\" for=\"contacthub-person-search\">Search people</label><input id=\"contacthub-person-search\" type=\"search\" name=\"s\" value=\""
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2837
+msgid "<label>Billing email<input type=\"email\" data-key=\"email\" value=\""
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2839
+msgid "<label>Billing phone"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2841
+msgid "<label>Billing phone<input type=\"text\" value=\""
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2808 contacthub/includes/class-contacthub-plugin.php:2830
+msgid "<label>Country<select data-key=\"country\""
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2629
+msgid "<label>Date<input type=\"date\" class=\"contacthub-bulk-date\" value=\""
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2715
+msgid "<label>Date<input type=\"date\" class=\"contacthub-consent-date\" value=\""
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2713
+msgid "<label>Decision<select class=\"contacthub-consent-decision\"><option value=\"grant\">Grant consent</option><option value=\"revoke\">Withdraw consent</option></select></label>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2660
+msgid "<label>Email address<input type=\"email\" class=\"contacthub-new-email\" autocomplete=\"email\" required></label>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2657
+msgid "<label>First name<input type=\"text\" class=\"contacthub-new-first-name\" autocomplete=\"given-name\"></label>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2658
+msgid "<label>Last name<input type=\"text\" class=\"contacthub-new-last-name\" autocomplete=\"family-name\"></label>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2630
+msgid "<label>Note / evidence<textarea class=\"contacthub-bulk-note\" rows=\"3\" placeholder=\"Optional evidence note\"></textarea></label>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2716
+msgid "<label>Note / evidence<textarea class=\"contacthub-consent-note\" rows=\"3\" placeholder=\"Optional evidence note\"></textarea></label>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2628
+msgid "<label>Source<select class=\"contacthub-bulk-source\"><option value=\"\">Please select</option><option value=\"personally\">In person</option><option value=\"phone\">By phone</option><option value=\"written\">In writing</option><option value=\"email\">By email</option><option value=\"import\">Documented import</option><option value=\"other\">Other</option></select></label>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2714
+msgid "<label>Source<select class=\"contacthub-consent-source\"><option value=\"\">Please select</option><option value=\"personally\">In person</option><option value=\"phone\">By phone</option><option value=\"written\">In writing</option><option value=\"email\">By email</option><option value=\"import\">Documented import</option><option value=\"other\">Other</option></select></label>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2500
+msgid "<main><section class=\"contacthub-card\"><h2>Contacts <span class=\"contacthub-count\">"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2627
+msgid "<p class=\"contacthub-bulk-modal-count\"><strong>0 people selected</strong></p>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2773
+msgid "<p class=\"contacthub-muted contacthub-woocommerce-address-note\">No linked WordPress/WooCommerce customer account. The contact address is saved independently; billing and shipping addresses become available after an account is linked.</p>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2510
+msgid "<p class=\"contacthub-muted\">No contacts were returned by the public Companies interface.</p>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2560
+msgid "<p class=\"contacthub-muted\">No event booking was found for this person.</p>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2518
+msgid "<p class=\"contacthub-muted\">No order was found using the contacts' email addresses.</p>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2856
+msgid "<p class=\"contacthub-muted\">No order was found using the email address.</p>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2493
+msgid "<p class=\"description contacthub-uid-help\">Linked to German Market (billing_vat) and B2B Market (b2b_uid) for the primary contact. EU validation only runs when requested.</p>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2794
+msgid "<p class=\"description\">Only the WooCommerce customer profile is saved. Existing orders and historical invoices are not changed.</p>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3009
+msgid "<p>An account with a secure random password will be created. This does not grant marketing consent.</p><label>Username<input type=\"text\" class=\"contacthub-account-username\" value=\""
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2712
+msgid "<p>Only change this when consent or withdrawal is actually documented.</p>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2626
+msgid "<p>Only selected people without an unsubscribe or blocked status will be changed. Already marketable contacts remain unchanged.</p>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1665
+msgid "<section class=\"contacthub-card contacthub-master-data\"><h2>Master data</h2>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3824
+msgid "<section class=\"contacthub-card contacthub-status\"><h2>System status</h2>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2530
+msgid "<section class=\"contacthub-card contacthub-tabs-card\" data-tabs><div class=\"contacthub-tabs\" role=\"tablist\" aria-label=\"Person data\">"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1757
+msgid "<section class=\"contacthub-card\"><div class=\"contacthub-toolbar\"><h2>Companies overview</h2><span class=\"contacthub-count\">"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1499
+msgid "<section class=\"contacthub-card\"><div class=\"contacthub-toolbar\"><h2>People overview</h2><span class=\"contacthub-count\">"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3578
+msgid "<section class=\"contacthub-card\"><h2>Activities <span class=\"contacthub-count\">"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2514
+msgid "<section class=\"contacthub-card\"><h2>Orders &amp; invoices <span class=\"contacthub-count\">"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1108
+msgid "<section class=\"note\"><h2>Customer note</h2><p>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1096
+msgid "<section><h2>Shipping address</h2><p>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2879
+msgid "<span class=\"contacthub-document-unavailable\" title=\"German Market does not provide an invoice action for this order\">—</span>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2736
+msgid "<span class=\"contacthub-muted\">No tags assigned yet.</span>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3699
+msgid "<span class=\"contacthub-phone-input-group\"><select class=\"contacthub-phone-prefix\" aria-label=\"Country calling code\">"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3818
+msgid "<span class=\"contacthub-vat-check\" title=\"Successfully validated through EU VIES\">✓</span>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2979
+msgid "<strong>No user account</strong>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2889
+msgid "<table class=\"widefat contacthub-table contacthub-orders-table\"><thead><tr><th>Order number</th><th>Date</th><th>Invoice number</th><th>Actions</th><th>Status</th><th>Payment method</th><th>Total</th></tr></thead><tbody>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2563
+msgid "<table class=\"widefat contacthub-table\"><thead><tr><th>Event</th><th><span class=\"screen-reader-text\">Preview</span></th><th>Date</th><th>Status</th><th>Booking</th></tr></thead><tbody>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1527
+msgid "<td class=\"check-column\"><input type=\"checkbox\" class=\"contacthub-select-all\" aria-label=\"Select all people on this page\"></td>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1530
+msgid "<th><span class=\"screen-reader-text\">Actions</span></th>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1540
+msgid "<th><span class=\"screen-reader-text\">Email confirmation and marketing status</span></th></tr></thead><tbody>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1531
+msgid "<th>Email</th><th>Phone</th>"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-store.php:480
+msgid "A Groundhogg tag has no readable ID."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1650
+#, php-format
+msgid "A new business registration was submitted.\n\nPerson: %1$s\nCompany: %2$s\nEmail: %3$s\nRequested role: %4$s\n\nReview: %5$s"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:747 contacthub/includes/class-contacthub-plugin.php:750 contacthub/includes/class-contacthub-store.php:101
+msgid "A person with this email address already exists."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1374
+msgid "A user account already exists for this email address."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1164
+msgid "A user account already exists for this email address. Please reload the page and use “Link”."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:381
+msgid "A VAT ID is optional unless this setting is enabled. Every entered VAT ID must be successfully validated through EU VIES."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2974
+msgid "Account available"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:306 contacthub/includes/class-contacthub-registration.php:873
+msgid "Actions"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:769
+msgid "Active"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:652
+msgid "Active theme"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:684
+msgid "Activities"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1105
+msgid "Add a separate shipping address"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1086
+msgid "Add company details"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:886 contacthub/includes/class-contacthub-plugin.php:893
+msgid "Add new tag"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:305
+msgid "Add or update entry"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1676 contacthub/includes/class-contacthub-plugin.php:1691
+msgid "Address"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:677 contacthub/includes/class-contacthub-plugin.php:2495 contacthub/includes/class-contacthub-plugin.php:2804 contacthub/includes/class-contacthub-plugin.php:2826 contacthub/includes/class-contacthub-registration.php:1097 contacthub/includes/class-contacthub-registration.php:1107 contacthub/includes/class-contacthub-my-account.php:209 contacthub/includes/class-contacthub-my-account.php:278
+msgid "Address line 2"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2532 contacthub/includes/class-contacthub-my-account.php:234
+msgid "Addresses"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:380
+msgid "Adds a separate business registration with company data, VAT ID validation, and a requested customer role."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:412
+msgid "After double opt-in confirmation"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1512
+msgid "All"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2645
+#, php-format
+msgid "All filtered people (%d)"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2815
+msgid "Also copy this address to the WooCommerce billing address."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-store.php:537
+#, php-format
+msgid "An unreadable tag assignment was found on Groundhogg contact %d."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:651
+msgid "Appearance"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:905 contacthub/includes/class-contacthub-plugin.php:1525
+msgid "Apply"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:317
+msgid "Apply the assignments immediately after checking."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:881
+msgid "Approve"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2393
+msgid "ascending"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:317
+msgid "Assign missing salutations"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:906 contacthub/includes/class-contacthub-plugin.php:1773
+msgid "Assigned people"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2569
+msgid "Attended"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:160
+msgid "Attended events"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3135 contacthub/includes/class-contacthub-plugin.php:3663 contacthub/includes/class-contacthub-registration.php:1178
+msgid "Austria"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:850
+msgid "Available"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2616
+msgid "Available delivery, opening, and click information is read from the respective source. Privacy features or blocked images may affect tracking."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:394
+msgid "Available placeholders: {first_name}, {site_name}, {confirmation_link}."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:411
+msgid "Available placeholders: {first_name}, {site_name}, {confirmation_link}. If the confirmation link is omitted, it is appended automatically."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3669
+msgid "Belgium"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1330 contacthub/includes/class-contacthub-plugin.php:2790 contacthub/includes/class-contacthub-registration.php:968 contacthub/includes/class-contacthub-my-account.php:236
+msgid "Billing address"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2202 contacthub/includes/class-contacthub-plugin.php:2206 contacthub/includes/class-contacthub-plugin.php:2338 contacthub/includes/class-contacthub-plugin.php:2342
+msgid "Blocked"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2569
+msgid "Booked"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:226
+msgid "Broadcast"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:905
+msgid "Bulk actions"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1525
+msgid "Bulk edit"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:219
+msgid "Bulk editing failed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:960
+msgid "Business customer"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:365
+msgid "Business customers"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:459
+msgid "By default, uninstalling ContactHub does not delete customer data."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2242
+msgid "By email"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2240
+msgid "By phone"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:190 contacthub/includes/class-contacthub-plugin.php:895 contacthub/includes/class-contacthub-plugin.php:2650 contacthub/includes/class-contacthub-plugin.php:2676 contacthub/includes/class-contacthub-registration.php:725
+msgid "Cancel"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:93 contacthub/includes/class-contacthub-my-account.php:120 contacthub/includes/class-contacthub-my-account.php:218
+msgid "Change password"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:214 contacthub/includes/class-contacthub-registration.php:937 contacthub/includes/class-contacthub-my-account.php:64
+msgid "Checking EU VIES…"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:201
+msgid "Checking the selected contacts…"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2639
+msgid "Choose whether selected people or all currently filtered people should be used."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:234
+msgid "Choose whether selected people or all filtered people should be used."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1099 contacthub/includes/class-contacthub-registration.php:1109 contacthub/includes/class-contacthub-my-account.php:211 contacthub/includes/class-contacthub-my-account.php:280
+msgid "City"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2594
+msgid "Clicked"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:191
+msgid "Close"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:80
+msgid "Close registration"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:56 contacthub/includes/class-contacthub-plugin.php:57 contacthub/includes/class-contacthub-registration.php:684
+msgid "Companies"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:676 contacthub/includes/class-contacthub-plugin.php:1533 contacthub/includes/class-contacthub-plugin.php:1678 contacthub/includes/class-contacthub-plugin.php:1693 contacthub/includes/class-contacthub-plugin.php:1773 contacthub/includes/class-contacthub-plugin.php:2495 contacthub/includes/class-contacthub-plugin.php:2663 contacthub/includes/class-contacthub-plugin.php:2826 contacthub/includes/class-contacthub-registration.php:873
+msgid "Company"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2457
+msgid "Company #"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:206 contacthub/includes/class-contacthub-my-account.php:270 contacthub/includes/class-contacthub-my-account.php:275
+msgid "Company (optional)"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2481 contacthub/includes/class-contacthub-plugin.php:2489
+msgid "Company address"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2662
+msgid "Company assignment (optional)"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:252
+msgid "Company management is unavailable because Groundhogg Companies is not active."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2477 contacthub/includes/class-contacthub-plugin.php:2485 contacthub/includes/class-contacthub-plugin.php:2676
+msgid "Company name"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3583
+msgid "Company note"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2202 contacthub/includes/class-contacthub-plugin.php:2206 contacthub/includes/class-contacthub-plugin.php:2338 contacthub/includes/class-contacthub-plugin.php:2342
+msgid "Complaint"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2698
+msgid "Completed"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:270
+msgid "Configure ContactHub and its optional integrations."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1482 contacthub/includes/class-contacthub-registration.php:1487
+msgid "Confirm email address"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:222
+msgid "Confirm new password"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1021
+msgid "Confirm newsletter subscription"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:173
+msgid "Confirm your newsletter subscription at {site_name}"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:162
+msgid "Confirm your registration at {site_name}"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:425
+msgid "Confirmation is required."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:414
+msgid "Confirmation text for business customers"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:413
+msgid "Confirmation text for standard customers"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1128
+msgid "Confirmations"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:301
+msgid "Confirmed assignments can suggest a salutation for the same first name in future. A suggestion is never applied automatically."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:310
+msgid "Confirmed selection"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2506
+msgid "Contact"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1309 contacthub/includes/class-contacthub-plugin.php:2802
+msgid "Contact address"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1309
+#, php-format
+msgid "Contact address updated%1$s. Edited by: %2$s."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:619 contacthub/includes/class-contacthub-plugin.php:619
+msgid "Contact list"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3079
+msgid "Contact note"
+msgstr ""
+
+#: contacthub/contacthub.php:3
+msgid "ContactHub Basic – User-Friendly CRM for WordPress"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:653
+msgid "ContactHub can inherit the theme typography, colors, form fields, buttons, borders, and corner radii. Its functional layout remains intact."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:484
+msgid "ContactHub can merge customer profiles from WooCommerce into the ContactHub database using the email address as the unique key. Orders, invoices, prices, and WooCommerce data remain unchanged."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1494
+msgid "ContactHub contacts, company relationships, orders, events, and marketing status in one view."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-schema.php:236
+msgid "ContactHub could not create all required database fields."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-schema.php:233
+msgid "ContactHub could not create all standalone database tables."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:299
+msgid "ContactHub could not save the change."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:725
+msgid "ContactHub CRM records and imported newsletter archives will be deleted. ContactHub-created email drafts, WordPress users, WooCommerce orders and invoices, Groundhogg data, and event data remain unchanged."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:447 contacthub/includes/class-contacthub-registration.php:679
+msgid "ContactHub database"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1656 contacthub/includes/class-contacthub-plugin.php:2469
+#, php-format
+msgid "ContactHub ID %d"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:447
+msgid "ContactHub is responsible for contacts, companies, tags, consent, activities, and—when ContactHub Plus is active—newsletter delivery. Groundhogg is not written to in this mode."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:671
+#, php-format
+msgid "ContactHub now adopts the styles from %s."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:612
+msgid "ContactHub only lists possible duplicates here. No records are merged automatically. A later merge step will require selecting a primary record and confirming every conflict."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3006
+msgid "ContactHub person"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:45 contacthub/includes/class-contacthub-registration.php:271
+msgid "ContactHub settings"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-schema.php:254
+msgid "ContactHub standalone tables are incomplete."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:652 contacthub/includes/class-contacthub-registration.php:655
+msgid "ContactHub style"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:684
+msgid "Contacts"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:677 contacthub/includes/class-contacthub-plugin.php:2495 contacthub/includes/class-contacthub-registration.php:1100 contacthub/includes/class-contacthub-registration.php:1110 contacthub/includes/class-contacthub-my-account.php:213 contacthub/includes/class-contacthub-my-account.php:282
+msgid "Country"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:211 contacthub/includes/class-contacthub-registration.php:1153 contacthub/includes/class-contacthub-my-account.php:557
+msgid "Country calling code"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:79
+msgid "Create a customer account to manage your profile, addresses, orders, and bookings."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3013
+msgid "Create account"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:882
+msgid "Create and manage tags in the currently selected data source."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2676 contacthub/includes/class-contacthub-plugin.php:2676
+msgid "Create company"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:972
+msgid "Create customer account"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2656
+msgid "Create new person"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:682
+msgid "Create or update ContactHub database and activate"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:516
+msgid "Create the ContactHub database before importing newsletter subscribers."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:122
+msgid "Create the ContactHub database before selecting ContactHub mode."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:209
+msgid "Create the new user account now?"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3004
+msgid "Create user account"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:221
+msgid "Creating company…"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:220
+msgid "Creating person…"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:222
+msgid "Creation failed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3674
+msgid "Croatia"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:220
+msgid "Current password"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2990
+msgid "Customer / WordPress roles"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:367
+msgid "Customer account registration"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:783
+msgid "Customer groups, roles, prices, and tax rules remain untouched."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1120
+msgid "Customer role"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1512
+msgid "Customers"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3670
+msgid "Czechia"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:767
+msgid "Data preserved in detected plugins"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:438
+msgid "Data source"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:679
+msgid "Date created"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:905 contacthub/includes/class-contacthub-plugin.php:912 contacthub/includes/class-contacthub-registration.php:311
+msgid "Delete"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:231
+msgid "Delete the selected tags and all their contact assignments? The people themselves will not be deleted."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:230
+#, php-format
+msgid "Delete the tag “%1$s”? It is currently assigned to %2$d people. The people themselves will not be deleted."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:954
+#, php-format
+msgid "Deleted tags: %d"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:687
+msgid "Deletes ContactHub CRM records and imported Groundhogg newsletter archives. ContactHub-created newsletter drafts, Groundhogg, WordPress, WooCommerce, invoices, and events remain untouched."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:919
+msgid "Deleting a tag removes only the tag and its assignments. People and their other data remain unchanged."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2594
+msgid "Delivered"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3144
+msgid "Denmark"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2393
+msgid "descending"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:906 contacthub/includes/class-contacthub-plugin.php:2482 contacthub/includes/class-contacthub-plugin.php:2490
+msgid "Description"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:893
+msgid "Description (optional)"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3826
+msgid "detected"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:228
+msgid "Do you really want ContactHub-owned customer data to be permanently deleted when the plugin is uninstalled? Data from Groundhogg, WooCommerce, German Market, B2B Market, The Events Calendar, and Event Tickets will not be deleted."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2696
+msgid "Documented date"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2243
+msgid "Documented import"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2698
+msgid "Double opt-in"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:398
+msgid "Double opt-in email"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:612
+msgid "Duplicate review"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:912 contacthub/includes/class-contacthub-plugin.php:1661 contacthub/includes/class-contacthub-plugin.php:1795
+msgid "Edit"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3772 contacthub/includes/class-contacthub-plugin.php:3782 contacthub/includes/class-contacthub-plugin.php:3803 contacthub/includes/class-contacthub-plugin.php:3811
+#, php-format
+msgid "Edit %s"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3795
+msgid "Edit address"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2469
+msgid "Edit company"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1656
+msgid "Edit person"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:886
+msgid "Edit tag"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1618
+#, php-format
+msgid "Edited by: %s"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:676
+msgid "Email"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1674 contacthub/includes/class-contacthub-plugin.php:1689 contacthub/includes/class-contacthub-registration.php:992 contacthub/includes/class-contacthub-registration.php:1068
+msgid "Email address"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2222
+msgid "Email address confirmed"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2222
+msgid "Email address not confirmed"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:883
+msgid "Email confirmation is still pending."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:678 contacthub/includes/class-contacthub-registration.php:873
+msgid "Email confirmed"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:399
+msgid "Email subject"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:400
+msgid "Email text"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1525
+msgid "Enable marketable status"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:390
+msgid "Enable separate newsletter signup"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:370
+msgid "Enable standard customer registration"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1373 contacthub/includes/class-contacthub-registration.php:1229
+msgid "EU VIES did not return a usable response."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:187
+msgid "Event"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2565
+msgid "Event #"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1514
+msgid "Event attendees"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:679 contacthub/includes/class-contacthub-plugin.php:1538
+msgid "Events"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:784
+msgid "Events and venue data remain untouched."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:372
+msgid "Every account registration offers an optional, unchecked marketing consent. Account registration never implies marketing consent."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1224
+msgid "Existing WordPress user account linked."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:512
+msgid "Explicit confirmation is required."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1525
+msgid "Export"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:232 contacthub/includes/class-contacthub-plugin.php:2639
+msgid "Export contacts"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2650 contacthub/includes/class-contacthub-registration.php:314
+msgid "Export CSV"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:181 contacthub/includes/class-contacthub-plugin.php:2659 contacthub/includes/class-contacthub-plugin.php:3754 contacthub/includes/class-contacthub-registration.php:305 contacthub/includes/class-contacthub-registration.php:309 contacthub/includes/class-contacthub-registration.php:1076
+msgid "Family"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3148
+msgid "Faroe Islands"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:675 contacthub/includes/class-contacthub-plugin.php:1528 contacthub/includes/class-contacthub-plugin.php:1667 contacthub/includes/class-contacthub-plugin.php:1682 contacthub/includes/class-contacthub-plugin.php:2495 contacthub/includes/class-contacthub-plugin.php:2826 contacthub/includes/class-contacthub-registration.php:305 contacthub/includes/class-contacthub-registration.php:306 contacthub/includes/class-contacthub-registration.php:990 contacthub/includes/class-contacthub-registration.php:1078 contacthub/includes/class-contacthub-my-account.php:201 contacthub/includes/class-contacthub-my-account.php:272
+msgid "First name"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:293
+msgid "First names"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3667 contacthub/includes/class-contacthub-registration.php:1182
+msgid "France"
+msgstr ""
+
+#: contacthub/contacthub.php:4
+msgid "Free contact and company management for WordPress with a complete WooCommerce customer overview and optional Groundhogg compatibility."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:156
+#, php-format
+msgid "From your dashboard you can manage your <a href=\"%1$s\">profile</a>, <a href=\"%2$s\">addresses</a>, <a href=\"%3$s\">payment methods</a>, and <a href=\"%4$s\">password</a>."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1679 contacthub/includes/class-contacthub-plugin.php:1694
+msgid "Function in company"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:261
+msgid "General"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:365
+msgid "General customer registration"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3664 contacthub/includes/class-contacthub-registration.php:1179
+msgid "Germany"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2598 contacthub/includes/class-contacthub-plugin.php:3374
+msgid "Groundhogg"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1766
+msgid "Groundhogg Companies returned no companies."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3006
+msgid "Groundhogg contact"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:780
+msgid "Groundhogg contacts, companies, tags, funnels, and activities remain untouched."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1496
+msgid "Groundhogg contacts, company relationships, and marketing status in one view."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1497
+msgid "Groundhogg contacts, orders, and marketing status in one view."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:470
+msgid "Groundhogg could not change the marketing status."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:849
+msgid "Groundhogg could not change the tag assignment."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:834
+msgid "Groundhogg could not create the tag."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:308 contacthub/includes/class-contacthub-plugin.php:374
+msgid "Groundhogg could not save the change."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:440
+msgid "Groundhogg frontend mode"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1656 contacthub/includes/class-contacthub-plugin.php:2469
+#, php-format
+msgid "Groundhogg ID %d"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:443
+msgid "Groundhogg is configured as the data source but is currently inactive. ContactHub has not switched the data source automatically."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1148
+msgid "Groundhogg is unavailable; no user account was created."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:686
+msgid "Groundhogg remains read only. Contacts, companies, tags, and—with ContactHub Plus—mail templates and completed broadcasts are imported without duplicates."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:440
+msgid "Groundhogg remains responsible for contacts, companies, tags, consent, broadcasts, funnels, and automations. ContactHub provides the user-friendly interface."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:163
+msgid "Hello {first_name},\n\nplease confirm your email address by opening this link:\n{confirmation_link}\n\nThe link is valid for 24 hours."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:174
+msgid "Hello {first_name},\n\nplease confirm your newsletter subscription by opening this link:\n{confirmation_link}\n\nThe link is valid for 24 hours."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3672
+msgid "Hungary"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1132
+msgid "I accept the terms and conditions."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:198
+msgid "I confirm that explicit consent has been given."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:197
+msgid "I confirm that the withdrawal or unsubscribe has actually been documented."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:994 contacthub/includes/class-contacthub-registration.php:1129
+msgid "I have read the privacy policy."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1135
+msgid "I would also like to receive news and offers by email. I can withdraw this consent at any time."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:995
+msgid "I would like to receive the newsletter and confirm that I can withdraw my consent at any time."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:310
+msgid "Import"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:316
+msgid "Import and merge CSV"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:490 contacthub/includes/class-contacthub-registration.php:532
+msgid "Import and merge now"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:486 contacthub/includes/class-contacthub-registration.php:526
+msgid "Import preview"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:513
+msgid "Import The Newsletter Plugin data"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:484
+msgid "Import WooCommerce customers"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:583 contacthub/includes/class-contacthub-registration.php:590
+msgid "Imported newsletter subscription."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:473
+msgid "Imports are started only after an explicit confirmation. Source systems remain unchanged, and existing ContactHub contacts are matched by email address before new records are created."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2239
+msgid "In person"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2241
+msgid "In writing"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2480 contacthub/includes/class-contacthub-plugin.php:2488 contacthub/includes/class-contacthub-registration.php:1088
+msgid "Industry"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2646
+msgid "Information to include"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:656
+msgid "Inherit compatible typography, colors, fields, buttons, borders, and spacing from the active theme."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:769
+msgid "Installed, inactive"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:848
+msgid "Integration status"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:705
+#, php-format
+msgid "Intentionally omitted system tags: %d"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-store.php:476
+#, php-format
+msgid "Internal Groundhogg status tag “%s” was intentionally omitted."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1234
+msgid "Invalid address selection."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:261
+msgid "Invalid field."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:324
+msgid "Invalid person field."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:422
+msgid "Invalid selection."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:814
+msgid "Invalid tag action."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:185
+msgid "Invoice"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:782
+msgid "Invoices and invoice documents remain untouched."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3666 contacthub/includes/class-contacthub-registration.php:1181
+msgid "Italy"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:528
+msgid "Last import:"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:690
+msgid "Last migration"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:675 contacthub/includes/class-contacthub-plugin.php:1529 contacthub/includes/class-contacthub-plugin.php:1668 contacthub/includes/class-contacthub-plugin.php:1683 contacthub/includes/class-contacthub-plugin.php:2495 contacthub/includes/class-contacthub-plugin.php:2826 contacthub/includes/class-contacthub-registration.php:991 contacthub/includes/class-contacthub-registration.php:1079 contacthub/includes/class-contacthub-my-account.php:202 contacthub/includes/class-contacthub-my-account.php:273
+msgid "Last name"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1087
+msgid "Legal company name"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3013
+msgid "Link"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:208
+msgid "Link the existing account to this person?"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3004
+msgid "Link user account"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1211
+msgid "Linking failed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:677 contacthub/includes/class-contacthub-plugin.php:1773 contacthub/includes/class-contacthub-plugin.php:2495 contacthub/includes/class-contacthub-plugin.php:2804 contacthub/includes/class-contacthub-plugin.php:2826
+msgid "Location"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2594
+msgid "Mailing"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2607
+msgid "Mailing pages"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2536 contacthub/includes/class-contacthub-plugin.php:2589
+msgid "Mailings"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:370
+msgid "Makes the standard customer account form available through [contacthub_registration]."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:310
+msgid "Manual"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:678
+msgid "Marketable"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:458 contacthub/includes/class-contacthub-plugin.php:491 contacthub/includes/class-contacthub-plugin.php:2200 contacthub/includes/class-contacthub-plugin.php:2203 contacthub/includes/class-contacthub-plugin.php:2336 contacthub/includes/class-contacthub-plugin.php:2339
+msgid "Marketing allowed"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1517
+msgid "Marketing consent confirmed through the registration double opt-in."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:568
+msgid "Marketing consent enabled by bulk edit"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:562
+#, php-format
+msgid "Marketing consent enabled by bulk edit on %1$s. Source: %2$s. Edited by: %3$s.%4$s"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:455 contacthub/includes/class-contacthub-plugin.php:474 contacthub/includes/class-contacthub-store.php:419
+msgid "Marketing consent granted manually"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:455 contacthub/includes/class-contacthub-plugin.php:474 contacthub/includes/class-contacthub-store.php:419
+msgid "Marketing consent revoked manually"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2695
+msgid "Marketing status"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:458 contacthub/includes/class-contacthub-plugin.php:492
+msgid "Marketing status and log were saved."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:617
+msgid "Match"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:686
+msgid "Migrate data from Groundhogg"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:262
+msgid "Migration"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:473
+msgid "Migration center"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:264
+msgid "Miscellaneous parameters"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2201 contacthub/includes/class-contacthub-plugin.php:2205 contacthub/includes/class-contacthub-plugin.php:2337 contacthub/includes/class-contacthub-plugin.php:2341
+msgid "Monthly"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:179 contacthub/includes/class-contacthub-plugin.php:2659 contacthub/includes/class-contacthub-plugin.php:3754 contacthub/includes/class-contacthub-registration.php:305 contacthub/includes/class-contacthub-registration.php:309 contacthub/includes/class-contacthub-registration.php:1076
+msgid "Mr"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:180 contacthub/includes/class-contacthub-plugin.php:2659 contacthub/includes/class-contacthub-plugin.php:3754 contacthub/includes/class-contacthub-registration.php:305 contacthub/includes/class-contacthub-registration.php:309 contacthub/includes/class-contacthub-registration.php:1076
+msgid "Ms"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:91 contacthub/includes/class-contacthub-my-account.php:116 contacthub/includes/class-contacthub-my-account.php:198
+msgid "My profile"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:892 contacthub/includes/class-contacthub-plugin.php:906 contacthub/includes/class-contacthub-registration.php:1075
+msgid "Name"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-store.php:77
+msgid "Name and postal code"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3668 contacthub/includes/class-contacthub-registration.php:1183
+msgid "Netherlands"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:182 contacthub/includes/class-contacthub-plugin.php:2659 contacthub/includes/class-contacthub-plugin.php:3754 contacthub/includes/class-contacthub-registration.php:305 contacthub/includes/class-contacthub-registration.php:309 contacthub/includes/class-contacthub-registration.php:1076
+msgid "Neutral"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1646
+#, php-format
+msgid "New business registration: %s"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:79
+msgid "New here?"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:221
+msgid "New password"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:695
+#, php-format
+msgid "Newsletter archive: %1$d email templates and %2$d completed broadcasts imported; %3$d errors."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:392
+msgid "Newsletter confirmation email"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:391
+msgid "Newsletter confirmation subject"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1043
+msgid "Newsletter consent confirmed through double opt-in."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:365 contacthub/includes/class-contacthub-registration.php:989
+msgid "Newsletter signup"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:601
+#, php-format
+msgid "Newsletter subscriber import completed: %1$d new contacts, %2$d updated contacts, %3$d skipped."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2140
+msgid "Newsletter unsubscribed"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1654
+msgid "Next person →"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:722 contacthub/includes/class-contacthub-plugin.php:722 contacthub/includes/class-contacthub-plugin.php:2620 contacthub/includes/class-contacthub-registration.php:879
+msgid "No"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1766
+msgid "No companies have been created in ContactHub yet."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:520
+msgid "No compatible The Newsletter Plugin subscriber table was detected. Nothing will be changed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:450
+msgid "No ContactHub customer tables have been created. With Groundhogg active, they are created only after an explicit ContactHub setup or migration."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:614
+msgid "No likely duplicates were found using phone number, WordPress account, or matching name and address."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:876
+msgid "No longer available"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2591
+msgid "No mailing with a reliable recipient assignment was found for this person."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:900
+msgid "No matching tags were found."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:178
+msgid "No orders have been placed yet."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1519
+msgid "No people found"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1525
+msgid "No person selected"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1765
+msgid "No result was found for this company name."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2990
+msgid "No role"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:194
+msgid "No usable response was received."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1154
+msgid "No valid email address is stored for this person."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2698
+msgid "Not completed"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3826
+msgid "not detected"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:850
+msgid "Not detected"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:417
+msgid "Notification email address"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:380
+msgid "Offer business customer registration"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3020
+msgid "Only administrators may manage user accounts and roles."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:749
+msgid "Only ContactHub data was deleted. The empty ContactHub database is ready for a new migration."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:438
+msgid "Only one system may be the leading source for contacts, companies, tags, and consent data."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:623
+msgid "Open first"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:193
+msgid "Open in new window"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:623
+msgid "Open second"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2594
+msgid "Opened"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:678
+msgid "Opt-in status"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:186
+msgid "Order"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1113
+msgid "Order #"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:185
+#, php-format
+msgid "Order #%s"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:679 contacthub/includes/class-contacthub-my-account.php:158
+msgid "Order total"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:679 contacthub/includes/class-contacthub-plugin.php:1535 contacthub/includes/class-contacthub-plugin.php:2531 contacthub/includes/class-contacthub-my-account.php:157
+msgid "Orders"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2244
+msgid "Other"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:155
+msgid "Overview"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2442 contacthub/includes/class-contacthub-plugin.php:2607
+#, php-format
+msgid "Page %1$d of %2$d"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:377
+msgid "Page after successful submission"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1069
+msgid "Password"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:868
+msgid "Pending business registrations"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:47 contacthub/includes/class-contacthub-plugin.php:48
+msgid "People"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2645
+msgid "People to include"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:461
+msgid "Permanently delete all ContactHub-owned customer data when the plugin is uninstalled."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:229
+msgid "Permanently delete all data from the ContactHub database now? Groundhogg, WordPress, WooCommerce, invoices, and events will remain untouched."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:725
+msgid "Permanently delete ContactHub data?"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:725
+msgid "Permanently delete data"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:873
+msgid "Person"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1656 contacthub/includes/class-contacthub-plugin.php:1789
+#, php-format
+msgid "Person #%d"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:676 contacthub/includes/class-contacthub-plugin.php:1675 contacthub/includes/class-contacthub-plugin.php:1690 contacthub/includes/class-contacthub-plugin.php:1773 contacthub/includes/class-contacthub-plugin.php:2479 contacthub/includes/class-contacthub-plugin.php:2487 contacthub/includes/class-contacthub-registration.php:1153 contacthub/includes/class-contacthub-my-account.php:205
+msgid "Phone"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:212 contacthub/includes/class-contacthub-registration.php:1157 contacthub/includes/class-contacthub-my-account.php:561 contacthub/includes/class-contacthub-store.php:76
+msgid "Phone number"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1385
+msgid "Please complete all required billing details."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1382
+msgid "Please complete all required contact details."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1008
+msgid "Please complete all required fields and confirm the newsletter consent."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:379
+msgid "Please complete the billing address."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1411 contacthub/includes/class-contacthub-my-account.php:383
+msgid "Please complete the separate shipping address."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1542
+msgid "Please confirm your email address before signing in."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:796
+msgid "Please enter a company name."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1390
+msgid "Please enter a formally valid EU VAT ID."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:202 contacthub/includes/class-contacthub-plugin.php:822
+msgid "Please enter a tag name."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1266
+msgid "Please enter a valid billing email address."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:519
+msgid "Please enter a valid date that is not in the future."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:432
+msgid "Please enter a valid date."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:349 contacthub/includes/class-contacthub-plugin.php:741 contacthub/includes/class-contacthub-registration.php:1372
+msgid "Please enter a valid email address."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1367
+msgid "Please enter a valid username."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:269
+msgid "Please enter a valid website address."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1388
+msgid "Please enter a VAT ID."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1168
+msgid "Please enter an available, valid username."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:744
+msgid "Please enter at least a first or last name."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:323
+msgid "Please enter your first and last name."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1120 contacthub/includes/class-contacthub-registration.php:1165
+msgid "Please select"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:275 contacthub/includes/class-contacthub-plugin.php:354
+msgid "Please select a European country calling code."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1271
+msgid "Please select a European telephone calling code."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:204
+msgid "Please select a suggested WordPress role."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:841
+msgid "Please select a tag."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1407
+msgid "Please select a valid billing country."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1263
+msgid "Please select a valid country."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:358
+msgid "Please select a valid salutation."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1174 contacthub/includes/class-contacthub-plugin.php:3028
+msgid "Please select at least one permitted role."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:667
+msgid "Please select at least one person."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:954
+msgid "Please select at least one tag."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:509
+msgid "Please select between 1 and 100 people."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1396
+msgid "Please select one of the available customer roles."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1120
+msgid "Please select the customer group you would like to request. The role is assigned only after approval."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:428 contacthub/includes/class-contacthub-plugin.php:515
+msgid "Please select the source of consent."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2669
+msgid "Position / function in the company"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:676 contacthub/includes/class-contacthub-plugin.php:1677 contacthub/includes/class-contacthub-plugin.php:1692 contacthub/includes/class-contacthub-registration.php:1080
+msgid "Position / Job title"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:617
+msgid "Possible duplicate"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1098 contacthub/includes/class-contacthub-registration.php:1108 contacthub/includes/class-contacthub-my-account.php:210 contacthub/includes/class-contacthub-my-account.php:279
+msgid "Postal code"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:677 contacthub/includes/class-contacthub-plugin.php:2495 contacthub/includes/class-contacthub-plugin.php:2804 contacthub/includes/class-contacthub-plugin.php:2826
+msgid "Postcode"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:675 contacthub/includes/class-contacthub-plugin.php:1670 contacthub/includes/class-contacthub-plugin.php:1685 contacthub/includes/class-contacthub-registration.php:1077 contacthub/includes/class-contacthub-my-account.php:203
+msgid "Prefix title"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:192
+msgid "Preview"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:489 contacthub/includes/class-contacthub-registration.php:531
+msgid "Preview import"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:619
+msgid "Print"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:233
+msgid "Print contact list"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1525
+msgid "Print list"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:375
+msgid "Privacy policy page"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:960
+msgid "Private customer"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:207
+msgid "Profile address"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:390
+msgid "Provides [contacthub_newsletter_signup]. The form creates or updates a ContactHub contact but never creates a WordPress user account."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:176
+msgid "Recent orders"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:416
+msgid "Redirect delay in seconds"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:415
+msgid "Redirect page after confirmation"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:373
+msgid "Redirects the public WordPress registration to the selected ContactHub registration page. Administrative login remains available."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:80 contacthub/includes/class-contacthub-my-account.php:80
+msgid "Register now"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:873
+msgid "Registered"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:263
+msgid "Registration"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1618
+msgid "Registration approved"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:852
+msgid "Registration data is stored in compatible WordPress and WooCommerce profile fields. Existing orders and invoices are never changed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:926
+msgid "Registration is currently unavailable because no customer role has been configured."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:374
+msgid "Registration page"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1618
+msgid "Registration rejected"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:960
+msgid "Registration type"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:887
+msgid "Reject"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:206 contacthub/includes/class-contacthub-plugin.php:2960
+#, php-format
+msgid "Remove role %s"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1070
+msgid "Repeat password"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:373
+msgid "Replace the standard WordPress registration"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1120
+msgid "Requested customer role"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:873
+msgid "Requested role"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:371
+msgid "Require email confirmation"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:381
+msgid "Require VAT ID"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:905
+msgid "Resend confirmation"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:687
+msgid "Reset ContactHub data"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:617
+msgid "Review"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:382
+msgid "Roles customers may request"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3169
+msgid "Romania"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:203
+msgid "Running tag action…"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1673 contacthub/includes/class-contacthub-plugin.php:2659 contacthub/includes/class-contacthub-plugin.php:3761 contacthub/includes/class-contacthub-registration.php:305 contacthub/includes/class-contacthub-registration.php:306 contacthub/includes/class-contacthub-registration.php:1076
+msgid "Salutation"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:301
+msgid "Salutation library"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-store.php:85
+msgid "Same WordPress account"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:189
+msgid "Save"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:247
+msgid "Save addresses"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:657
+msgid "Save appearance"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2818
+msgid "Save contact address"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:462
+msgid "Save general settings"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:223
+msgid "Save new password"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:214
+msgid "Save profile"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:207
+msgid "Save the selected roles and the resulting permissions for this account?"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:216
+msgid "Saved."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:210
+msgid "Saving address…"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:196
+msgid "Saving failed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:218
+msgid "Saving with confirmation…"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:215 contacthub/includes/class-contacthub-my-account.php:62
+msgid "Saving…"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:898
+msgid "Search"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:898 contacthub/includes/class-contacthub-plugin.php:898
+msgid "Search tags"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:912
+#, php-format
+msgid "Select %s"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:906
+msgid "Select all tags"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2662
+msgid "Select an existing company by typing its name, or enter a new company name. Similar existing names are suggested to avoid duplicates."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1525
+msgid "Select bulk action"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:885
+msgid "Select this role again in the settings before approval."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2645
+msgid "Selected people"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1557 contacthub/includes/class-contacthub-plugin.php:1557 contacthub/includes/class-contacthub-plugin.php:3780 contacthub/includes/class-contacthub-plugin.php:3780 contacthub/includes/class-contacthub-plugin.php:3789 contacthub/includes/class-contacthub-plugin.php:3789
+msgid "Send email"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2594
+msgid "Sent"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:46 contacthub/includes/class-contacthub-registration.php:270
+msgid "Settings"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1330 contacthub/includes/class-contacthub-plugin.php:2791 contacthub/includes/class-contacthub-my-account.php:245
+msgid "Shipping address"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:396
+msgid "Shown after the confirmation link has been opened."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:395
+msgid "Shown after the form has been submitted."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3671
+msgid "Slovakia"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3673
+msgid "Slovenia"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2391
+#, php-format
+msgid "Sort %1$s %2$s"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2594 contacthub/includes/class-contacthub-plugin.php:2697 contacthub/includes/class-contacthub-registration.php:306
+msgid "Source"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2202 contacthub/includes/class-contacthub-plugin.php:2206 contacthub/includes/class-contacthub-plugin.php:2338 contacthub/includes/class-contacthub-plugin.php:2342
+msgid "Spam"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:212 contacthub/includes/class-contacthub-my-account.php:281
+msgid "State / Province"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:677 contacthub/includes/class-contacthub-plugin.php:2804 contacthub/includes/class-contacthub-plugin.php:2826
+msgid "State / region"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:492
+msgid "Status saved; the additional log note could not be created."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2495
+msgid "Street"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:677 contacthub/includes/class-contacthub-plugin.php:2804 contacthub/includes/class-contacthub-plugin.php:2826 contacthub/includes/class-contacthub-registration.php:1096 contacthub/includes/class-contacthub-registration.php:1106 contacthub/includes/class-contacthub-my-account.php:208 contacthub/includes/class-contacthub-my-account.php:277
+msgid "Street and house number"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:972
+msgid "Submit business registration"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:995
+msgid "Subscribe to newsletter"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:525
+msgid "Subscribers are matched by email address. Historical mailings and available statistics are imported as read-only archives by ContactHub Plus. Unsubscribed and bounced states take precedence and are never changed into a marketing consent by the import."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:675 contacthub/includes/class-contacthub-plugin.php:1671 contacthub/includes/class-contacthub-plugin.php:1686 contacthub/includes/class-contacthub-my-account.php:204
+msgid "Suffix title"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:217 contacthub/includes/class-contacthub-plugin.php:3765
+#, php-format
+msgid "Suggestion: %s"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3665 contacthub/includes/class-contacthub-registration.php:1180
+msgid "Switzerland"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:224
+msgid "Tag action failed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:851
+msgid "Tag assigned."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:692
+#, php-format
+msgid "Tag comparison: %1$d in Groundhogg, %2$d in ContactHub; %3$d source assignments processed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-store.php:480
+#, php-format
+msgid "Tag ID %d has no name."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-store.php:523
+#, php-format
+msgid "Tag ID %d is assigned to a contact but was not found in the tag list."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:851
+msgid "Tag removed from this person."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:698
+#, php-format
+msgid "Tag warnings: %d"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-store.php:487
+#, php-format
+msgid "Tag “%s” could not be stored."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:65 contacthub/includes/class-contacthub-plugin.php:66 contacthub/includes/class-contacthub-plugin.php:678 contacthub/includes/class-contacthub-plugin.php:882 contacthub/includes/class-contacthub-plugin.php:897 contacthub/includes/class-contacthub-plugin.php:2728 contacthub/includes/class-contacthub-registration.php:684
+msgid "Tags"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:376
+msgid "Terms and conditions page"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:388
+msgid "Text after business customer registration"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:396
+msgid "Text after newsletter confirmation"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:395
+msgid "Text after newsletter signup"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:378
+msgid "Text after standard customer registration"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:161
+msgid "Thank you. Please check your inbox and confirm your email address."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:160
+msgid "Thank you. Please check your inbox and confirm your email address. Your requested customer role will only be assigned after approval."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:180
+msgid "Thank you. Please check your inbox and confirm your newsletter subscription."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:371
+msgid "The account remains blocked until the email address has been confirmed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:225
+msgid "The broadcast could not be loaded."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1070
+msgid "The broadcast does not contain a displayable email."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1076
+msgid "The broadcast email could not be rendered."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2704
+msgid "The change is saved in the selected leading data source and documented as an activity."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:63
+msgid "The changes could not be saved."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:800
+msgid "The company could not be created in the selected data source."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2452
+msgid "The company could not be loaded from the selected data source."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:264
+msgid "The company name must not be empty."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:802
+msgid "The company was created."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1025
+msgid "The confirmation email could not be sent. Please try again later."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1035 contacthub/includes/class-contacthub-registration.php:1504
+msgid "The confirmation link is invalid or has expired."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1286
+msgid "The contact address could not be saved."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1310
+msgid "The contact address was saved and copied to the WooCommerce billing address."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1292
+msgid "The contact address was saved, but no linked WooCommerce customer account is available for copying."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1304
+msgid "The contact address was saved, but WooCommerce could not copy it to the billing address."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1310
+msgid "The contact address was saved."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:681
+msgid "The ContactHub database tables do not exist yet or require an update. Creating or updating them does not change Groundhogg or any connected plugin."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:734
+msgid "The ContactHub database was created and activated."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:911
+msgid "The ContactHub registration form is disabled in the settings."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:471
+msgid "The current password is incorrect."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:386
+msgid "The customer only requests a role. It is assigned exclusively after an administrator approves the registration. Privileged administrative roles are excluded."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:435
+msgid "The date must not be in the future."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:553
+msgid "The detected newsletter table does not contain a compatible email field."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:313
+msgid "The dictionary is empty."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1354 contacthub/includes/class-contacthub-registration.php:1221
+msgid "The EU VIES service is currently unavailable. The VAT ID was not evaluated."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3007
+#, php-format
+msgid "The existing account <strong>%1$s</strong> with the same email address will be linked to this %2$s."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1159
+msgid "The existing user account cannot be linked."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1001 contacthub/includes/class-contacthub-registration.php:1252
+msgid "The form session has expired. Please try again."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:741
+msgid "The Groundhogg migration was completed. Review the migration report before switching modes."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-store.php:465
+msgid "The migration prerequisites are not available."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:892
+msgid "The name is displayed in contact profiles and filters."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:223 contacthub/includes/class-contacthub-my-account.php:474
+msgid "The new password must contain at least 10 characters."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:477
+msgid "The new passwords do not match."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:597
+msgid "The newsletter import preview is ready. No source or ContactHub data has been changed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:514
+msgid "The Newsletter Plugin is installed but inactive. Existing source tables can still be read without changing them."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1003 contacthub/includes/class-contacthub-registration.php:1016
+msgid "The newsletter signup could not be processed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:547
+msgid "The newsletter subscriber source or the ContactHub database is not available."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1040
+msgid "The newsletter subscription could not be saved."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1086
+msgid "The order was not found."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:533
+msgid "The original newsletter plugin data remains unchanged."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1377
+msgid "The password must contain at least 10 characters."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1379
+msgid "The passwords do not match."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1239 contacthub/includes/class-contacthub-plugin.php:1618
+msgid "The person could not be loaded from the selected data source."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-store.php:120
+msgid "The person could not be saved in ContactHub."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2656
+msgid "The person is created in the selected data source with the marketing status “Unconfirmed”."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:786
+msgid "The person was created with the status “Unconfirmed”."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1830 contacthub/includes/class-contacthub-plugin.php:1859
+msgid "The person was created, but the company assignment could not be saved."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1844
+msgid "The person was created, but the company could not be created."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:817 contacthub/includes/class-contacthub-plugin.php:1145
+msgid "The person was not found."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:227
+msgid "The preview could not be loaded."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:641
+msgid "The preview is ready. Review the totals before starting the import."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:285
+msgid "The primary contact does not have a WordPress user account."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1400
+msgid "The privacy policy must be acknowledged."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1257
+msgid "The registration could not be processed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:359
+msgid "The requested role is no longer enabled and was not assigned. Please update the allowed roles before approving this registration."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:362
+msgid "The requested role was not assigned because the email address has not yet been confirmed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:746
+msgid "The required deletion confirmation was not provided."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3039
+msgid "The role of the last administrator cannot be removed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:771
+msgid "The selected data source could not create the person."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1519
+msgid "The selected data source returned no contacts for this search."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:979
+msgid "The separate ContactHub newsletter signup is available only when the ContactHub database is the active data source."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:213
+msgid "The server returned an invalid response."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:244
+msgid "The shipping address differs from the billing address."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3795
+msgid "The structured contact address opens for editing."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:932
+msgid "The tag action could not be completed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:944
+msgid "The tag and its assignments were deleted."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:937
+msgid "The tag could not be created or already exists."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:944
+msgid "The tag could not be deleted."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:941
+msgid "The tag could not be renamed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:937
+msgid "The tag was created."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:941
+msgid "The tag was renamed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1403
+msgid "The terms and conditions must be accepted."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1128
+msgid "The user account cannot be edited."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1204
+msgid "The user account could not be linked safely to ContactHub; the newly created account was rolled back."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1218
+msgid "The user account could not be linked safely to Groundhogg; the newly created account was rolled back."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1225
+msgid "The user account was created and linked."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1225
+msgid "The user account was linked."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:281 contacthub/includes/class-contacthub-plugin.php:329 contacthub/includes/class-contacthub-plugin.php:1337 contacthub/includes/class-contacthub-registration.php:1200
+msgid "The VAT ID does not have a valid EU format."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1371 contacthub/includes/class-contacthub-registration.php:1244 contacthub/includes/class-contacthub-registration.php:1272 contacthub/includes/class-contacthub-my-account.php:396
+msgid "The VAT ID is not valid according to EU VIES."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1364 contacthub/includes/class-contacthub-registration.php:1246
+msgid "The VAT ID is valid according to EU VIES."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1330
+msgid "The WooCommerce "
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1136
+msgid "The WordPress roles were saved."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:870
+msgid "There are currently no registrations awaiting approval."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:725
+msgid "This action cannot be undone."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:442
+msgid "This address is blocked because of a delivery, spam, or complaint status. The ordinary consent override cannot remove this protection."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:461
+msgid "This affects only ContactHub chb_ tables, ContactHub options, and ContactHub user metadata. Data belonging to other plugins is never deleted."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1063
+msgid "This broadcast was not found for the person."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1550
+msgid "This business registration was not approved. Please contact us."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:346
+msgid "This field must not be empty."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1246
+msgid "This person does not have a linked WooCommerce customer account."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:334
+msgid "This person does not have a linked WordPress user account."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:205
+msgid "This role is already assigned."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3031
+msgid "This super administrator account cannot be changed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:223
+msgid "This tag is already assigned to the person."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:414
+msgid "This text is displayed after a business customer confirms the email address."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:388
+msgid "This text is displayed after a business customer registration."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:378
+msgid "This text is displayed after a standard customer account registration."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:413
+msgid "This text is displayed after a standard customer confirms the email address."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1369
+msgid "This username is already in use."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:785
+msgid "Tickets, attendees, and check-ins remain untouched."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1260
+msgid "Too many registration attempts. Please wait and try again."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1004
+msgid "Too many signup attempts. Please wait and try again."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1235
+msgid "Too many VAT ID checks. Please wait and try again."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3178
+msgid "Türkiye"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2200 contacthub/includes/class-contacthub-plugin.php:2203 contacthub/includes/class-contacthub-plugin.php:2336 contacthub/includes/class-contacthub-plugin.php:2339
+msgid "Unconfirmed"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2201 contacthub/includes/class-contacthub-plugin.php:2205 contacthub/includes/class-contacthub-plugin.php:2337 contacthub/includes/class-contacthub-plugin.php:2341
+msgid "Undeliverable"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:459
+msgid "Uninstallation and data"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3151
+msgid "United Kingdom"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2209 contacthub/includes/class-contacthub-plugin.php:2344
+msgid "Unknown"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:452
+msgid "unknown"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1795
+msgid "Unnamed company"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:623 contacthub/includes/class-contacthub-registration.php:623
+msgid "Unnamed contact"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1552 contacthub/includes/class-contacthub-plugin.php:1789
+msgid "Unnamed person"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:458 contacthub/includes/class-contacthub-plugin.php:491 contacthub/includes/class-contacthub-plugin.php:2200 contacthub/includes/class-contacthub-plugin.php:2204 contacthub/includes/class-contacthub-plugin.php:2336 contacthub/includes/class-contacthub-plugin.php:2340
+msgid "Unsubscribed"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1614
+msgid "Update about your business registration"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:893
+msgid "Update tag"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:416
+msgid "Use 0 for an immediate redirect or up to 30 seconds."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:238
+msgid "Use address from my profile"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:893
+msgid "Use the description to document the purpose of this tag."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:655
+msgid "Use the neutral ContactHub form and account design."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1066
+msgid "User account"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1067
+msgid "Username"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:188 contacthub/includes/class-contacthub-registration.php:1161 contacthub/includes/class-contacthub-my-account.php:243
+msgid "Validate VAT ID"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:676 contacthub/includes/class-contacthub-plugin.php:1680 contacthub/includes/class-contacthub-plugin.php:1695 contacthub/includes/class-contacthub-plugin.php:2483 contacthub/includes/class-contacthub-plugin.php:2491 contacthub/includes/class-contacthub-registration.php:873 contacthub/includes/class-contacthub-registration.php:1161 contacthub/includes/class-contacthub-my-account.php:243
+msgid "VAT ID"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:243
+msgid "VAT ID successfully validated"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:195 contacthub/includes/class-contacthub-registration.php:938 contacthub/includes/class-contacthub-my-account.php:65
+msgid "VAT ID validation could not be completed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1795
+msgid "View"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2469
+msgid "View company"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1656
+msgid "View person"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1773 contacthub/includes/class-contacthub-plugin.php:2478 contacthub/includes/class-contacthub-plugin.php:2486 contacthub/includes/class-contacthub-registration.php:1089
+msgid "Website"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:2201 contacthub/includes/class-contacthub-plugin.php:2204 contacthub/includes/class-contacthub-plugin.php:2337 contacthub/includes/class-contacthub-plugin.php:2340
+msgid "Weekly"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-store.php:332
+msgid "WooCommerce and the ContactHub database must be available for this import."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1327
+msgid "WooCommerce could not save the address."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:454
+#, php-format
+msgid "WooCommerce did not persist all address fields. Please try again. Affected fields: %s"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:644
+#, php-format
+msgid "WooCommerce import completed: %1$d new contacts, %2$d updated contacts, %3$d new companies, %4$d skipped."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1243
+msgid "WooCommerce is unavailable."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:781
+msgid "WordPress accounts, customer profiles, and orders remain untouched."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:678
+msgid "WordPress roles"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1135
+msgid "WordPress roles changed"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1135
+#, php-format
+msgid "WordPress roles changed to: %1$s. Edited by: %2$s."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1224
+msgid "WordPress user account"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1224
+msgid "WordPress user account created and linked."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:722 contacthub/includes/class-contacthub-plugin.php:722 contacthub/includes/class-contacthub-plugin.php:2620 contacthub/includes/class-contacthub-registration.php:879
+msgid "Yes"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:914
+msgid "You are already signed in."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:3034
+msgid "You cannot remove your own administrator role here."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:639
+msgid "You do not have permission to export or print contacts."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:857 contacthub/includes/class-contacthub-plugin.php:924
+msgid "You do not have permission to manage tags."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:662 contacthub/includes/class-contacthub-registration.php:753
+msgid "You do not have permission to perform this action."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1378 contacthub/includes/class-contacthub-plugin.php:1397 contacthub/includes/class-contacthub-registration.php:255
+msgid "You do not have permission to view this page."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:248 contacthub/includes/class-contacthub-plugin.php:388 contacthub/includes/class-contacthub-plugin.php:3281 contacthub/includes/class-contacthub-registration.php:321 contacthub/includes/class-contacthub-registration.php:344 contacthub/includes/class-contacthub-registration.php:1580 contacthub/includes/class-contacthub-registration.php:1626
+msgid "You do not have permission."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:360 contacthub/includes/class-contacthub-my-account.php:369
+msgid "Your addresses have been saved."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1609
+msgid "Your business account and requested customer role have been approved. You can now sign in."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1609
+msgid "Your business account has been approved"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1547
+msgid "Your business account is still awaiting approval."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:1614
+msgid "Your business registration could not be approved. Please contact us if you have questions."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:170
+msgid "Your email address has been confirmed. You can now sign in."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:169
+msgid "Your email address has been confirmed. Your requested customer role is still awaiting approval."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:181
+msgid "Your newsletter subscription has been confirmed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:482
+msgid "Your password has been changed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:306 contacthub/includes/class-contacthub-my-account.php:315
+msgid "Your profile has been saved."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-my-account.php:513
+msgid "Your session has expired. Please sign in again."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php:824
+msgid "— Select page —"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1652
+msgid "← People overview"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php:1653
+msgid "← Previous person"
+msgstr ""
+

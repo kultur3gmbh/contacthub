@@ -1,0 +1,82 @@
+.contacthub-registration-form{display:grid;gap:20px;max-width:920px;margin:24px auto;color:#253342}
+.contacthub-form-section{box-sizing:border-box;min-width:0;margin:0;padding:22px;border:1px solid #dfe5eb;border-radius:10px;background:#fff}
+.contacthub-form-section>h3,.contacthub-form-section>summary h3{margin:0 0 18px;padding:0}
+.contacthub-form-section>summary{display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none}
+.contacthub-form-section>summary::-webkit-details-marker{display:none}
+.contacthub-form-section>summary::marker{content:''}
+.contacthub-form-section>summary:before{content:'+';display:grid;place-items:center;width:24px;height:24px;flex:0 0 24px;border-radius:50%;background:#edf0f3;color:#526274;font:700 18px/1 sans-serif}
+.contacthub-form-section[open]>summary:before{content:'−'}
+.contacthub-form-section>summary h3{margin-bottom:0}
+.contacthub-form-section[open]>summary{margin-bottom:18px}
+.contacthub-inline-disclosure{border:0;background:transparent;padding:0;box-shadow:none}.contacthub-inline-disclosure>summary{font-size:16px;font-weight:400;line-height:1.5}.contacthub-inline-disclosure>summary:before{width:30px;height:30px;flex-basis:30px;font-size:22px}.contacthub-inline-disclosure[open]>summary{margin-bottom:18px}.contacthub-inline-disclosure>.contacthub-form-grid{padding:20px 22px;border:1px solid #dfe5eb;border-radius:10px;background:#fff}.contacthub-disclosure-label{font:inherit;color:inherit}
+.contacthub-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 18px}
+.contacthub-form-grid label{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600}
+.contacthub-form-grid label>span{color:#526274}
+.contacthub-form-grid em{color:#b32d2e;font-style:normal}
+.contacthub-form-grid input,.contacthub-form-grid select{box-sizing:border-box;width:100%;min-height:44px;padding:9px 11px;border:1px solid #a7b0ba;border-radius:6px;background:#fff;color:#253342;font:inherit}
+.contacthub-form-grid input:focus,.contacthub-form-grid select:focus{border-color:#5266d4;outline:2px solid rgba(82,102,212,.18);outline-offset:1px}
+.contacthub-form-check{display:flex;align-items:flex-start;gap:9px;margin:10px 0;font-size:14px;font-weight:400}
+.contacthub-form-check input{margin-top:3px}
+.contacthub-form-help{margin:14px 0 0;color:#657487;font-size:13px}
+.contacthub-role-request{margin-top:12px}.contacthub-role-request label{display:flex;max-width:460px;flex-direction:column;gap:6px;font-size:14px;font-weight:600}.contacthub-role-request select{box-sizing:border-box;width:100%;min-height:44px;padding:9px 11px;border:1px solid #a7b0ba;border-radius:6px;background:#fff;color:#253342;font:inherit}
+.contacthub-vat-controls{display:flex;align-items:stretch;gap:8px}
+.contacthub-vat-controls input{min-width:0;flex:1}
+.contacthub-vat-button{flex:0 0 auto;padding:8px 13px;border:0;border-radius:6px;background:#e2e5e9;color:#263442;font-family:inherit;font-size:13px;font-weight:600;line-height:1.2;cursor:pointer}
+.contacthub-vat-button:hover,.contacthub-vat-button:focus{background:#6a7178;color:#fff}
+.contacthub-vat-button:disabled{cursor:wait;opacity:.65}
+.contacthub-vat-message{min-height:18px;color:#8d2021;font-size:13px;font-weight:400}
+.contacthub-vat-message.is-success{color:#18713e}
+.contacthub-registration-submit{justify-self:start;min-height:46px;padding:10px 22px;border:0;border-radius:6px;background:#5266d4;color:#fff;font-size:15px;font-weight:700;cursor:pointer}
+.contacthub-registration-submit:hover,.contacthub-registration-submit:focus{background:#3448bb}
+.contacthub-registration-notice{max-width:920px;box-sizing:border-box;margin:18px auto;padding:14px 16px;border-left:4px solid #21854a;border-radius:5px;background:#edf8f2;color:#185d39}
+.contacthub-registration-notice.is-error{border-left-color:#b32d2e;background:#fff0f0;color:#8d2021}
+.contacthub-registration-trap{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;overflow:hidden!important}
+@media(max-width:680px){.contacthub-form-grid{grid-template-columns:1fr}.contacthub-form-section{padding:18px}.contacthub-vat-controls{align-items:stretch;flex-direction:column}}
+
+/* Optional theme inheritance. ContactHub retains only its layout and uses the
+   active theme's public custom properties where they are available. */
+.contacthub-registration-form.contacthub-use-theme-styles{font-family:inherit;color:inherit}
+.contacthub-use-theme-styles .contacthub-form-section,.contacthub-use-theme-styles .contacthub-inline-disclosure>.contacthub-form-grid{border-color:var(--form_border_color,var(--awb-form-border-color,currentColor));border-radius:var(--form_border_radius,var(--awb-border-radius,6px));background:var(--content_bg_color,var(--awb-color1,transparent));box-shadow:none}
+.contacthub-use-theme-styles .contacthub-form-grid label>span,.contacthub-use-theme-styles .contacthub-form-help{color:inherit}
+.contacthub-use-theme-styles .contacthub-form-grid input,.contacthub-use-theme-styles .contacthub-form-grid select,.contacthub-use-theme-styles .contacthub-role-request select{border-color:var(--form_border_color,var(--awb-form-border-color,#a7b0ba));border-radius:var(--form_border_radius,var(--awb-border-radius,4px));background:var(--form_bg_color,var(--awb-form-bg-color,#fff));color:var(--form_text_color,var(--awb-form-text-color,inherit));font-family:inherit}
+.contacthub-use-theme-styles .contacthub-registration-submit,.contacthub-use-theme-styles .contacthub-vat-button{border-radius:var(--button_border_radius,var(--button-border-radius,var(--awb-border-radius,4px)));background:var(--button_gradient_top_color,var(--button_accent_color,var(--awb-color4,#5266d4)));color:var(--button_accent_color,var(--awb-color1,#fff));font-family:inherit}
+.contacthub-use-theme-styles .contacthub-registration-submit:hover,.contacthub-use-theme-styles .contacthub-registration-submit:focus,.contacthub-use-theme-styles .contacthub-vat-button:hover,.contacthub-use-theme-styles .contacthub-vat-button:focus{filter:brightness(.9)}
+
+/* WooCommerce My Account */
+.contacthub-account-registration{box-sizing:border-box;margin:32px 0 0;padding:24px;border:1px solid rgba(125,135,145,.3);border-radius:8px}
+.contacthub-account-registration>h2{margin-top:0}.contacthub-account-registration>p{margin-bottom:16px}.contacthub-account-registration-form{margin-top:24px}.contacthub-account-registration-form[hidden]{display:none!important}.contacthub-account-registration-form .contacthub-registration-form{margin:0;max-width:none}
+.contacthub-default-dashboard-text,.contacthub-account-dashboard .woocommerce-MyAccount-content>p{display:none}
+.contacthub-account-overview{margin-top:8px}.contacthub-account-overview>h2{font-size:1.35em;margin-bottom:9px}.contacthub-dashboard-intro{margin:0 0 18px}.contacthub-account-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0 24px}.contacthub-account-facts>div{display:grid;gap:4px;padding:12px 14px;border:1px solid rgba(125,135,145,.26);border-radius:8px}.contacthub-account-facts span{font-size:.78em;opacity:.72}.contacthub-account-facts strong{font-size:1.18em;line-height:1.15}.contacthub-recent-orders h3{font-size:1.05em;margin-bottom:10px}.contacthub-account-order-list{border-top:1px solid rgba(125,135,145,.25)}.contacthub-account-order-list>a{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:10px 4px;border-bottom:1px solid rgba(125,135,145,.25);text-decoration:none}.contacthub-account-order-list>a>span{display:grid;gap:3px}.contacthub-account-order-list>a>span:last-child{text-align:right}.contacthub-account-order-list small{font-size:.82em;opacity:.7}
+.woocommerce-EditAccountForm.edit-account{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px}.woocommerce-EditAccountForm.edit-account>p,.woocommerce-EditAccountForm.edit-account>fieldset,.woocommerce-EditAccountForm.edit-account>.clear{grid-column:1/-1}.woocommerce-EditAccountForm.edit-account>p.form-row-first,.woocommerce-EditAccountForm.edit-account>p.form-row-last{grid-column:auto}.woocommerce-EditAccountForm .contacthub-profile-contacthub_title_prefix{order:-20}.woocommerce-EditAccountForm>p:has(#account_first_name){order:-19}.woocommerce-EditAccountForm>p:has(#account_last_name){order:-18}.woocommerce-EditAccountForm .contacthub-profile-contacthub_title_suffix{order:-17}.woocommerce-EditAccountForm .contacthub-profile-billing_phone{order:-16}.woocommerce-EditAccountForm .contacthub-profile-billing_company{order:-15}.woocommerce-EditAccountForm>p:has(#account_email){order:-14}.woocommerce-EditAccountForm>p:has(#account_display_name){order:-13}.woocommerce-EditAccountForm>fieldset{order:10}.woocommerce-EditAccountForm>p:last-of-type{order:20}
+@media(max-width:680px){.contacthub-account-order-list>a{align-items:flex-start}.woocommerce-EditAccountForm.edit-account{grid-template-columns:1fr}.woocommerce-EditAccountForm.edit-account>p.form-row-first,.woocommerce-EditAccountForm.edit-account>p.form-row-last{grid-column:1}.contacthub-account-registration{padding:18px}}
+
+.contacthub-account-section>h2{margin:0 0 20px}.contacthub-account-form{display:block}.contacthub-account-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 18px}.contacthub-account-field{display:flex;min-width:0;flex-direction:column;gap:6px}.contacthub-account-field>span{font-size:.9em;font-weight:600}.contacthub-account-field em{color:#b32d2e;font-style:normal}.contacthub-account-field input,.contacthub-account-field select{box-sizing:border-box;width:100%;min-height:42px}.contacthub-account-field-wide,.contacthub-account-subheading{grid-column:1/-1}.contacthub-account-subheading{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:8px}.contacthub-account-subheading h3{margin:0;font-size:1.08em}.contacthub-account-save{margin-top:20px!important}.contacthub-profile-phone{display:grid;grid-template-columns:minmax(145px,210px) minmax(140px,1fr);gap:8px}.contacthub-address-panel{margin:0 0 18px;padding:18px;border:1px solid rgba(125,135,145,.27);border-radius:8px}.contacthub-address-panel>.contacthub-account-subheading{margin:0 0 16px}.contacthub-shipping-toggle{display:flex;align-items:flex-start;gap:8px;margin:18px 0}.contacthub-shipping-toggle input{margin-top:4px}.contacthub-shipping-account-fields[hidden]{display:none!important}.contacthub-password-form{max-width:620px}.contacthub-password-form .contacthub-account-field{margin-bottom:14px}
+.contacthub-account-message{min-height:20px;margin-top:10px;font-size:.9em}.contacthub-account-message.is-success{color:#18713e}.contacthub-account-message.is-error{color:#8d2021}.contacthub-account-vat-check{display:inline-grid;flex:0 0 22px;place-items:center;width:22px;height:22px;align-self:center;border-radius:50%;background:#21854a;color:#fff;font-weight:800}.contacthub-account-vat-check[hidden]{display:none!important}.contacthub-address-account-form [name="billing_vat_number"],.contacthub-address-account-form [name="billing_vat_id"],.contacthub-address-account-form .wgm-vat-id-field,.contacthub-address-account-form .b2b-market-vat-field{display:none!important}
+.woocommerce-MyAccount-navigation-link.is-active>a{background:var(--primary_color,var(--button_gradient_top_color,var(--button_accent_color,var(--awb-color5,#5266d4))))!important;color:var(--awb-color1,#fff)!important}.woocommerce-MyAccount-navigation-link.is-active>a:hover,.woocommerce-MyAccount-navigation-link.is-active>a:focus{filter:brightness(.92)}.contacthub-account-theme-styles .woocommerce-MyAccount-navigation-link.is-active>a{border-color:var(--primary_color,var(--button_gradient_top_color,var(--button_accent_color,var(--awb-color5,#5266d4))))!important}
+.woocommerce-MyAccount-content [name="billing_vat_number"]:not([name="vat_id"]),.woocommerce-MyAccount-content [name="billing_vat_id"]:not([name="vat_id"]),.woocommerce-MyAccount-content [name="billing_vat"]:not([name="vat_id"]),.woocommerce-MyAccount-content #billing_vat_number_field,.woocommerce-MyAccount-content #billing_vat_id_field,.woocommerce-MyAccount-content #billing_vat_field,.woocommerce-MyAccount-content .wgm-vat-id-field,.woocommerce-MyAccount-content .b2b-market-vat-field{display:none!important}
+@media(max-width:680px){.contacthub-account-grid{grid-template-columns:1fr}.contacthub-account-field-wide,.contacthub-account-subheading{grid-column:1}.contacthub-profile-phone{grid-template-columns:1fr}.contacthub-account-subheading{align-items:flex-start;flex-direction:column}.contacthub-address-panel{padding:15px}}
+.contacthub-registration-types {
+	display: flex;
+	gap: 8px;
+	margin: 0 0 18px;
+}
+
+.contacthub-registration-types a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 10px 16px;
+	border: 1px solid #cbd5e1;
+	border-radius: 8px;
+	background: #f8fafc;
+	color: #334155;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.contacthub-registration-types a.is-active {
+	border-color: #405de6;
+	background: #405de6;
+	color: #fff;
+}
+

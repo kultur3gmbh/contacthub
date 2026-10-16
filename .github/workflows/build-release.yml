@@ -1,0 +1,31 @@
+name: Build ContactHub Basic package
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate source
+        run: ./tools/check.sh
+      - name: Build installable ZIP files
+        run: ./tools/build-release.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: contacthub-basic-package
+          path: dist/*.zip
+          if-no-files-found: error
+
