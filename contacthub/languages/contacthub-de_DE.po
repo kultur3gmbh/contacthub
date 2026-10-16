@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactHub 0.14.0\n"
+"Project-Id-Version: ContactHub 0.14.5\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-16 09:00+0200\n"
 "PO-Revision-Date: 2026-10-16 09:00+0200\n"
@@ -3165,3 +3165,71 @@ msgstr "← Personenübersicht"
 msgid "← Previous person"
 msgstr "← Vorherige Person"
 
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Trash"
+msgstr "Papierkorb"
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "This action requires an administrator and standalone ContactHub mode."
+msgstr "Diese Aktion erfordert Administratorrechte und den eigenständigen ContactHub-Modus."
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Select records and explicitly confirm the selected action."
+msgstr "Wähle Datensätze aus und bestätige die gewählte Aktion ausdrücklich."
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Trash is available only for standalone ContactHub records. Groundhogg records cannot be deleted here."
+msgstr "Der Papierkorb ist nur für eigenständige ContactHub-Datensätze verfügbar. Groundhogg-Datensätze können hier nicht gelöscht werden."
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Only ContactHub records are affected. WordPress users, orders, invoices, events, Groundhogg records and external source data are never deleted."
+msgstr "Die Aktionen betreffen nur ContactHub-Datensätze. WordPress-Benutzer, Bestellungen, Rechnungen, Events, Groundhogg-Datensätze und externe Quelldaten werden niemals gelöscht."
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Changed: %1$d. Failed or no longer in the required state: %2$d."
+msgstr "Geändert: %1$d. Fehlgeschlagen oder nicht mehr im erforderlichen Zustand: %2$d."
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Active records"
+msgstr "Aktive Datensätze"
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Restore"
+msgstr "Wiederherstellen"
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Delete permanently"
+msgstr "Endgültig löschen"
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Move to Trash"
+msgstr "In den Papierkorb verschieben"
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "I explicitly confirm the selected action for the checked records. Permanent deletion cannot be undone."
+msgstr "Ich bestätige die gewählte Aktion für die markierten Datensätze ausdrücklich. Endgültiges Löschen kann nicht rückgängig gemacht werden."
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Select all records on this page"
+msgstr "Alle Datensätze auf dieser Seite auswählen"
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Deleted at"
+msgstr "Gelöscht am"
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "No records found."
+msgstr "Keine Datensätze gefunden."
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Previous page"
+msgstr "Vorherige Seite"
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Next page"
+msgstr "Nächste Seite"
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Trash and bulk actions"
+msgstr "Papierkorb und Massenaktionen"

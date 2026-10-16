@@ -82,6 +82,7 @@ final class ContactHub_Plugin {
 			'contacthub-segments'    => 40,
 			'contacthub-newsletters' => 50,
 			'contacthub-campaigns'   => 60,
+			'contacthub-trash'       => 70,
 			'contacthub-settings'    => 999,
 		);
 		usort(
@@ -158,6 +159,11 @@ final class ContactHub_Plugin {
 	}
 
 	public static function assets( $hook ) {
+		if ( 'contacthub_page_contacthub-trash' === $hook ) {
+			wp_enqueue_style( 'contacthub', CONTACTHUB_URL . 'assets/contacthub-admin.css', array(), CONTACTHUB_ASSET_VERSION );
+			wp_enqueue_script( 'contacthub-trash', CONTACTHUB_URL . 'assets/contacthub-trash.js', array(), CONTACTHUB_ASSET_VERSION, true );
+			return;
+		}
 		if ( ! in_array( $hook, array( 'toplevel_page_contacthub', 'contacthub_page_contacthub-firmen', 'contacthub_page_contacthub-tags', 'contacthub_page_contacthub-settings' ), true ) ) {
 			return;
 		}
@@ -238,7 +244,7 @@ final class ContactHub_Plugin {
 	}
 
 	public static function disable_groundhogg_email_detector( $hook ) {
-		if ( in_array( $hook, array( 'toplevel_page_contacthub', 'contacthub_page_contacthub-firmen', 'contacthub_page_contacthub-tags', 'contacthub_page_contacthub-settings', 'contacthub_page_contacthub-newsletters' ), true ) ) {
+		if ( in_array( $hook, array( 'toplevel_page_contacthub', 'contacthub_page_contacthub-firmen', 'contacthub_page_contacthub-tags', 'contacthub_page_contacthub-trash', 'contacthub_page_contacthub-settings', 'contacthub_page_contacthub-newsletters' ), true ) ) {
 			wp_dequeue_script( 'groundhogg-admin-email-detector' );
 		}
 	}
@@ -1514,6 +1520,7 @@ final class ContactHub_Plugin {
 			echo self::people_filter_link( __( 'Event attendees', 'contacthub' ), 'event-besucher', $customer_filter, $search, $orderby, $order );
 		}
 		echo '</span></form>';
+		self::render_trash_link( 'contacts' );
 		do_action( 'contacthub_people_advanced_search', $advanced_filter, $total );
 		if ( ! $contacts ) {
 			echo '<div class="contacthub-empty"><span class="dashicons dashicons-admin-users"></span><h3>' . esc_html__( 'No people found', 'contacthub' ) . '</h3><p>' . esc_html__( 'The selected data source returned no contacts for this search.', 'contacthub' ) . '</p></div>';
@@ -1528,6 +1535,7 @@ final class ContactHub_Plugin {
 		echo self::sortable_heading( __( 'First name', 'contacthub' ), 'first_name', $orderby, $order, $customer_filter, $search );
 		echo self::sortable_heading( __( 'Last name', 'contacthub' ), 'last_name', $orderby, $order, $customer_filter, $search );
 		echo __( '<th><span class="screen-reader-text">Actions</span></th>', 'contacthub' );
+		if ( ContactHub_Trash::available() ) echo '<th>' . esc_html__( 'Trash', 'contacthub' ) . '</th>';
 		echo __( '<th>Email</th><th>Phone</th>', 'contacthub' );
 		if ( $companies_enabled ) {
 			echo self::sortable_heading( __( 'Company', 'contacthub' ), 'company', $orderby, $order, $customer_filter, $search );
@@ -1551,6 +1559,7 @@ final class ContactHub_Plugin {
 			$display_name = trim( $first_name . ' ' . $last_name );
 			echo '<tr class="contacthub-person-data-row"><th class="check-column" scope="row"><input type="checkbox" class="contacthub-person-select" value="' . esc_attr( $id ) . '" aria-label="' . esc_attr( ( $display_name ?: __( 'Unnamed person', 'contacthub' ) ) . __( ' select', 'contacthub' ) ) . '"></th><td class="contacthub-first-name"><strong>' . esc_html( $first_name ?: '—' ) . '</strong></td><td class="contacthub-last-name"><strong>' . esc_html( $last_name ?: '—' ) . '</strong></td>';
 			echo '<td><div class="contacthub-person-actions"><a class="contacthub-person-row-action" href="' . esc_url( $edit_url ) . __( '" aria-label="Edit person" title="Edit person"><span class="dashicons dashicons-edit" aria-hidden="true"></span></a><a class="contacthub-person-row-action" href="', 'contacthub' ) . esc_url( $view_url ) . __( '" aria-label="View person" title="View person"><span class="dashicons dashicons-visibility" aria-hidden="true"></span></a></div></td>', 'contacthub' );
+			self::render_trash_link( 'contacts', $id, true );
 			$email = self::value( $contact, array( 'email' ) );
 			echo '<td><div class="contacthub-list-email"><span>' . esc_html( $email ?: '—' ) . '</span>';
 			if ( is_email( $email ) ) {
@@ -1738,6 +1747,11 @@ final class ContactHub_Plugin {
 		);
 	}
 
+	private static function render_trash_link( $entity, $id = 0, $cell = false ) {
+		if ( ! ContactHub_Trash::available() ) return;
+		echo ( $cell ? '<td>' : '<p>' ) . '<a class="button" href="' . esc_url( ContactHub_Trash::url( $entity, $id, ! $id ) ) . '">' . esc_html( $id ? __( 'Move to Trash', 'contacthub' ) : __( 'Trash and bulk actions', 'contacthub' ) ) . '</a>' . ( $cell ? '</td>' : '</p>' );
+	}
+
 	private static function render_index() {
 		$search = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only search.
 		echo __( '<div class="contacthub-heading"><div><p class="contacthub-eyebrow">CRM</p><h1>Companies</h1><p>A unified view of companies, contacts, orders, and invoices.</p></div><button type="button" class="button button-primary contacthub-heading-action contacthub-open-new-company">Add company</button></div>', 'contacthub' );
@@ -1760,6 +1774,7 @@ final class ContactHub_Plugin {
 			echo '<a class="button" href="' . esc_url( admin_url( 'admin.php?page=contacthub-firmen' ) ) . __( '">Show all</a>', 'contacthub' );
 		}
 		echo '</form>';
+		self::render_trash_link( 'companies' );
 		if ( ! $companies ) {
 			$empty_message = $search
 				? __( 'No result was found for this company name.', 'contacthub' )
@@ -1770,7 +1785,7 @@ final class ContactHub_Plugin {
 			return;
 		}
 
-		echo '<table class="widefat striped contacthub-table contacthub-companies-table"><thead><tr><th>' . esc_html__( 'Company', 'contacthub' ) . '</th><th>' . esc_html__( 'Assigned people', 'contacthub' ) . '</th><th>' . esc_html__( 'Website', 'contacthub' ) . '</th><th>' . esc_html__( 'Phone', 'contacthub' ) . '</th><th>' . esc_html__( 'Location', 'contacthub' ) . '</th></tr></thead><tbody>';
+		echo '<table class="widefat striped contacthub-table contacthub-companies-table"><thead><tr><th>' . esc_html__( 'Company', 'contacthub' ) . '</th><th>' . ( ContactHub_Trash::available() ? esc_html__( 'Trash', 'contacthub' ) . '</th><th>' : '' ) . esc_html__( 'Assigned people', 'contacthub' ) . '</th><th>' . esc_html__( 'Website', 'contacthub' ) . '</th><th>' . esc_html__( 'Phone', 'contacthub' ) . '</th><th>' . esc_html__( 'Location', 'contacthub' ) . '</th></tr></thead><tbody>';
 		foreach ( $companies as $company ) {
 			$id = self::value( $company, array( 'get_id', 'ID', 'id' ) );
 			$edit_url = admin_url( 'admin.php?page=contacthub-firmen&firma=' . absint( $id ) );
@@ -1793,6 +1808,7 @@ final class ContactHub_Plugin {
 					: esc_html( $name );
 			}
 			echo '<tr><td><strong>' . esc_html( self::value( $company, array( 'get_name', 'name', 'company_name' ), __( 'Unnamed company', 'contacthub' ) ) ) . '</strong><div class="row-actions contacthub-row-actions"><span class="edit"><a href="' . esc_url( $edit_url ) . '">' . esc_html__( 'Edit', 'contacthub' ) . '</a> | </span><span class="view"><a href="' . esc_url( $view_url ) . '">' . esc_html__( 'View', 'contacthub' ) . '</a></span></div></td>';
+			self::render_trash_link( 'companies', $id, true );
 			echo '<td class="contacthub-company-people">' . ( $person_links ? wp_kses_post( implode( ', ', $person_links ) ) : '&mdash;' ) . '</td>';
 			echo '<td>' . esc_html( self::value( $company, array( 'domain', 'website', 'get_website' ), '—' ) ) . '</td>';
 			echo '<td>' . esc_html( self::format_phone( self::value( $company, array( 'phone', 'get_phone' ) ) ) ) . '</td>';

@@ -44,17 +44,19 @@ final class ContactHub_Store {
 		return array( 'contacts' => array_map( array( __CLASS__, 'hydrate_contact' ), (array) $rows ), 'total_items' => $total );
 	}
 
-	public static function contact( $id ) {
+	public static function contact( $id, $include_deleted = false ) {
 		global $wpdb;
 		$table = ContactHub_Schema::table_names()['contacts'];
-		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$table}` WHERE id = %d AND deleted_at IS NULL", absint( $id ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+		$state = $include_deleted ? '' : ' AND deleted_at IS NULL';
+		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$table}` WHERE id = %d{$state}", absint( $id ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
 		return $row ? self::hydrate_contact( $row ) : false;
 	}
 
-	public static function contact_by_email( $email ) {
+	public static function contact_by_email( $email, $include_deleted = false ) {
 		global $wpdb;
 		$table = ContactHub_Schema::table_names()['contacts'];
-		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$table}` WHERE email_normalized = %s AND deleted_at IS NULL", strtolower( sanitize_email( $email ) ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+		$state = $include_deleted ? '' : ' AND deleted_at IS NULL';
+		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$table}` WHERE email_normalized = %s{$state}", strtolower( sanitize_email( $email ) ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
 		return $row ? self::hydrate_contact( $row ) : false;
 	}
 
@@ -97,7 +99,7 @@ final class ContactHub_Store {
 		global $wpdb;
 		$table = ContactHub_Schema::table_names()['contacts'];
 		$email = sanitize_email( isset( $data['email'] ) ? $data['email'] : '' );
-		if ( $email && self::contact_by_email( $email ) ) {
+		if ( $email && self::contact_by_email( $email, true ) ) {
 			return new WP_Error( 'contacthub_duplicate_email', __( 'A person with this email address already exists.', 'contacthub' ) );
 		}
 		$now = current_time( 'mysql' );
@@ -189,10 +191,11 @@ final class ContactHub_Store {
 		return $wpdb->insert_id ? (int) $wpdb->insert_id : 0;
 	}
 
-	public static function company_by_name( $name ) {
+	public static function company_by_name( $name, $include_deleted = false ) {
 		global $wpdb;
 		$table = ContactHub_Schema::table_names()['companies'];
-		return (int) $wpdb->get_var( $wpdb->prepare( "SELECT id FROM `{$table}` WHERE LOWER(name) = LOWER(%s) AND deleted_at IS NULL LIMIT 1", sanitize_text_field( $name ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+		$state = $include_deleted ? '' : ' AND deleted_at IS NULL';
+		return (int) $wpdb->get_var( $wpdb->prepare( "SELECT id FROM `{$table}` WHERE LOWER(name) = LOWER(%s){$state} LIMIT 1", sanitize_text_field( $name ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
 	}
 
 	public static function link_company_contact( $company_id, $contact_id, $position = '', $primary = false ) {
@@ -367,7 +370,8 @@ final class ContactHub_Store {
 
 		$report = array( 'found' => count( $customers ), 'new' => 0, 'updated' => 0, 'companies' => 0, 'skipped' => 0, 'dry_run' => $dry_run ? 1 : 0, 'completed_at' => current_time( 'mysql' ) );
 		foreach ( $customers as $data ) {
-			$existing = self::contact_by_email( $data['email'] );
+			$existing = self::contact_by_email( $data['email'], true );
+			if ( $existing && ! empty( $existing['deleted_at'] ) ) { $report['skipped']++; continue; }
 			$existing ? $report['updated']++ : $report['new']++;
 			if ( $dry_run ) continue;
 			$payload = array( 'email' => $data['email'], 'user_id' => absint( $data['user_id'] ?? 0 ), 'first_name' => $data['first_name'] ?? '', 'last_name' => $data['last_name'] ?? '', 'primary_phone' => $data['phone'] ?? '', 'source' => 'woocommerce' );
@@ -376,7 +380,8 @@ final class ContactHub_Store {
 			if ( $existing ) self::update_contact( $contact_id, $payload );
 			self::update_contact_address( $contact_id, array( 'address_1' => $data['address_1'] ?? '', 'address_2' => $data['address_2'] ?? '', 'postcode' => $data['postcode'] ?? '', 'city' => $data['city'] ?? '', 'state' => $data['state'] ?? '', 'country' => $data['country'] ?? '' ) );
 			if ( ! empty( $data['company'] ) ) {
-				$company_id = self::company_by_name( $data['company'] );
+				$company_id = self::company_by_name( $data['company'], true );
+				if ( $company_id && ! self::company( $company_id ) ) { $report['skipped']++; continue; }
 				if ( ! $company_id ) { $company_id = self::create_company( array( 'name' => $data['company'] ) ); $report['companies']++; }
 				if ( $company_id ) self::link_company_contact( $company_id, $contact_id, '', false );
 			}
@@ -454,7 +459,8 @@ final class ContactHub_Store {
 			)
 		);
 		if ( ! empty( $data['company'] ) ) {
-			$company_id = self::company_by_name( $data['company'] );
+			$company_id = self::company_by_name( $data['company'], true );
+			if ( $company_id && ! self::company( $company_id ) ) return $contact_id;
 			if ( ! $company_id ) $company_id = self::create_company( array( 'name' => $data['company'], 'industry' => $data['industry'], 'website' => $data['website'], 'vat_id' => $data['vat_id'] ) );
 			if ( $company_id ) { self::update_company_profile( $company_id, $data ); self::link_company_contact( $company_id, $contact_id, $data['position'] ?? '', true ); }
 		}
@@ -499,7 +505,8 @@ final class ContactHub_Store {
 				$source_id = absint( self::value( $row, array( 'id', 'ID' ) ) );
 				$email = sanitize_email( self::value( $row, array( 'email' ) ) );
 				$contact = self::contact_by_source_id( $source_id );
-				if ( ! $contact && $email ) $contact = self::contact_by_email( $email );
+				if ( ! $contact && $email ) $contact = self::contact_by_email( $email, true );
+				if ( $contact && ! empty( $contact['deleted_at'] ) ) { $report['skipped']++; continue; }
 				$optin = self::optin_value( $row );
 				$data = array( 'email' => $email, 'first_name' => self::value( $row, array( 'first_name' ) ), 'last_name' => self::value( $row, array( 'last_name' ) ), 'user_id' => absint( self::value( $row, array( 'user_id' ) ) ), 'source' => 'groundhogg', 'groundhogg_contact_id' => $source_id, 'optin_status' => $optin, 'primary_phone' => self::meta_value( $row, 'primary_phone' ), 'titel_vorangestellt' => self::meta_value( $row, 'titel_vorangestellt' ), 'titel_nachgestellt' => self::meta_value( $row, 'titel_nachgestellt' ), 'berufsbezeichnung' => self::meta_value( $row, 'berufsbezeichnung' ), 'meta' => array( 'email_confirmed' => in_array( $optin, array( 2, 4, 5, 'confirmed', 'weekly', 'monthly' ), true ) ? 1 : 0, 'address_1' => self::meta_value( $row, 'street_address_1' ) ?: self::meta_value( $row, 'address_1' ), 'address_2' => self::meta_value( $row, 'street_address_2' ) ?: self::meta_value( $row, 'address_2' ), 'postcode' => self::meta_value( $row, 'postal_zip' ) ?: self::meta_value( $row, 'postcode' ), 'city' => self::meta_value( $row, 'city' ), 'state' => self::meta_value( $row, 'region' ) ?: self::meta_value( $row, 'state' ), 'country' => self::meta_value( $row, 'country' ) ) );
 				$contact_id = $contact ? (int) $contact['id'] : self::create_contact( $data );
@@ -563,6 +570,7 @@ final class ContactHub_Store {
 				if ( ! $name ) { $report['skipped']++; continue; }
 				$source_company_id = absint( self::value( $company, array( 'id', 'ID' ) ) );
 				$company_id = self::company_by_source_id( $source_company_id );
+				if ( $company_id && ! self::company( $company_id ) ) { $report['skipped']++; continue; }
 				if ( $company_id ) {
 					self::update_company( $company_id, 'name', $name );
 					self::update_company( $company_id, 'industry', self::value( $company, array( 'industry' ) ) );
@@ -637,7 +645,7 @@ final class ContactHub_Store {
 	private static function contact_by_source_id( $source_id ) {
 		global $wpdb; $tables = ContactHub_Schema::table_names();
 		$id = $wpdb->get_var( $wpdb->prepare( "SELECT contact_id FROM `{$tables['contactmeta']}` WHERE meta_key = 'groundhogg_contact_id' AND meta_value = %s LIMIT 1", (string) absint( $source_id ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
-		return $id ? self::contact( $id ) : false;
+		return $id ? self::contact( $id, true ) : false;
 	}
 	private static function company_by_source_id( $source_id ) {
 		global $wpdb; $table = ContactHub_Schema::table_names()['companymeta'];

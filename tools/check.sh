@@ -10,10 +10,12 @@ if command -v php >/dev/null 2>&1; then
     if ! php -l "$file" >/dev/null; then
       status=1
     fi
-  done < <(find contacthub -type f -name '*.php' -print0)
+  done < <(find contacthub tests -type f -name '*.php' -print0)
+  php tests/trash.php || status=1
 elif command -v python3 >/dev/null 2>&1; then
   echo "PHP CLI is unavailable; running the offline structural fallback."
-  python3 tools/check_php_structure.py contacthub || status=1
+  python3 tools/check_php_structure.py contacthub tests || status=1
+  echo "SKIPPED: PHP trash behavior tests require PHP CLI."
 else
   echo "PHP or Python 3 is required for source validation." >&2
   status=1
@@ -29,9 +31,10 @@ fi
 
 basic_header="$(awk -F': ' '/^ \* Version:/{print $2; exit}' contacthub/contacthub.php)"
 basic_constant="$(sed -n "s/^define( 'CONTACTHUB_VERSION', '\([^']*\)' );/\1/p" contacthub/contacthub.php | head -1)"
+basic_stable="$(awk -F': ' '/^Stable tag:/{print $2; exit}' contacthub/readme.txt)"
 
-if [[ -z "$basic_header" || "$basic_header" != "$basic_constant" ]]; then
-  echo "ContactHub Basic header and version constant do not match." >&2
+if [[ -z "$basic_header" || "$basic_header" != "$basic_constant" || "$basic_header" != "$basic_stable" ]]; then
+  echo "ContactHub Basic header, version constant, and stable tag do not match." >&2
   status=1
 fi
 

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactHub 0.14.0\n"
+"Project-Id-Version: ContactHub 0.14.5\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-16 09:00+0200\n"
 "PO-Revision-Date: 2026-10-16 09:00+0200\n"
@@ -3165,3 +3165,71 @@ msgstr ""
 msgid "← Previous person"
 msgstr ""
 
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Trash"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "This action requires an administrator and standalone ContactHub mode."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Select records and explicitly confirm the selected action."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Trash is available only for standalone ContactHub records. Groundhogg records cannot be deleted here."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Only ContactHub records are affected. WordPress users, orders, invoices, events, Groundhogg records and external source data are never deleted."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Changed: %1$d. Failed or no longer in the required state: %2$d."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Active records"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Restore"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Delete permanently"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Move to Trash"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "I explicitly confirm the selected action for the checked records. Permanent deletion cannot be undone."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Select all records on this page"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Deleted at"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "No records found."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Previous page"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-trash.php
+msgid "Next page"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Trash and bulk actions"
+msgstr ""

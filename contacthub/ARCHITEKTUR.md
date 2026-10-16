@@ -1,4 +1,4 @@
-# ContactHub – modulare Architektur 0.14.0
+# ContactHub – modulare Architektur 0.14.5
 
 ## Pakete
 
