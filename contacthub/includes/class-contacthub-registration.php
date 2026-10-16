@@ -692,6 +692,9 @@ The link is valid for 24 hours.', 'contacthub' ),
 			echo '</div>';
 			if ( $report ) {
 				echo '<div class="contacthub-migration-report"><h3>' . esc_html__( 'Last migration', 'contacthub' ) . '</h3><p>' . esc_html( sprintf( __( '%1$d contacts, %2$d companies, %3$d tags, %4$d tag assignments, %5$d skipped, %6$d errors. Completed: %7$s', 'contacthub' ), absint( $report['contacts'] ?? 0 ), absint( $report['companies'] ?? 0 ), absint( $report['tags'] ?? 0 ), absint( $report['assignments'] ?? 0 ), absint( $report['skipped'] ?? 0 ), absint( $report['errors'] ?? 0 ), sanitize_text_field( $report['completed_at'] ?? '' ) ) ) . '</p>';
+				if ( isset( $report['source_contacts'] ) ) {
+					echo '<p>' . esc_html( sprintf( __( 'Groundhogg contact comparison: %1$d found in the source, %2$d imported or updated.', 'contacthub' ), absint( $report['source_contacts'] ), absint( $report['contacts'] ?? 0 ) ) ) . '</p>';
+				}
 				if ( isset( $report['source_tags'] ) ) {
 					echo '<p>' . esc_html( sprintf( __( 'Tag comparison: %1$d in Groundhogg, %2$d in ContactHub; %3$d source assignments processed.', 'contacthub' ), absint( $report['source_tags'] ), absint( $report['tags'] ?? 0 ), absint( $report['source_assignments'] ?? 0 ) ) ) . '</p>';
 				}

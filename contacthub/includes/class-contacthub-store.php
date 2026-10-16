@@ -506,8 +506,8 @@ final class ContactHub_Store {
 	}
 
 	public static function migrate_groundhogg() {
-		if ( ! self::ready() || ! function_exists( 'wp_get_ability' ) ) return new WP_Error( 'contacthub_migration_unavailable', __( 'The migration prerequisites are not available.', 'contacthub' ) );
-		$report = array( 'contacts' => 0, 'companies' => 0, 'tags' => 0, 'source_tags' => 0, 'assignments' => 0, 'source_assignments' => 0, 'missing_tags' => array(), 'skipped_tags' => array(), 'skipped' => 0, 'errors' => 0 );
+		if ( ! self::ready() || ( ! function_exists( 'wp_get_ability' ) && ! class_exists( '\\Groundhogg\\Contact' ) ) ) return new WP_Error( 'contacthub_migration_unavailable', __( 'The migration prerequisites are not available.', 'contacthub' ) );
+		$report = array( 'contacts' => 0, 'source_contacts' => 0, 'companies' => 0, 'tags' => 0, 'source_tags' => 0, 'assignments' => 0, 'source_assignments' => 0, 'missing_tags' => array(), 'skipped_tags' => array(), 'skipped' => 0, 'errors' => 0 );
 		$source_map = array();
 		$source_tag_map = array();
 		$source_tags = self::groundhogg_tags();
@@ -531,16 +531,11 @@ final class ContactHub_Store {
 				$report['missing_tags'][] = sprintf( __( 'Tag “%s” could not be stored.', 'contacthub' ), $name );
 			}
 		}
-		$offset = 0;
-		$seen_contact_pages = array();
-		do {
-			$result = self::ability( 'groundhogg/search-contacts', array( 'limit' => 100, 'offset' => $offset, 'expand' => array( 'tags', 'meta', 'work_details' ) ) );
-			$rows = is_array( $result ) && isset( $result['contacts'] ) ? (array) $result['contacts'] : array();
-			$contact_fingerprint = md5( wp_json_encode( array_map( static function ( $contact ) { return self::value( $contact, array( 'id', 'ID' ) ); }, $rows ) ) );
-			if ( $rows && isset( $seen_contact_pages[ $contact_fingerprint ] ) ) break;
-			$seen_contact_pages[ $contact_fingerprint ] = true;
-			foreach ( $rows as $row ) {
+		$rows = self::groundhogg_contacts_for_migration();
+		$report['source_contacts'] = count( $rows );
+		foreach ( $rows as $row ) {
 				$source_id = absint( self::value( $row, array( 'id', 'ID' ) ) );
+				if ( ! $source_id ) { $report['errors']++; continue; }
 				$email = sanitize_email( self::value( $row, array( 'email' ) ) );
 				$contact = self::contact_by_source_id( $source_id );
 				if ( ! $contact && $email ) $contact = self::contact_by_email( $email, true );
@@ -589,9 +584,7 @@ final class ContactHub_Store {
 						if ( $source_tag_id ) $source_tag_map[ $source_tag_id ] = $tag_id;
 					}
 				}
-			}
-			$offset += count( $rows );
-		} while ( $rows && $offset < 1000000 );
+		}
 		$report['tags'] = count( self::tags() );
 		$report['missing_tags'] = array_values( array_unique( $report['missing_tags'] ) );
 		$report['skipped_tags'] = array_values( array_unique( $report['skipped_tags'] ) );
@@ -740,8 +733,57 @@ final class ContactHub_Store {
 		}
 		return array();
 	}
+	private static function groundhogg_contacts_for_migration() {
+		global $wpdb;
+		$contacts = array();
+		if ( class_exists( '\\Groundhogg\\Contact' ) ) {
+			$table = $wpdb->prefix . 'gh_contacts';
+			try {
+				$exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $table ) ) );
+				if ( $table === $exists ) {
+					$ids = (array) $wpdb->get_col( "SELECT ID FROM `{$table}` ORDER BY ID ASC" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- fixed Groundhogg table name using the active WordPress prefix.
+					foreach ( $ids as $id ) {
+						try {
+							$contact = new \Groundhogg\Contact( absint( $id ) );
+							if ( method_exists( $contact, 'exists' ) && ! $contact->exists() ) continue;
+							if ( class_exists( '\\Groundhogg\\Abilities\\Schemas\\Contact_Schema' ) ) {
+								try {
+									$contact = \Groundhogg\Abilities\Schemas\Contact_Schema::transform( $contact, array( 'tags', 'meta', 'work_details' ) );
+								} catch ( Throwable $error ) {
+									// The original Groundhogg contact object still exposes its standard fields and metadata.
+								}
+							}
+							$source_id = absint( self::value( $contact, array( 'id', 'ID' ) ) );
+							if ( $source_id ) $contacts[ $source_id ] = $contact;
+						} catch ( Throwable $error ) {
+							continue;
+						}
+					}
+					return array_values( $contacts );
+				}
+			} catch ( Throwable $error ) {
+				$contacts = array();
+			}
+		}
+
+		$offset = 0;
+		$seen_pages = array();
+		do {
+			$result = self::ability( 'groundhogg/search-contacts', array( 'limit' => 100, 'offset' => $offset, 'expand' => array( 'tags', 'meta', 'work_details' ) ) );
+			$rows = is_array( $result ) && isset( $result['contacts'] ) ? (array) $result['contacts'] : array();
+			$fingerprint = md5( wp_json_encode( array_map( static function ( $contact ) { return self::value( $contact, array( 'id', 'ID' ) ); }, $rows ) ) );
+			if ( $rows && isset( $seen_pages[ $fingerprint ] ) ) break;
+			$seen_pages[ $fingerprint ] = true;
+			foreach ( $rows as $contact ) {
+				$source_id = absint( self::value( $contact, array( 'id', 'ID' ) ) );
+				if ( $source_id ) $contacts[ $source_id ] = $contact;
+			}
+			$offset += count( $rows );
+		} while ( $rows && $offset < 1000000 );
+		return array_values( $contacts );
+	}
 	private static function ability( $name, $input ) { try { $ability = wp_get_ability( $name ); if ( ! $ability ) return false; $result = $ability->execute( $input ); return is_wp_error( $result ) ? false : $result; } catch ( Throwable $e ) { return false; } }
 	private static function value( $source, $keys, $default = '' ) { foreach ( $keys as $key ) { if ( is_array( $source ) && isset( $source[ $key ] ) && is_scalar( $source[ $key ] ) && '' !== (string) $source[ $key ] ) return (string) $source[ $key ]; if ( is_object( $source ) && method_exists( $source, $key ) ) { $value = $source->{$key}(); if ( is_scalar( $value ) && '' !== (string) $value ) return (string) $value; } $getter = 'get_' . $key; if ( is_object( $source ) && method_exists( $source, $getter ) ) { $value = $source->{$getter}(); if ( is_scalar( $value ) && '' !== (string) $value ) return (string) $value; } if ( is_object( $source ) && isset( $source->{$key} ) && is_scalar( $source->{$key} ) ) return (string) $source->{$key}; } return $default; }
-	private static function meta_value( $source, $key ) { if ( is_array( $source ) && isset( $source['meta'][ $key ] ) ) return is_scalar( $source['meta'][ $key ] ) ? (string) $source['meta'][ $key ] : ''; return ''; }
-	private static function optin_value( $source ) { if ( is_array( $source ) && isset( $source['optin_status'] ) ) { $value = $source['optin_status']; if ( is_array( $value ) && isset( $value['value'] ) ) return is_numeric( $value['value'] ) ? (int) $value['value'] : sanitize_key( $value['value'] ); if ( is_scalar( $value ) ) return is_numeric( $value ) ? (int) $value : sanitize_key( $value ); } return 'unconfirmed'; }
+	private static function meta_value( $source, $key ) { if ( is_array( $source ) && isset( $source['meta'][ $key ] ) ) return is_scalar( $source['meta'][ $key ] ) ? (string) $source['meta'][ $key ] : ''; if ( is_object( $source ) && method_exists( $source, 'get_meta' ) ) { try { $value = $source->get_meta( $key ); return is_scalar( $value ) ? (string) $value : ''; } catch ( Throwable $error ) { return ''; } } return ''; }
+	private static function optin_value( $source ) { $value = is_array( $source ) && isset( $source['optin_status'] ) ? $source['optin_status'] : self::value( $source, array( 'optin_status' ), 'unconfirmed' ); if ( is_array( $value ) && isset( $value['value'] ) ) return is_numeric( $value['value'] ) ? (int) $value['value'] : sanitize_key( $value['value'] ); if ( is_scalar( $value ) ) return is_numeric( $value ) ? (int) $value : sanitize_key( $value ); return 'unconfirmed'; }
 }

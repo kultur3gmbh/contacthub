@@ -935,6 +935,10 @@ msgstr ""
 msgid "WooCommerce customer data could not be read. No ContactHub data was changed."
 msgstr ""
 
+#: contacthub/includes/class-contacthub-registration.php:706
+msgid "Groundhogg contact comparison: %1$d found in the source, %2$d imported or updated."
+msgstr ""
+
 #: contacthub/includes/class-contacthub-registration.php:641
 msgid "The WooCommerce import could not be completed. WooCommerce data was not changed. Please review the ContactHub data before trying again."
 msgstr ""
