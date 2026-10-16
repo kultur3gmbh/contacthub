@@ -634,7 +634,11 @@ The link is valid for 24 hours.', 'contacthub' ),
 	public static function handle_import_woocommerce() {
 		self::guard_database_action( 'contacthub_import_woocommerce' );
 		$mode = sanitize_key( wp_unslash( $_POST['mode'] ?? 'preview' ) );
-		$result = ContactHub_Store::import_woocommerce( 'run' !== $mode );
+		try {
+			$result = ContactHub_Store::import_woocommerce( 'run' !== $mode );
+		} catch ( Throwable $error ) {
+			self::database_redirect( 'error', __( 'The WooCommerce import could not be completed. WooCommerce data was not changed. Please review the ContactHub data before trying again.', 'contacthub' ) );
+		}
 		if ( is_wp_error( $result ) ) self::database_redirect( 'error', $result->get_error_message() );
 		if ( 'run' !== $mode ) {
 			set_transient( 'contacthub_woocommerce_import_' . get_current_user_id(), $result, 30 * MINUTE_IN_SECONDS );

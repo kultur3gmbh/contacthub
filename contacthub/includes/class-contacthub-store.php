@@ -337,9 +337,25 @@ final class ContactHub_Store {
 		$customers = array();
 		$page = 1;
 		do {
-			$result = wc_get_orders( array( 'limit' => 100, 'page' => $page, 'paginate' => true, 'return' => 'objects', 'status' => array_keys( wc_get_order_statuses() ), 'orderby' => 'date', 'order' => 'DESC' ) );
-			$orders = is_object( $result ) && isset( $result->orders ) ? (array) $result->orders : (array) $result;
+			$args = array( 'limit' => 100, 'page' => $page, 'paginate' => true, 'return' => 'objects', 'orderby' => 'date', 'order' => 'DESC' );
+			if ( function_exists( 'wc_get_order_statuses' ) ) $args['status'] = array_keys( wc_get_order_statuses() );
+			try {
+				$result = wc_get_orders( $args );
+			} catch ( Throwable $error ) {
+				return new WP_Error( 'contacthub_woocommerce_import_read', __( 'WooCommerce customer data could not be read. No ContactHub data was changed.', 'contacthub' ) );
+			}
+			if ( is_wp_error( $result ) ) {
+				return new WP_Error( 'contacthub_woocommerce_import_read', __( 'WooCommerce customer data could not be read. No ContactHub data was changed.', 'contacthub' ) );
+			}
+			if ( is_object( $result ) && isset( $result->orders ) ) {
+				$orders = (array) $result->orders;
+			} elseif ( is_array( $result ) ) {
+				$orders = $result;
+			} else {
+				return new WP_Error( 'contacthub_woocommerce_import_read', __( 'WooCommerce customer data could not be read. No ContactHub data was changed.', 'contacthub' ) );
+			}
 			foreach ( $orders as $order ) {
+				if ( ! is_object( $order ) || ! method_exists( $order, 'get_billing_email' ) ) continue;
 				$email = strtolower( sanitize_email( $order->get_billing_email() ) );
 				if ( ! $email || isset( $customers[ $email ] ) ) continue;
 				$customers[ $email ] = array(
@@ -352,16 +368,26 @@ final class ContactHub_Store {
 			$page++;
 		} while ( $page <= $max_pages );
 
-		$users = get_users( array( 'fields' => array( 'ID', 'user_email', 'first_name', 'last_name' ), 'role__in' => array_filter( array( get_role( 'customer' ) ? 'customer' : '', get_role( 'subscriber' ) ? 'subscriber' : '' ) ) ) );
+		$user_args = array( 'fields' => array( 'ID', 'user_email' ) );
+		$roles = array_filter( array( get_role( 'customer' ) ? 'customer' : '', get_role( 'subscriber' ) ? 'subscriber' : '' ) );
+		$users = array();
+		if ( $roles ) {
+			$user_args['role__in'] = array_values( $roles );
+			try {
+				$users = get_users( $user_args );
+			} catch ( Throwable $error ) {
+				return new WP_Error( 'contacthub_woocommerce_import_read', __( 'WooCommerce customer data could not be read. No ContactHub data was changed.', 'contacthub' ) );
+			}
+		}
 		foreach ( $users as $user ) {
 			$email = strtolower( sanitize_email( get_user_meta( $user->ID, 'billing_email', true ) ?: $user->user_email ) );
 			if ( ! $email ) continue;
 			$row = $customers[ $email ] ?? array( 'email' => $email );
 			$map = array( 'first_name', 'last_name', 'phone', 'company', 'address_1', 'address_2', 'postcode', 'city', 'state', 'country' );
 			foreach ( $map as $field ) {
-				$key = in_array( $field, array( 'first_name', 'last_name' ), true ) ? 'billing_' . $field : 'billing_' . $field;
+				$key = 'billing_' . $field;
 				$value = get_user_meta( $user->ID, $key, true );
-				if ( '' === (string) $value && in_array( $field, array( 'first_name', 'last_name' ), true ) ) $value = $user->{$field};
+				if ( '' === (string) $value && in_array( $field, array( 'first_name', 'last_name' ), true ) ) $value = get_user_meta( $user->ID, $field, true );
 				if ( '' !== (string) $value ) $row[ $field ] = $value;
 			}
 			$row['user_id'] = (int) $user->ID;
@@ -374,11 +400,23 @@ final class ContactHub_Store {
 			if ( $existing && ! empty( $existing['deleted_at'] ) ) { $report['skipped']++; continue; }
 			$existing ? $report['updated']++ : $report['new']++;
 			if ( $dry_run ) continue;
-			$payload = array( 'email' => $data['email'], 'user_id' => absint( $data['user_id'] ?? 0 ), 'first_name' => $data['first_name'] ?? '', 'last_name' => $data['last_name'] ?? '', 'primary_phone' => $data['phone'] ?? '', 'source' => 'woocommerce' );
+			$payload = array( 'email' => $data['email'] );
+			if ( ! $existing ) $payload['source'] = 'woocommerce';
+			foreach ( array( 'first_name', 'last_name' ) as $field ) {
+				if ( ! $existing || '' !== trim( (string) ( $data[ $field ] ?? '' ) ) ) $payload[ $field ] = $data[ $field ] ?? '';
+			}
+			if ( ! $existing || '' !== trim( (string) ( $data['phone'] ?? '' ) ) ) $payload['primary_phone'] = $data['phone'] ?? '';
+			if ( ! empty( $data['user_id'] ) ) $payload['user_id'] = absint( $data['user_id'] );
 			$contact_id = $existing ? absint( $existing['id'] ) : self::create_contact( $payload );
 			if ( is_wp_error( $contact_id ) || ! $contact_id ) { $report['skipped']++; continue; }
 			if ( $existing ) self::update_contact( $contact_id, $payload );
-			self::update_contact_address( $contact_id, array( 'address_1' => $data['address_1'] ?? '', 'address_2' => $data['address_2'] ?? '', 'postcode' => $data['postcode'] ?? '', 'city' => $data['city'] ?? '', 'state' => $data['state'] ?? '', 'country' => $data['country'] ?? '' ) );
+			$address = array();
+			foreach ( array( 'address_1', 'address_2', 'postcode', 'city', 'state', 'country' ) as $field ) {
+				$value = $data[ $field ] ?? '';
+				if ( $existing && '' === trim( (string) $value ) ) $value = $existing['meta'][ $field ] ?? '';
+				$address[ $field ] = $value;
+			}
+			if ( ! self::update_contact_address( $contact_id, $address ) ) { $report['skipped']++; continue; }
 			if ( ! empty( $data['company'] ) ) {
 				$company_id = self::company_by_name( $data['company'], true );
 				if ( $company_id && ! self::company( $company_id ) ) { $report['skipped']++; continue; }

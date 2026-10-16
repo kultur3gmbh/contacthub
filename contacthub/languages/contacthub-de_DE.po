@@ -929,7 +929,15 @@ msgstr "ContactHub kann Typografie, Farben, Formularfelder, Schaltflächen, Rahm
 
 #: contacthub/includes/class-contacthub-registration.php:484
 msgid "ContactHub can merge customer profiles from WooCommerce into the ContactHub database using the email address as the unique key. Orders, invoices, prices, and WooCommerce data remain unchanged."
-msgstr "ContactHub can merge customer profiles from WooCommerce into the ContactHub-Datenbank using the email address as the unique key. Bestellungen, invoices, prices, and WooCommerce data remain unchanged."
+msgstr "ContactHub kann Kundenprofile aus WooCommerce anhand der E-Mail-Adresse als eindeutigem Schlüssel in die ContactHub-Datenbank übernehmen und zusammenführen. Bestellungen, Rechnungen, Preise und WooCommerce-Daten bleiben unverändert."
+
+#: contacthub/includes/class-contacthub-store.php:347
+msgid "WooCommerce customer data could not be read. No ContactHub data was changed."
+msgstr "Die WooCommerce-Kundendaten konnten nicht gelesen werden. Es wurden keine ContactHub-Daten geändert."
+
+#: contacthub/includes/class-contacthub-registration.php:641
+msgid "The WooCommerce import could not be completed. WooCommerce data was not changed. Please review the ContactHub data before trying again."
+msgstr "Der WooCommerce-Import konnte nicht abgeschlossen werden. Die WooCommerce-Daten wurden nicht verändert. Bitte prüfen Sie die ContactHub-Daten, bevor Sie es erneut versuchen."
 
 #: contacthub/includes/class-contacthub-plugin.php:1494
 msgid "ContactHub contacts, company relationships, orders, events, and marketing status in one view."
