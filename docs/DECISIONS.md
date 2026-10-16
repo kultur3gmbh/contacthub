@@ -26,6 +26,9 @@ This document records stable decisions that must survive individual conversation
 
 ## Releases and deployment
 
+- Basic and Plus use the same version number for coordinated releases.
+- ContactHub Basic is distributed through its public WordPress/GitHub update channel.
+- ContactHub Plus remains a manual ZIP update unless its private developer test channel is explicitly enabled.
 - New files or release versions are produced only after an explicit go from the user.
 - Installation on live sites requires a separate explicit approval.
 
