@@ -12,9 +12,9 @@ Version changes require explicit user approval. Confirm the intended Basic versi
 4. Update changelog and translation catalogs.
 5. Update plugin headers and version constants.
 6. Commit the complete source state.
-7. Run `./tools/build-release.sh`.
-8. Inspect both ZIP contents and install them on a non-production WordPress site.
+7. Run `./tools/build-release.sh`; it creates the installable ZIP and the matching SHA-256 update manifest.
+8. Inspect the ZIP and manifest, then install the ZIP on a non-production WordPress site.
 9. Obtain approval before any live-site deployment.
 
-Generated ZIP files are written to `dist/` and are not committed.
+Generated ZIP and update-manifest files are written to `dist/` and are not committed. Upload both files to the matching published GitHub Release only after the isolated update test passes.
 

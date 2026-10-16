@@ -34,7 +34,7 @@ No release or version is created by installing this updater. For a later, author
 
 1. Choose a strictly increasing normal numeric version (`MAJOR.MINOR.PATCH`), update plugin header/constants consistently, and run checks. Plus must declare its Basic minimum consistently in `Requires ContactHub:` and `CONTACTHUB_PLUS_MIN_BASIC_VERSION`.
 2. Build from the reviewed commit using the existing `tools/build-release.sh`. Expected filenames are `contacthub-basic-VERSION.zip` and `contacthub-plus-VERSION.zip`. Their root directories remain `contacthub/` and `contacthub-plus/`; do not upload source archives as plugin packages. Exclude private configuration and tokens.
-3. Compute the ZIP's SHA-256 and byte size. Create a separate `contacthub-update.json` or `contacthub-plus-update.json` asset. All version fields must contain numeric versions, not ranges. Example below uses placeholders and is intentionally not publishable.
+3. The build creates `contacthub-update.json` or `contacthub-plus-update.json` with the ZIP's SHA-256. Set `CONTACTHUB_TESTED_WP` to the highest WordPress version actually verified; if omitted, the conservative minimum supported WordPress version is used. All version fields must contain numeric versions, not ranges. The example below uses placeholders and is intentionally not publishable.
 4. Attach both the ZIP and its manifest to the same GitHub Release, with tag `vVERSION` (or `VERSION`). Publish only after checking all assets; drafts and prereleases are ignored. The updater checks GitHub's ZIP digest too when present.
 5. Test on the isolated test website before enabling any automatic update.
 

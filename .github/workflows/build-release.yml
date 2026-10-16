@@ -2,6 +2,11 @@ name: Build ContactHub Basic package
 
 on:
   workflow_dispatch:
+    inputs:
+      tested_wordpress:
+        description: Highest WordPress version verified for this release
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -22,10 +27,12 @@ jobs:
       - name: Validate source
         run: ./tools/check.sh
       - name: Build installable ZIP files
+        env:
+          CONTACTHUB_TESTED_WP: ${{ inputs.tested_wordpress }}
         run: ./tools/build-release.sh
       - uses: actions/upload-artifact@v4
         with:
           name: contacthub-basic-package
-          path: dist/*.zip
+          path: dist/*
           if-no-files-found: error
 
