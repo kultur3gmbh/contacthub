@@ -1535,7 +1535,7 @@ final class ContactHub_Plugin {
 		echo self::sortable_heading( __( 'First name', 'contacthub' ), 'first_name', $orderby, $order, $customer_filter, $search );
 		echo self::sortable_heading( __( 'Last name', 'contacthub' ), 'last_name', $orderby, $order, $customer_filter, $search );
 		echo __( '<th><span class="screen-reader-text">Actions</span></th>', 'contacthub' );
-		if ( ContactHub_Trash::available() ) echo '<th>' . esc_html__( 'Trash', 'contacthub' ) . '</th>';
+		if ( ContactHub_Trash::available() ) echo '<th class="contacthub-trash-column"><span class="screen-reader-text">' . esc_html__( 'Trash', 'contacthub' ) . '</span></th>';
 		echo __( '<th>Email</th><th>Phone</th>', 'contacthub' );
 		if ( $companies_enabled ) {
 			echo self::sortable_heading( __( 'Company', 'contacthub' ), 'company', $orderby, $order, $customer_filter, $search );
@@ -1749,7 +1749,12 @@ final class ContactHub_Plugin {
 
 	private static function render_trash_link( $entity, $id = 0, $cell = false ) {
 		if ( ! ContactHub_Trash::available() ) return;
-		echo ( $cell ? '<td>' : '<p>' ) . '<a class="button" href="' . esc_url( ContactHub_Trash::url( $entity, $id, ! $id ) ) . '">' . esc_html( $id ? __( 'Move to Trash', 'contacthub' ) : __( 'Trash and bulk actions', 'contacthub' ) ) . '</a>' . ( $cell ? '</td>' : '</p>' );
+		$label = $id ? __( 'Move to Trash', 'contacthub' ) : __( 'Trash and bulk actions', 'contacthub' );
+		if ( $cell ) {
+			echo '<td class="contacthub-trash-column"><a class="button contacthub-trash-row-action" href="' . esc_url( ContactHub_Trash::url( $entity, $id, false ) ) . '" aria-label="' . esc_attr( $label ) . '" title="' . esc_attr( $label ) . '"><span class="dashicons dashicons-trash" aria-hidden="true"></span><span class="screen-reader-text">' . esc_html( $label ) . '</span></a></td>';
+			return;
+		}
+		echo '<p><a class="button" href="' . esc_url( ContactHub_Trash::url( $entity, 0, true ) ) . '">' . esc_html( $label ) . '</a></p>';
 	}
 
 	private static function render_index() {
@@ -1785,7 +1790,9 @@ final class ContactHub_Plugin {
 			return;
 		}
 
-		echo '<table class="widefat striped contacthub-table contacthub-companies-table"><thead><tr><th>' . esc_html__( 'Company', 'contacthub' ) . '</th><th>' . ( ContactHub_Trash::available() ? esc_html__( 'Trash', 'contacthub' ) . '</th><th>' : '' ) . esc_html__( 'Assigned people', 'contacthub' ) . '</th><th>' . esc_html__( 'Website', 'contacthub' ) . '</th><th>' . esc_html__( 'Phone', 'contacthub' ) . '</th><th>' . esc_html__( 'Location', 'contacthub' ) . '</th></tr></thead><tbody>';
+		echo '<table class="widefat striped contacthub-table contacthub-companies-table"><thead><tr><th>' . esc_html__( 'Company', 'contacthub' ) . '</th>';
+		if ( ContactHub_Trash::available() ) echo '<th class="contacthub-trash-column"><span class="screen-reader-text">' . esc_html__( 'Trash', 'contacthub' ) . '</span></th>';
+		echo '<th>' . esc_html__( 'Assigned people', 'contacthub' ) . '</th><th>' . esc_html__( 'Website', 'contacthub' ) . '</th><th>' . esc_html__( 'Phone', 'contacthub' ) . '</th><th>' . esc_html__( 'Location', 'contacthub' ) . '</th></tr></thead><tbody>';
 		foreach ( $companies as $company ) {
 			$id = self::value( $company, array( 'get_id', 'ID', 'id' ) );
 			$edit_url = admin_url( 'admin.php?page=contacthub-firmen&firma=' . absint( $id ) );
