@@ -1,0 +1,32 @@
+.contacthub-checkout-active{
+	--contacthub-checkout-accent:var(--awb-color4,var(--primary_color,var(--button_gradient_top_color,#405de6)));
+	--contacthub-checkout-surface:var(--awb-color1,var(--content_bg_color,#fff));
+	--contacthub-checkout-border:var(--awb-color3,var(--form_border_color,#dce3ea));
+	--contacthub-checkout-text:var(--awb-text-color,var(--body_typography-color,#253342));
+	--contacthub-checkout-radius:var(--awb-border-radius,var(--form_border_radius,10px));
+}
+.contacthub-checkout-shell{box-sizing:border-box;max-width:1320px;margin:0 auto;color:var(--contacthub-checkout-text);font-family:inherit}
+.contacthub-checkout-shell form.checkout.woocommerce-checkout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(320px,.75fr);gap:0 28px;align-items:start}
+.contacthub-checkout-shell .woocommerce-NoticeGroup-checkout{grid-column:1/-1}
+.contacthub-checkout-shell #customer_details{grid-column:1;grid-row:1/5;min-width:0}
+.contacthub-checkout-shell #order_review_heading{grid-column:2;margin:0;padding:22px 24px 12px;border:1px solid var(--contacthub-checkout-border);border-bottom:0;border-radius:var(--contacthub-checkout-radius) var(--contacthub-checkout-radius) 0 0;background:var(--contacthub-checkout-surface);font-size:1.25em}
+.contacthub-checkout-shell #order_review{grid-column:2;box-sizing:border-box;min-width:0;padding:0 24px 24px;border:1px solid var(--contacthub-checkout-border);border-top:0;border-radius:0 0 var(--contacthub-checkout-radius) var(--contacthub-checkout-radius);background:var(--contacthub-checkout-surface)}
+.contacthub-checkout-shell #customer_details.col2-set{display:grid;grid-template-columns:1fr;gap:20px}
+.contacthub-checkout-shell #customer_details.col2-set:before,.contacthub-checkout-shell #customer_details.col2-set:after{display:none}
+.contacthub-checkout-shell #customer_details .col-1,.contacthub-checkout-shell #customer_details .col-2{float:none;box-sizing:border-box;width:100%;padding:24px;border:1px solid var(--contacthub-checkout-border);border-radius:var(--contacthub-checkout-radius);background:var(--contacthub-checkout-surface)}
+.contacthub-checkout-shell #customer_details h3{margin-top:0;font-size:1.25em}
+.contacthub-checkout-shell .form-row{box-sizing:border-box;margin-bottom:15px}
+.contacthub-checkout-shell .form-row label{font-weight:600}
+.contacthub-checkout-shell .input-text,.contacthub-checkout-shell select,.contacthub-checkout-shell .select2-selection{box-sizing:border-box;min-height:44px;border-color:var(--contacthub-checkout-border);border-radius:calc(var(--contacthub-checkout-radius) * .6);font-family:inherit}
+.contacthub-checkout-shell #payment{border-radius:var(--contacthub-checkout-radius);background:#f5f7f9;background:color-mix(in srgb,var(--contacthub-checkout-border) 22%,transparent)}
+.contacthub-checkout-shell #place_order{width:100%;min-height:48px;border-radius:calc(var(--contacthub-checkout-radius) * .7);background:var(--contacthub-checkout-accent);color:#fff;font:inherit;font-weight:700}
+.contacthub-checkout-shell #place_order:hover,.contacthub-checkout-shell #place_order:focus{filter:brightness(.9)}
+.contacthub-checkout-consents{margin:18px 0;padding:18px;border:1px solid var(--contacthub-checkout-border);border-radius:var(--contacthub-checkout-radius);background:var(--contacthub-checkout-surface)}
+.contacthub-checkout-consents h3{margin:0 0 12px;font-size:1.05em}
+.contacthub-checkout-consents label{display:flex;align-items:flex-start;gap:9px;margin:9px 0;font-weight:600}
+.contacthub-checkout-consents input{margin-top:4px}
+.contacthub-checkout-consents p{margin:10px 0 0;font-size:.88em;opacity:.75}
+.contacthub-checkout-account-info{margin:0 0 15px;font-size:.92em;opacity:.8}
+.contacthub-checkout-neutral{--contacthub-checkout-accent:#405de6;--contacthub-checkout-surface:#fff;--contacthub-checkout-border:#dce3ea;--contacthub-checkout-text:#253342;--contacthub-checkout-radius:10px}
+@media(max-width:900px){.contacthub-checkout-shell form.checkout.woocommerce-checkout{grid-template-columns:1fr;gap:22px}.contacthub-checkout-shell #customer_details,.contacthub-checkout-shell #order_review_heading,.contacthub-checkout-shell #order_review{grid-column:1;grid-row:auto}.contacthub-checkout-shell #order_review_heading{margin-top:0}}
+@media(max-width:600px){.contacthub-checkout-shell #customer_details .col-1,.contacthub-checkout-shell #customer_details .col-2,.contacthub-checkout-shell #order_review{padding:18px}.contacthub-checkout-shell #order_review_heading{padding:18px 18px 10px}.contacthub-checkout-shell .form-row-first,.contacthub-checkout-shell .form-row-last{float:none;width:100%}}

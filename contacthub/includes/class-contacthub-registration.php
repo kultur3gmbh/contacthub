@@ -1020,7 +1020,7 @@ The link is valid for 24 hours.', 'contacthub' ),
 
 	public static function request_newsletter_optin( $email, $first_name = '', $last_name = '', $redirect = '', $source = 'newsletter_signup' ) {
 		$email = sanitize_email( $email );
-		if ( ! is_email( $email ) || ! ContactHub_Store::standalone() ) return new WP_Error( 'contacthub_optin_invalid', __( 'The newsletter signup could not be processed.', 'contacthub' ) );
+		if ( ! is_email( $email ) ) return new WP_Error( 'contacthub_optin_invalid', __( 'The newsletter signup could not be processed.', 'contacthub' ) );
 		$settings = self::settings();
 		$token = bin2hex( random_bytes( 32 ) );
 		set_transient( 'contacthub_newsletter_verify_' . hash( 'sha256', $token ), array( 'email' => $email, 'first_name' => sanitize_text_field( $first_name ), 'last_name' => sanitize_text_field( $last_name ), 'redirect' => wp_validate_redirect( $redirect, home_url( '/' ) ), 'source' => sanitize_key( $source ) ), DAY_IN_SECONDS );
@@ -1041,13 +1041,15 @@ The link is valid for 24 hours.', 'contacthub' ),
 		$redirect = is_array( $data ) ? wp_validate_redirect( $data['redirect'] ?? '', home_url( '/' ) ) : home_url( '/' );
 		if ( ! is_array( $data ) || empty( $data['email'] ) ) self::redirect_notice( $redirect, 'error', __( 'The confirmation link is invalid or has expired.', 'contacthub' ) );
 		delete_transient( $key );
-		$contact = ContactHub_Store::contact_by_email( $data['email'] );
-		$payload = array( 'email' => $data['email'], 'first_name' => $data['first_name'], 'last_name' => $data['last_name'], 'source' => sanitize_key( $data['source'] ?? 'newsletter_signup' ), 'optin_status' => 'confirmed', 'meta' => array( 'email_confirmed' => 1, 'email_confirmed_at' => current_time( 'mysql' ) ) );
-		$contact_id = $contact ? absint( $contact['id'] ) : ContactHub_Store::create_contact( $payload );
-		if ( is_wp_error( $contact_id ) || ! $contact_id ) self::redirect_notice( $redirect, 'error', __( 'The newsletter subscription could not be saved.', 'contacthub' ) );
-		if ( $contact ) ContactHub_Store::update_contact( $contact_id, $payload );
 		$source = ! empty( $data['source'] ) ? sanitize_key( $data['source'] ) . '_double_opt_in' : 'newsletter_double_opt_in';
-		ContactHub_Store::record_consent( $contact_id, 'granted', $source, current_time( 'Y-m-d' ), __( 'Newsletter consent confirmed through double opt-in.', 'contacthub' ) );
+		$contact_id = ContactHub_Plugin::extension_confirm_marketing_optin(
+			$data['email'],
+			$data['first_name'] ?? '',
+			$data['last_name'] ?? '',
+			$source,
+			__( 'Newsletter consent confirmed through double opt-in.', 'contacthub' )
+		);
+		if ( is_wp_error( $contact_id ) || ! $contact_id ) self::redirect_notice( $redirect, 'error', is_wp_error( $contact_id ) ? $contact_id->get_error_message() : __( 'The newsletter subscription could not be saved.', 'contacthub' ) );
 		self::redirect_notice( $redirect, 'success', self::settings()['newsletter_verified'] );
 		return true;
 	}

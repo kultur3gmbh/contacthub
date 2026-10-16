@@ -2119,6 +2119,144 @@ final class ContactHub_Plugin {
 		return self::contact( absint( $id ) );
 	}
 
+	/**
+	 * Find one contact by an exact email address in the active data source.
+	 *
+	 * @param string $email Email address.
+	 * @return array|object|false
+	 */
+	public static function extension_contact_by_email( $email ) {
+		$email = strtolower( sanitize_email( $email ) );
+		if ( ! is_email( $email ) ) {
+			return false;
+		}
+		if ( ContactHub_Store::standalone() ) {
+			return ContactHub_Store::contact_by_email( $email );
+		}
+		$result = self::contact_search( $email, 20, 0 );
+		$contacts = isset( $result['contacts'] ) && is_array( $result['contacts'] ) ? $result['contacts'] : array();
+		foreach ( $contacts as $contact ) {
+			$contact_email = strtolower( sanitize_email( self::value( $contact, array( 'email', 'get_email' ) ) ) );
+			if ( $contact_email && hash_equals( $email, $contact_email ) ) {
+				return $contact;
+			}
+		}
+		// Older Groundhogg releases expose different search semantics. Fall back
+		// to the existing complete read API only when the targeted search misses.
+		foreach ( self::all_contacts( $email ) as $contact ) {
+			$contact_email = strtolower( sanitize_email( self::value( $contact, array( 'email', 'get_email' ) ) ) );
+			if ( $contact_email && hash_equals( $email, $contact_email ) ) {
+				return $contact;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Store a successfully confirmed double opt-in in the active data source.
+	 *
+	 * @param string $email      Confirmed email address.
+	 * @param string $first_name First name supplied with the request.
+	 * @param string $last_name  Last name supplied with the request.
+	 * @param string $source     Auditable request source.
+	 * @param string $proof      Human-readable proof note.
+	 * @return int|WP_Error Contact ID or error.
+	 */
+	public static function extension_confirm_marketing_optin( $email, $first_name = '', $last_name = '', $source = 'double_opt_in', $proof = '' ) {
+		$email = strtolower( sanitize_email( $email ) );
+		if ( ! is_email( $email ) ) {
+			return new WP_Error( 'contacthub_optin_email', __( 'The newsletter subscription could not be saved.', 'contacthub' ) );
+		}
+		$first_name = sanitize_text_field( $first_name );
+		$last_name = sanitize_text_field( $last_name );
+		$source = sanitize_key( $source );
+		$proof = sanitize_textarea_field( $proof );
+		$date = current_time( 'Y-m-d' );
+		$confirmed_at = current_time( 'mysql' );
+		$contact = self::extension_contact_by_email( $email );
+		if ( $contact && in_array( self::optin_status( $contact ), array( 6, 7, 8, 9, 'hard_bounce', 'spam', 'complained', 'blocked' ), true ) ) {
+			return new WP_Error( 'contacthub_optin_protected', __( 'This email address cannot be subscribed because it has a protected delivery or complaint status.', 'contacthub' ) );
+		}
+
+		$meta = array(
+			'email_confirmed'         => 1,
+			'email_confirmed_at'      => $confirmed_at,
+			'marketing_consent'       => 'yes',
+			'marketing_consent_source' => $source,
+			'marketing_consent_date'  => $date,
+		);
+		if ( ContactHub_Store::standalone() ) {
+			$payload = array(
+				'email'        => $email,
+				'first_name'   => $first_name,
+				'last_name'    => $last_name,
+				'source'       => $source,
+				'optin_status' => 'confirmed',
+				'meta'         => $meta,
+			);
+			$contact_id = $contact ? absint( self::value( $contact, array( 'id', 'ID' ) ) ) : ContactHub_Store::create_contact( $payload );
+			if ( is_wp_error( $contact_id ) || ! $contact_id ) {
+				return is_wp_error( $contact_id ) ? $contact_id : new WP_Error( 'contacthub_optin_save', __( 'The newsletter subscription could not be saved.', 'contacthub' ) );
+			}
+			if ( $contact && ! ContactHub_Store::update_contact( $contact_id, $payload ) ) {
+				return new WP_Error( 'contacthub_optin_save', __( 'The newsletter subscription could not be saved.', 'contacthub' ) );
+			}
+			ContactHub_Store::record_consent( $contact_id, 'granted', $source, $date, $proof );
+			self::update_wordpress_marketing_status( $email, $confirmed_at );
+			return $contact_id;
+		}
+
+		$contact_id = $contact ? absint( self::value( $contact, array( 'id', 'ID', 'get_id' ) ) ) : 0;
+		if ( ! $contact_id ) {
+			$created = self::execute_ability(
+				'groundhogg/create-contact',
+				array(
+					'email'        => $email,
+					'first_name'   => $first_name,
+					'last_name'    => $last_name,
+					'optin_status' => 'confirmed',
+					'meta'         => $meta,
+					'expand'       => array( 'tags', 'meta' ),
+				)
+			);
+			$contact_id = is_array( $created ) && isset( $created['contact']['id'] ) ? absint( $created['contact']['id'] ) : 0;
+		} else {
+			$updated = self::execute_ability(
+				'groundhogg/update-contact',
+				array(
+					'id'           => $contact_id,
+					'optin_status' => 'confirmed',
+					'meta'         => $meta,
+				)
+			);
+			if ( false === $updated ) {
+				return new WP_Error( 'contacthub_optin_save', __( 'The newsletter subscription could not be saved.', 'contacthub' ) );
+			}
+		}
+		if ( ! $contact_id ) {
+			return new WP_Error( 'contacthub_optin_save', __( 'The newsletter subscription could not be saved.', 'contacthub' ) );
+		}
+		self::execute_ability(
+			'groundhogg/add-contact-note',
+			array(
+				'contact_id' => $contact_id,
+				'summary'    => __( 'Marketing consent confirmed by double opt-in', 'contacthub' ),
+				'content'    => $proof,
+			)
+		);
+		self::update_wordpress_marketing_status( $email, $confirmed_at );
+		return $contact_id;
+	}
+
+	private static function update_wordpress_marketing_status( $email, $confirmed_at ) {
+		$user = get_user_by( 'email', $email );
+		if ( ! $user ) {
+			return;
+		}
+		update_user_meta( $user->ID, 'contacthub_marketing_status', 'confirmed' );
+		update_user_meta( $user->ID, 'contacthub_marketing_confirmed_at', $confirmed_at );
+	}
+
 	public static function extension_value( $contact, $keys, $default = '' ) {
 		return self::value( $contact, (array) $keys, $default );
 	}

@@ -26,6 +26,7 @@ require_once CONTACTHUB_PATH . 'includes/class-contacthub-trash.php';
 require_once CONTACTHUB_PATH . 'includes/class-contacthub-github-updater.php';
 require_once CONTACTHUB_PATH . 'includes/class-contacthub-registration.php';
 require_once CONTACTHUB_PATH . 'includes/class-contacthub-my-account.php';
+require_once CONTACTHUB_PATH . 'includes/class-contacthub-woocommerce.php';
 
 add_action(
 	'plugins_loaded',
@@ -49,6 +50,7 @@ add_action( 'plugins_loaded', array( 'ContactHub_Plugin', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactHub_Trash', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactHub_Registration', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactHub_My_Account', 'boot' ), 31 );
+add_action( 'plugins_loaded', array( 'ContactHub_WooCommerce', 'boot' ), 31 );
 
 register_activation_hook( __FILE__, array( 'ContactHub_Registration', 'activate' ) );
 
