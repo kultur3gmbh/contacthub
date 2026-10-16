@@ -2228,9 +2228,10 @@ final class ContactHub_Plugin {
 
 	private static function marketing_icon_badge( $status ) {
 		$positive = self::is_marketable_status( $status );
+		$protected = self::is_protected_optout_status( $status );
 		$label = self::status_label( $status );
-		$icon = $positive ? 'dashicons-thumbs-up' : 'dashicons-thumbs-down';
-		return '<span class="contacthub-marketing-icon ' . ( $positive ? 'is-positive' : 'is-negative' ) . '" role="img" aria-label="' . esc_attr( $label ) . '" title="' . esc_attr( $label ) . '"><span class="dashicons ' . esc_attr( $icon ) . '" aria-hidden="true"></span></span>';
+		$icon = $positive ? 'dashicons-thumbs-up' : ( $protected ? 'dashicons-dismiss' : 'dashicons-thumbs-down' );
+		return '<span class="contacthub-marketing-icon ' . ( $positive ? 'is-positive' : 'is-negative' ) . ( $protected ? ' is-protected' : '' ) . '" role="img" aria-label="' . esc_attr( $label ) . '" title="' . esc_attr( $label ) . '"><span class="dashicons ' . esc_attr( $icon ) . '" aria-hidden="true"></span></span>';
 	}
 
 	private static function email_confirmation_icon( $status, $contact = array() ) {
