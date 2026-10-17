@@ -198,6 +198,35 @@ final class ContactHub_Store {
 		return (int) $wpdb->get_var( $wpdb->prepare( "SELECT id FROM `{$table}` WHERE LOWER(name) = LOWER(%s){$state} LIMIT 1", sanitize_text_field( $name ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
 	}
 
+	/**
+	 * Links a standalone contact to a freely entered company name. Existing
+	 * active companies are reused; otherwise a minimal company is created.
+	 */
+	public static function link_contact_company_name( $email, $company_name ) {
+		if ( ! self::standalone() ) {
+			return true;
+		}
+		$email = sanitize_email( $email );
+		$company_name = sanitize_text_field( $company_name );
+		if ( ! $email || '' === trim( $company_name ) ) {
+			return true;
+		}
+		$contact = self::contact_by_email( $email );
+		if ( ! $contact ) {
+			return false;
+		}
+		$company_id = self::company_by_name( $company_name );
+		if ( ! $company_id ) {
+			$company_id = self::create_company(
+				array(
+					'name'       => $company_name,
+					'legal_name' => $company_name,
+				)
+			);
+		}
+		return $company_id ? self::link_company_contact( $company_id, $contact['id'] ) : false;
+	}
+
 	public static function link_company_contact( $company_id, $contact_id, $position = '', $primary = false ) {
 		global $wpdb;
 		$table = ContactHub_Schema::table_names()['company_contacts'];

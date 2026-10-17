@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactHub 0.16.5\n"
+"Project-Id-Version: ContactHub 0.16.6\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-16 09:00+0200\n"
 "PO-Revision-Date: 2026-10-16 23:50+0200\n"
@@ -3290,3 +3290,52 @@ msgstr "Marketingzustimmung durch Double Opt-in bestätigt"
 #: contacthub/includes/class-contacthub-plugin.php
 msgid "This email address cannot be subscribed because it has a protected delivery or complaint status."
 msgstr "Diese E-Mail-Adresse kann wegen eines geschützten Zustell- oder Beschwerdestatus nicht angemeldet werden."
+
+#: contacthub/includes/class-contacthub-registration.php
+msgid "This confirmation request is no longer available. Please submit the signup form again."
+msgstr "Diese Bestätigungsanfrage ist nicht mehr verfügbar. Bitte senden Sie das Anmeldeformular erneut ab."
+
+#: contacthub/includes/class-contacthub-registration.php
+msgid "A confirmation email was requested too often. Please wait a few minutes and try again."
+msgstr "Eine Bestätigungs-E-Mail wurde zu oft angefordert. Bitte warten Sie einige Minuten und versuchen Sie es erneut."
+
+#: contacthub/includes/class-contacthub-registration.php
+msgid "A new confirmation email has been sent."
+msgstr "Eine neue Bestätigungs-E-Mail wurde versendet."
+
+#: contacthub/includes/class-contacthub-registration.php
+msgid "The email address was changed too often. Please wait a few minutes and try again."
+msgstr "Die E-Mail-Adresse wurde zu oft geändert. Bitte warten Sie einige Minuten und versuchen Sie es erneut."
+
+#: contacthub/includes/class-contacthub-registration.php
+msgid "The email address was changed, but the new confirmation email could not be sent. Please request it again."
+msgstr "Die E-Mail-Adresse wurde geändert, aber die neue Bestätigungs-E-Mail konnte nicht versendet werden. Bitte fordern Sie sie erneut an."
+
+#: contacthub/includes/class-contacthub-registration.php
+msgid "The email address was corrected and a new confirmation email has been sent."
+msgstr "Die E-Mail-Adresse wurde korrigiert und eine neue Bestätigungs-E-Mail wurde versendet."
+
+#: contacthub/includes/class-contacthub-registration.php
+msgid "Please confirm your email address"
+msgstr "Bitte bestätigen Sie Ihre E-Mail-Adresse"
+
+#: contacthub/includes/class-contacthub-registration.php
+#, php-format
+msgid "We sent the confirmation email to %s."
+msgstr "Wir haben die Bestätigungs-E-Mail an %s gesendet."
+
+#: contacthub/includes/class-contacthub-registration.php
+msgid "If you cannot find the message, please also check your spam folder."
+msgstr "Falls Sie die Nachricht nicht finden, prüfen Sie bitte auch Ihren Spam-Ordner."
+
+#: contacthub/includes/class-contacthub-registration.php
+msgid "Send confirmation email again"
+msgstr "Bestätigungs-E-Mail erneut senden"
+
+#: contacthub/includes/class-contacthub-registration.php
+msgid "Correct email address"
+msgstr "E-Mail-Adresse korrigieren"
+
+#: contacthub/includes/class-contacthub-registration.php
+msgid "Save and send again"
+msgstr "Speichern und erneut senden"

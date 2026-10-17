@@ -1,5 +1,16 @@
 (function () {
 	'use strict';
+	function setVatButtonState(button, verified) {
+		if (!button) return;
+		var defaultLabel = button.dataset.defaultLabel || button.textContent.trim() || 'Validate VAT ID';
+		var successLabel = button.dataset.successLabel || 'VAT ID successfully validated';
+		button.dataset.defaultLabel = defaultLabel;
+		button.classList.toggle('is-valid', Boolean(verified));
+		button.textContent = verified ? '✓' : defaultLabel;
+		button.setAttribute('aria-label', verified ? successLabel : defaultLabel);
+		button.title = verified ? successLabel : '';
+	}
+
 	function shippingMatchesBilling(form) {
 		var keys = ['first_name', 'last_name', 'company', 'address_1', 'address_2', 'postcode', 'city', 'state', 'country'];
 		return keys.every(function (key) {
@@ -44,8 +55,7 @@
 			message.classList.remove('is-success');
 		}
 		event.target.dataset.verified = '0';
-		var check = field ? field.querySelector('.contacthub-account-vat-check') : null;
-		if (check) check.hidden = true;
+		setVatButtonState(field ? field.querySelector('.contacthub-vat-button') : null, false);
 	});
 
 	document.addEventListener('input', function (event) {
@@ -144,8 +154,7 @@
 			message.textContent = result.data.message;
 			message.classList.add('is-success');
 			input.dataset.verified = '1';
-			var check = field.querySelector('.contacthub-account-vat-check');
-			if (check) check.hidden = false;
+			setVatButtonState(button, true);
 		}).catch(function (error) {
 			message.textContent = error.message || config.i18n.vatValidationFailed;
 		}).finally(function () {
@@ -184,9 +193,9 @@
 					message.classList.add('is-success');
 				}
 				var vatInput = form.querySelector('[name="vat_id"]');
-				var vatCheck = form.querySelector('.contacthub-account-vat-check');
+				var vatButton = form.querySelector('.contacthub-vat-button');
 				if (vatInput && result.data.vatVerified) vatInput.dataset.verified = '1';
-				if (vatCheck) vatCheck.hidden = !result.data.vatVerified;
+				setVatButtonState(vatButton, Boolean(result.data.vatVerified));
 			})
 			.catch(function (error) {
 				if (message) {
@@ -209,6 +218,11 @@
 
 	document.querySelectorAll('.contacthub-shipping-toggle input').forEach(function (toggle) {
 		configureShippingFields(toggle.closest('form'), toggle.checked, false);
+	});
+
+	document.querySelectorAll('.contacthub-vat-field').forEach(function (field) {
+		var input = field.querySelector('[name="vat_id"]');
+		setVatButtonState(field.querySelector('.contacthub-vat-button'), Boolean(input && input.dataset.verified === '1'));
 	});
 
 	var redirectNotice = document.querySelector('[data-contacthub-redirect]');

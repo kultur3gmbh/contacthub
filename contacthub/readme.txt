@@ -2,12 +2,18 @@
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.16.5
+Stable tag: 0.16.6
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a free WooCommerce customer overview, optional Groundhogg compatibility, and a stable extension API for ContactHub Plus.
 
 == Changelog ==
+
+= 0.16.6 =
+* Adds a reusable double-opt-in confirmation notice with the submitted email address, spam-folder reminder, resend action, and protected email correction.
+* Places the optional company field above the customer name for both billing and shipping addresses in My Account.
+* Replaces the VAT validation action with a compact green confirmation check after successful validation.
+* Adds an inline company assignment to existing person records and reuses or creates a minimal company from freely entered customer company names without changing WooCommerce or Groundhogg source data.
 
 = 0.16.5 =
 * Presents private and business customer registration as accessible tabs instead of separate buttons.

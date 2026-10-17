@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactHub 0.16.5\n"
+"Project-Id-Version: ContactHub 0.16.6\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-16 23:50+0200\n"
 "PO-Revision-Date: 2026-10-16 09:00+0200\n"
@@ -3289,4 +3289,53 @@ msgstr ""
 
 #: contacthub/includes/class-contacthub-plugin.php
 msgid "This email address cannot be subscribed because it has a protected delivery or complaint status."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php
+msgid "This confirmation request is no longer available. Please submit the signup form again."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php
+msgid "A confirmation email was requested too often. Please wait a few minutes and try again."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php
+msgid "A new confirmation email has been sent."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php
+msgid "The email address was changed too often. Please wait a few minutes and try again."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php
+msgid "The email address was changed, but the new confirmation email could not be sent. Please request it again."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php
+msgid "The email address was corrected and a new confirmation email has been sent."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php
+msgid "Please confirm your email address"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php
+#, php-format
+msgid "We sent the confirmation email to %s."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php
+msgid "If you cannot find the message, please also check your spam folder."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php
+msgid "Send confirmation email again"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php
+msgid "Correct email address"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-registration.php
+msgid "Save and send again"
 msgstr ""

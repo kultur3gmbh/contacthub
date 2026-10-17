@@ -242,7 +242,9 @@ final class ContactHub_My_Account {
 		echo '</div><div class="contacthub-account-grid">';
 		self::address_fields( 'billing', $customer );
 		echo '</div></div>';
-		echo '<label class="contacthub-account-field contacthub-account-field-wide contacthub-vat-field"><span>' . esc_html__( 'VAT ID', 'contacthub' ) . '</span><span class="contacthub-vat-controls"><input type="text" name="vat_id" value="' . esc_attr( $vat ) . '" autocomplete="off" data-verified="' . ( $vat_verified ? '1' : '0' ) . '"><button type="button" class="contacthub-vat-button">' . esc_html__( 'Validate VAT ID', 'contacthub' ) . '</button><span class="contacthub-account-vat-check"' . ( $vat_verified ? '' : ' hidden' ) . ' aria-label="' . esc_attr__( 'VAT ID successfully validated', 'contacthub' ) . '">✓</span></span><span class="contacthub-vat-message" aria-live="polite"></span></label>';
+		$vat_button_label = __( 'Validate VAT ID', 'contacthub' );
+		$vat_success_label = __( 'VAT ID successfully validated', 'contacthub' );
+		echo '<label class="contacthub-account-field contacthub-account-field-wide contacthub-vat-field"><span>' . esc_html__( 'VAT ID', 'contacthub' ) . '</span><span class="contacthub-vat-controls"><input type="text" name="vat_id" value="' . esc_attr( $vat ) . '" autocomplete="off" data-verified="' . ( $vat_verified ? '1' : '0' ) . '"><button type="button" class="contacthub-vat-button' . ( $vat_verified ? ' is-valid' : '' ) . '" data-default-label="' . esc_attr( $vat_button_label ) . '" data-success-label="' . esc_attr( $vat_success_label ) . '" aria-label="' . esc_attr( $vat_verified ? $vat_success_label : $vat_button_label ) . '">' . ( $vat_verified ? '✓' : esc_html( $vat_button_label ) ) . '</button></span><span class="contacthub-vat-message" aria-live="polite"></span></label>';
 		echo '<label class="contacthub-shipping-toggle"><input type="checkbox" name="shipping_different" value="1"' . checked( $different, true, false ) . '> <span>' . esc_html__( 'The shipping address differs from the billing address.', 'contacthub' ) . '</span></label>';
 		echo '<div class="contacthub-address-panel contacthub-shipping-account-fields"' . ( $different ? '' : ' hidden' ) . '><div class="contacthub-account-subheading"><h3>' . esc_html__( 'Shipping address', 'contacthub' ) . '</h3></div><div class="contacthub-account-grid">';
 		self::address_fields( 'shipping', $customer, $different );
@@ -268,14 +270,9 @@ final class ContactHub_My_Account {
 			$method = 'get_' . $prefix . '_' . $key;
 			return is_callable( array( $customer, $method ) ) ? $customer->{$method}() : '';
 		};
-		if ( 'billing' === $prefix ) {
-			self::account_input( $prefix . '_company', __( 'Company (optional)', 'contacthub' ), $get( 'company' ), false, 'organization', 'contacthub-account-field-wide' );
-		}
+		self::account_input( $prefix . '_company', __( 'Company (optional)', 'contacthub' ), $get( 'company' ), false, 'organization', 'contacthub-account-field-wide' );
 		self::account_input( $prefix . '_first_name', __( 'First name', 'contacthub' ), $get( 'first_name' ), $required, 'given-name' );
 		self::account_input( $prefix . '_last_name', __( 'Last name', 'contacthub' ), $get( 'last_name' ), $required, 'family-name' );
-		if ( 'billing' !== $prefix ) {
-			self::account_input( $prefix . '_company', __( 'Company (optional)', 'contacthub' ), $get( 'company' ), false, 'organization', 'contacthub-account-field-wide' );
-		}
 		self::account_input( $prefix . '_address_1', __( 'Street and house number', 'contacthub' ), $get( 'address_1' ), $required, 'address-line1', 'contacthub-account-field-wide' );
 		self::account_input( $prefix . '_address_2', __( 'Address line 2', 'contacthub' ), $get( 'address_2' ), false, 'address-line2', 'contacthub-account-field-wide' );
 		self::account_input( $prefix . '_postcode', __( 'Postal code', 'contacthub' ), $get( 'postcode' ), $required, 'postal-code' );
@@ -349,6 +346,7 @@ final class ContactHub_My_Account {
 		$phone = self::normalize_profile_phone( self::posted( 'phone_prefix' ), self::posted( 'phone_national' ) );
 		update_user_meta( $user_id, 'contacthub_profile_phone', $phone );
 		update_user_meta( $user_id, 'billing_phone', $phone );
+		self::sync_standalone_company( $user_id, self::posted( 'billing_company' ) );
 		return true;
 	}
 
@@ -458,8 +456,24 @@ final class ContactHub_My_Account {
 				)
 			);
 		}
+		self::sync_standalone_company( $user_id, $billing['company'] );
 
 		return array( 'vat_verified' => $vat_verified, 'billing' => $billing, 'shipping' => $shipping );
+	}
+
+	/**
+	 * Mirrors a freely entered billing company into standalone ContactHub without
+	 * changing WooCommerce, Groundhogg, or any historical source record.
+	 */
+	private static function sync_standalone_company( $user_id, $company_name ) {
+		if ( ! ContactHub_Store::standalone() ) {
+			return;
+		}
+		$user = get_user_by( 'id', absint( $user_id ) );
+		if ( ! $user ) {
+			return;
+		}
+		ContactHub_Store::link_contact_company_name( $user->user_email, $company_name );
 	}
 
 	public static function change_password() {

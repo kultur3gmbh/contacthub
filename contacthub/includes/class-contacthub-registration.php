@@ -20,6 +20,10 @@ final class ContactHub_Registration {
 		add_action( 'admin_post_contacthub_register', array( __CLASS__, 'handle_registration' ) );
 		add_action( 'admin_post_nopriv_contacthub_newsletter_signup', array( __CLASS__, 'handle_newsletter_signup' ) );
 		add_action( 'admin_post_contacthub_newsletter_signup', array( __CLASS__, 'handle_newsletter_signup' ) );
+		add_action( 'admin_post_nopriv_contacthub_pending_resend', array( __CLASS__, 'handle_pending_resend' ) );
+		add_action( 'admin_post_contacthub_pending_resend', array( __CLASS__, 'handle_pending_resend' ) );
+		add_action( 'admin_post_nopriv_contacthub_pending_email', array( __CLASS__, 'handle_pending_email_change' ) );
+		add_action( 'admin_post_contacthub_pending_email', array( __CLASS__, 'handle_pending_email_change' ) );
 		add_action( 'admin_post_contacthub_registration_decision', array( __CLASS__, 'handle_decision' ) );
 		add_action( 'admin_post_contacthub_registration_resend', array( __CLASS__, 'handle_resend' ) );
 		add_action( 'admin_post_contacthub_setup_standalone', array( __CLASS__, 'handle_setup_standalone' ) );
@@ -950,10 +954,8 @@ The link is valid for 24 hours.', 'contacthub' ),
 		$countries = self::countries();
 		ob_start();
 		if ( $notice ) {
-			$redirect_url = ! empty( $notice['redirect_url'] ) ? esc_url( $notice['redirect_url'] ) : '';
-			$delay = isset( $notice['delay'] ) ? absint( $notice['delay'] ) : 0;
-			echo '<div class="contacthub-registration-notice ' . ( 'error' === $notice['type'] ? 'is-error' : 'is-success' ) . '"' . ( $redirect_url ? ' data-contacthub-redirect="' . esc_attr( $redirect_url ) . '" data-contacthub-delay="' . esc_attr( $delay ) . '"' : '' ) . '>' . nl2br( esc_html( $notice['message'] ) ) . '</div>';
-			if ( ! empty( $notice['verification_complete'] ) ) {
+			echo self::render_front_notice( $notice ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns escaped markup.
+			if ( ! empty( $notice['verification_complete'] ) || ! empty( $notice['confirmation_pending'] ) ) {
 				return ob_get_clean();
 			}
 		}
@@ -990,7 +992,10 @@ The link is valid for 24 hours.', 'contacthub' ),
 		wp_enqueue_style( 'contacthub-registration', CONTACTHUB_URL . 'assets/contacthub-registration.css', array(), CONTACTHUB_ASSET_VERSION );
 		$notice = self::consume_notice();
 		ob_start();
-		if ( $notice ) echo '<div class="contacthub-registration-notice ' . ( 'error' === $notice['type'] ? 'is-error' : 'is-success' ) . '">' . nl2br( esc_html( $notice['message'] ) ) . '</div>';
+		if ( $notice ) {
+			echo self::render_front_notice( $notice ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper returns escaped markup.
+			if ( ! empty( $notice['confirmation_pending'] ) ) return ob_get_clean();
+		}
 		$general = self::general_settings();
 		$theme_class = ! empty( $general['theme_styles'] ) ? ' contacthub-use-theme-styles contacthub-theme-' . sanitize_html_class( (string) $general['theme_stylesheet'] ) : '';
 		echo '<form class="contacthub-registration-form contacthub-newsletter-signup' . esc_attr( $theme_class ) . '" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contacthub_newsletter_signup"><input type="hidden" name="redirect_to" value="' . esc_url( self::current_url() ) . '">';
@@ -1015,24 +1020,59 @@ The link is valid for 24 hours.', 'contacthub' ),
 		$first_name = sanitize_text_field( wp_unslash( $_POST['first_name'] ?? '' ) );
 		$last_name = sanitize_text_field( wp_unslash( $_POST['last_name'] ?? '' ) );
 		if ( ! is_email( $email ) || '' === $first_name || empty( $_POST['privacy_accepted'] ) || empty( $_POST['marketing_consent'] ) ) self::redirect_notice( $redirect, 'error', __( 'Please complete all required fields and confirm the newsletter consent.', 'contacthub' ) );
-		$result = self::request_newsletter_optin( $email, $first_name, $last_name, $redirect, 'newsletter_signup' );
-		if ( is_wp_error( $result ) ) self::redirect_notice( $redirect, 'error', $result->get_error_message() );
-		self::redirect_notice( $redirect, 'success', $settings['newsletter_success'] );
+		$management_token = self::create_pending_management(
+			array(
+				'kind'       => 'newsletter',
+				'email'      => $email,
+				'first_name' => $first_name,
+				'last_name'  => $last_name,
+				'redirect'   => $redirect,
+				'source'     => 'newsletter_signup',
+			)
+		);
+		$result = self::send_pending_newsletter_confirmation( $management_token );
+		if ( is_wp_error( $result ) ) self::redirect_notice( $redirect, 'error', $result->get_error_message(), self::pending_notice_extra( $management_token, $email, 'newsletter' ) );
+		self::redirect_notice( $redirect, 'success', $settings['newsletter_success'], self::pending_notice_extra( $management_token, $email, 'newsletter' ) );
 	}
 
 	public static function request_newsletter_optin( $email, $first_name = '', $last_name = '', $redirect = '', $source = 'newsletter_signup' ) {
 		$email = sanitize_email( $email );
 		if ( ! is_email( $email ) ) return new WP_Error( 'contacthub_optin_invalid', __( 'The newsletter signup could not be processed.', 'contacthub' ) );
+		$result = self::send_newsletter_confirmation(
+			array(
+				'email'      => $email,
+				'first_name' => sanitize_text_field( $first_name ),
+				'last_name'  => sanitize_text_field( $last_name ),
+				'redirect'   => wp_validate_redirect( $redirect, home_url( '/' ) ),
+				'source'     => sanitize_key( $source ),
+			)
+		);
+		return is_wp_error( $result ) ? $result : true;
+	}
+
+	private static function send_newsletter_confirmation( $data, $management_key = '' ) {
 		$settings = self::settings();
 		$token = bin2hex( random_bytes( 32 ) );
-		set_transient( 'contacthub_newsletter_verify_' . hash( 'sha256', $token ), array( 'email' => $email, 'first_name' => sanitize_text_field( $first_name ), 'last_name' => sanitize_text_field( $last_name ), 'redirect' => wp_validate_redirect( $redirect, home_url( '/' ) ), 'source' => sanitize_key( $source ) ), DAY_IN_SECONDS );
+		$verification_key = hash( 'sha256', $token );
+		$payload = array(
+			'email'          => sanitize_email( $data['email'] ?? '' ),
+			'first_name'     => sanitize_text_field( $data['first_name'] ?? '' ),
+			'last_name'      => sanitize_text_field( $data['last_name'] ?? '' ),
+			'redirect'       => wp_validate_redirect( $data['redirect'] ?? '', home_url( '/' ) ),
+			'source'         => sanitize_key( $data['source'] ?? 'newsletter_signup' ),
+			'management_key' => sanitize_key( $management_key ),
+		);
+		set_transient( 'contacthub_newsletter_verify_' . $verification_key, $payload, DAY_IN_SECONDS );
 		$link = add_query_arg( array( 'contacthub_newsletter_verify' => $token ), home_url( '/' ) );
-		$replacements = array( '{first_name}' => esc_html( sanitize_text_field( $first_name ) ), '{site_name}' => esc_html( wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ) ), '{confirmation_link}' => '<a href="' . esc_url( $link ) . '">' . esc_html__( 'Confirm newsletter subscription', 'contacthub' ) . '</a>' );
+		$replacements = array( '{first_name}' => esc_html( $payload['first_name'] ), '{site_name}' => esc_html( wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ) ), '{confirmation_link}' => '<a href="' . esc_url( $link ) . '">' . esc_html__( 'Confirm newsletter subscription', 'contacthub' ) . '</a>' );
 		$subject = strtr( $settings['newsletter_subject'], $replacements );
 		$message = strtr( wpautop( $settings['newsletter_message'] ), $replacements );
 		if ( false === strpos( $settings['newsletter_message'], '{confirmation_link}' ) ) $message .= '<p>' . $replacements['{confirmation_link}'] . '</p>';
-		if ( ! wp_mail( $email, $subject, $message, array( 'Content-Type: text/html; charset=UTF-8' ) ) ) return new WP_Error( 'contacthub_optin_mail', __( 'The confirmation email could not be sent. Please try again later.', 'contacthub' ) );
-		return true;
+		if ( ! wp_mail( $payload['email'], $subject, $message, array( 'Content-Type: text/html; charset=UTF-8' ) ) ) {
+			delete_transient( 'contacthub_newsletter_verify_' . $verification_key );
+			return new WP_Error( 'contacthub_optin_mail', __( 'The confirmation email could not be sent. Please try again later.', 'contacthub' ) );
+		}
+		return $verification_key;
 	}
 
 	private static function handle_newsletter_verification() {
@@ -1043,6 +1083,7 @@ The link is valid for 24 hours.', 'contacthub' ),
 		$redirect = is_array( $data ) ? wp_validate_redirect( $data['redirect'] ?? '', home_url( '/' ) ) : home_url( '/' );
 		if ( ! is_array( $data ) || empty( $data['email'] ) ) self::redirect_notice( $redirect, 'error', __( 'The confirmation link is invalid or has expired.', 'contacthub' ) );
 		delete_transient( $key );
+		if ( ! empty( $data['management_key'] ) ) delete_transient( 'contacthub_pending_confirmation_' . sanitize_key( $data['management_key'] ) );
 		$source = ! empty( $data['source'] ) ? sanitize_key( $data['source'] ) . '_double_opt_in' : 'newsletter_double_opt_in';
 		$contact_id = ContactHub_Plugin::extension_confirm_marketing_optin(
 			$data['email'],
@@ -1069,8 +1110,142 @@ The link is valid for 24 hours.', 'contacthub' ),
 			return $content;
 		}
 		wp_enqueue_style( 'contacthub-registration', CONTACTHUB_URL . 'assets/contacthub-registration.css', array(), CONTACTHUB_ASSET_VERSION );
-		$html = '<div class="contacthub-registration-notice ' . ( 'error' === $notice['type'] ? 'is-error' : 'is-success' ) . '">' . nl2br( esc_html( $notice['message'] ) ) . '</div>';
+		$html = self::render_front_notice( $notice );
 		return $html . $content;
+	}
+
+	private static function create_pending_management( $data ) {
+		$token = bin2hex( random_bytes( 32 ) );
+		$key = hash( 'sha256', $token );
+		$data = is_array( $data ) ? $data : array();
+		$data['kind'] = in_array( $data['kind'] ?? '', array( 'registration', 'newsletter' ), true ) ? $data['kind'] : '';
+		$data['email'] = sanitize_email( $data['email'] ?? '' );
+		$data['redirect'] = wp_validate_redirect( $data['redirect'] ?? '', home_url( '/' ) );
+		$data['created_at'] = time();
+		set_transient( 'contacthub_pending_confirmation_' . $key, $data, DAY_IN_SECONDS );
+		return $token;
+	}
+
+	private static function pending_management( $token ) {
+		$token = sanitize_text_field( $token );
+		if ( ! preg_match( '/^[a-f0-9]{64}$/', $token ) ) return false;
+		$key = hash( 'sha256', $token );
+		$data = get_transient( 'contacthub_pending_confirmation_' . $key );
+		if ( ! is_array( $data ) || empty( $data['kind'] ) ) return false;
+		$data['_key'] = $key;
+		return $data;
+	}
+
+	private static function save_pending_management( $token, $data ) {
+		$key = hash( 'sha256', sanitize_text_field( $token ) );
+		unset( $data['_key'] );
+		return set_transient( 'contacthub_pending_confirmation_' . $key, $data, DAY_IN_SECONDS );
+	}
+
+	private static function pending_notice_extra( $token, $email, $kind ) {
+		return array(
+			'confirmation_pending' => 1,
+			'pending_token'        => sanitize_text_field( $token ),
+			'pending_email'        => sanitize_email( $email ),
+			'pending_kind'         => sanitize_key( $kind ),
+		);
+	}
+
+	private static function send_pending_newsletter_confirmation( $management_token ) {
+		$data = self::pending_management( $management_token );
+		if ( ! $data || 'newsletter' !== $data['kind'] ) return new WP_Error( 'contacthub_pending_invalid', __( 'This confirmation request is no longer available. Please submit the signup form again.', 'contacthub' ) );
+		if ( ! empty( $data['verification_key'] ) ) delete_transient( 'contacthub_newsletter_verify_' . sanitize_key( $data['verification_key'] ) );
+		$key = $data['_key'];
+		$result = self::send_newsletter_confirmation( $data, $key );
+		if ( is_wp_error( $result ) ) return $result;
+		$data['verification_key'] = $result;
+		self::save_pending_management( $management_token, $data );
+		return true;
+	}
+
+	private static function pending_registration_user( $data ) {
+		$user_id = absint( $data['user_id'] ?? 0 );
+		$user = $user_id ? get_user_by( 'id', $user_id ) : false;
+		$key = $user ? sanitize_key( get_user_meta( $user_id, 'contacthub_pending_management_key', true ) ) : '';
+		$expires = $user ? absint( get_user_meta( $user_id, 'contacthub_pending_management_expires', true ) ) : 0;
+		if ( ! $user || ! $key || empty( $data['_key'] ) || ! hash_equals( $key, $data['_key'] ) || ! $expires || time() > $expires || get_user_meta( $user_id, 'contacthub_email_verified', true ) ) {
+			return new WP_Error( 'contacthub_pending_invalid', __( 'This confirmation request is no longer available. Please submit the signup form again.', 'contacthub' ) );
+		}
+		return $user;
+	}
+
+	public static function handle_pending_resend() {
+		$token = isset( $_POST['pending_token'] ) ? sanitize_text_field( wp_unslash( $_POST['pending_token'] ) ) : '';
+		$data = self::pending_management( $token );
+		$redirect = $data ? wp_validate_redirect( $data['redirect'] ?? '', home_url( '/' ) ) : home_url( '/' );
+		if ( ! $data ) self::redirect_notice( $redirect, 'error', __( 'This confirmation request is no longer available. Please submit the signup form again.', 'contacthub' ) );
+		$extra = self::pending_notice_extra( $token, $data['email'] ?? '', $data['kind'] );
+		if ( ! self::rate_limit_ok( 'pending_resend', 3 ) ) self::redirect_notice( $redirect, 'error', __( 'A confirmation email was requested too often. Please wait a few minutes and try again.', 'contacthub' ), $extra );
+		if ( 'registration' === $data['kind'] ) {
+			$user = self::pending_registration_user( $data );
+			if ( is_wp_error( $user ) ) self::redirect_notice( $redirect, 'error', $user->get_error_message() );
+			$data['email'] = $user->user_email;
+			self::save_pending_management( $token, $data );
+			if ( ! self::issue_confirmation( $user->ID ) ) self::redirect_notice( $redirect, 'error', __( 'The confirmation email could not be sent. Please try again later.', 'contacthub' ), self::pending_notice_extra( $token, $user->user_email, 'registration' ) );
+		} else {
+			$result = self::send_pending_newsletter_confirmation( $token );
+			if ( is_wp_error( $result ) ) self::redirect_notice( $redirect, 'error', $result->get_error_message(), $extra );
+		}
+		$email = 'registration' === $data['kind'] && isset( $user ) ? $user->user_email : $data['email'];
+		self::redirect_notice( $redirect, 'success', __( 'A new confirmation email has been sent.', 'contacthub' ), self::pending_notice_extra( $token, $email, $data['kind'] ) );
+	}
+
+	public static function handle_pending_email_change() {
+		$token = isset( $_POST['pending_token'] ) ? sanitize_text_field( wp_unslash( $_POST['pending_token'] ) ) : '';
+		$data = self::pending_management( $token );
+		$redirect = $data ? wp_validate_redirect( $data['redirect'] ?? '', home_url( '/' ) ) : home_url( '/' );
+		if ( ! $data ) self::redirect_notice( $redirect, 'error', __( 'This confirmation request is no longer available. Please submit the signup form again.', 'contacthub' ) );
+		$old_email = sanitize_email( $data['email'] ?? '' );
+		$extra = self::pending_notice_extra( $token, $old_email, $data['kind'] );
+		if ( ! self::rate_limit_ok( 'pending_email_change', 3 ) ) self::redirect_notice( $redirect, 'error', __( 'The email address was changed too often. Please wait a few minutes and try again.', 'contacthub' ), $extra );
+		$new_email = isset( $_POST['new_email'] ) ? sanitize_email( wp_unslash( $_POST['new_email'] ) ) : '';
+		if ( ! is_email( $new_email ) ) self::redirect_notice( $redirect, 'error', __( 'Please enter a valid email address.', 'contacthub' ), $extra );
+
+		if ( 'registration' === $data['kind'] ) {
+			$user = self::pending_registration_user( $data );
+			if ( is_wp_error( $user ) ) self::redirect_notice( $redirect, 'error', $user->get_error_message() );
+			$existing_user = email_exists( $new_email );
+			if ( $existing_user && absint( $existing_user ) !== $user->ID ) self::redirect_notice( $redirect, 'error', __( 'A user account already exists for this email address.', 'contacthub' ), $extra );
+			$contact = ContactHub_Store::standalone() ? ContactHub_Store::contact_by_email( $user->user_email ) : false;
+			$existing_contact = ContactHub_Store::standalone() ? ContactHub_Store::contact_by_email( $new_email, true ) : false;
+			if ( $existing_contact && ( ! $contact || absint( $existing_contact['id'] ) !== absint( $contact['id'] ) ) ) self::redirect_notice( $redirect, 'error', __( 'A person with this email address already exists.', 'contacthub' ), $extra );
+			$result = wp_update_user( array( 'ID' => $user->ID, 'user_email' => $new_email ) );
+			if ( is_wp_error( $result ) ) self::redirect_notice( $redirect, 'error', $result->get_error_message(), $extra );
+			update_user_meta( $user->ID, 'billing_email', $new_email );
+			if ( $contact ) ContactHub_Store::update_contact( $contact['id'], array( 'email' => $new_email ) );
+			$data['email'] = $new_email;
+			self::save_pending_management( $token, $data );
+			if ( ! self::issue_confirmation( $user->ID ) ) self::redirect_notice( $redirect, 'error', __( 'The email address was changed, but the new confirmation email could not be sent. Please request it again.', 'contacthub' ), self::pending_notice_extra( $token, $new_email, 'registration' ) );
+		} else {
+			$data['email'] = $new_email;
+			self::save_pending_management( $token, $data );
+			$result = self::send_pending_newsletter_confirmation( $token );
+			if ( is_wp_error( $result ) ) self::redirect_notice( $redirect, 'error', $result->get_error_message(), self::pending_notice_extra( $token, $new_email, 'newsletter' ) );
+		}
+		self::redirect_notice( $redirect, 'success', __( 'The email address was corrected and a new confirmation email has been sent.', 'contacthub' ), self::pending_notice_extra( $token, $new_email, $data['kind'] ) );
+	}
+
+	private static function render_front_notice( $notice ) {
+		$type = 'error' === ( $notice['type'] ?? '' ) ? 'error' : 'success';
+		$redirect_url = ! empty( $notice['redirect_url'] ) ? esc_url( $notice['redirect_url'] ) : '';
+		$delay = isset( $notice['delay'] ) ? absint( $notice['delay'] ) : 0;
+		$attributes = $redirect_url ? ' data-contacthub-redirect="' . esc_attr( $redirect_url ) . '" data-contacthub-delay="' . esc_attr( $delay ) . '"' : '';
+		$html = '<div class="contacthub-registration-notice is-' . esc_attr( $type ) . '" role="' . ( 'error' === $type ? 'alert' : 'status' ) . '"' . $attributes . '><p class="contacthub-notice-message">' . nl2br( esc_html( $notice['message'] ?? '' ) ) . '</p>';
+		if ( ! empty( $notice['confirmation_pending'] ) && ! empty( $notice['pending_token'] ) && is_email( $notice['pending_email'] ?? '' ) ) {
+			$token = sanitize_text_field( $notice['pending_token'] );
+			$email = sanitize_email( $notice['pending_email'] );
+			$html .= '<div class="contacthub-confirmation-pending"><h3>' . esc_html__( 'Please confirm your email address', 'contacthub' ) . '</h3>';
+			$html .= '<p>' . sprintf( esc_html__( 'We sent the confirmation email to %s.', 'contacthub' ), '<strong>' . esc_html( $email ) . '</strong>' ) . '</p>';
+			$html .= '<p>' . esc_html__( 'If you cannot find the message, please also check your spam folder.', 'contacthub' ) . '</p>';
+			$html .= '<div class="contacthub-pending-actions"><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contacthub_pending_resend"><input type="hidden" name="pending_token" value="' . esc_attr( $token ) . '"><button type="submit" class="contacthub-pending-button">' . esc_html__( 'Send confirmation email again', 'contacthub' ) . '</button></form>';
+			$html .= '<details class="contacthub-pending-correction"><summary>' . esc_html__( 'Correct email address', 'contacthub' ) . '</summary><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contacthub_pending_email"><input type="hidden" name="pending_token" value="' . esc_attr( $token ) . '"><label><span>' . esc_html__( 'Email address', 'contacthub' ) . '</span><input type="email" name="new_email" value="' . esc_attr( $email ) . '" autocomplete="email" required></label><button type="submit" class="contacthub-pending-button">' . esc_html__( 'Save and send again', 'contacthub' ) . '</button></form></details></div></div>';
+		}
+		return $html . '</div>';
 	}
 
 	private static function form_section_account() {
@@ -1169,7 +1344,8 @@ The link is valid for 24 hours.', 'contacthub' ),
 	}
 
 	private static function vat_input( $required ) {
-		echo '<label class="contacthub-vat-field"><span>' . esc_html__( 'VAT ID', 'contacthub' ) . ( $required ? ' <em>*</em>' : '' ) . '</span><span class="contacthub-vat-controls"><input type="text" name="vat_id" autocomplete="off"' . ( $required ? ' required' : '' ) . '><button type="button" class="contacthub-vat-button">' . esc_html__( 'Validate VAT ID', 'contacthub' ) . '</button></span><span class="contacthub-vat-message" aria-live="polite"></span></label>';
+		$button_label = __( 'Validate VAT ID', 'contacthub' );
+		echo '<label class="contacthub-vat-field"><span>' . esc_html__( 'VAT ID', 'contacthub' ) . ( $required ? ' <em>*</em>' : '' ) . '</span><span class="contacthub-vat-controls"><input type="text" name="vat_id" autocomplete="off"' . ( $required ? ' required' : '' ) . '><button type="button" class="contacthub-vat-button" data-default-label="' . esc_attr( $button_label ) . '" data-success-label="' . esc_attr__( 'VAT ID successfully validated', 'contacthub' ) . '">' . esc_html( $button_label ) . '</button></span><span class="contacthub-vat-message" aria-live="polite"></span></label>';
 	}
 
 	private static function country_select( $name, $label, $countries, $required ) {
@@ -1320,8 +1496,21 @@ The link is valid for 24 hours.', 'contacthub' ),
 			update_user_meta( $user_id, 'contacthub_vat_verified_at', current_time( 'mysql' ) );
 		}
 		$needs_confirmation = ! empty( $settings['require_email_verify'] ) || ! empty( $data['marketing_consent'] );
+		$management_token = '';
+		$confirmation_sent = true;
 		if ( $needs_confirmation ) {
-			self::issue_confirmation( $user_id );
+			$management_token = self::create_pending_management(
+				array(
+					'kind'     => 'registration',
+					'user_id'  => $user_id,
+					'email'    => $data['email'],
+					'redirect' => $settings['success_page_id'] ? get_permalink( $settings['success_page_id'] ) : $redirect,
+				)
+			);
+			$management_key = hash( 'sha256', $management_token );
+			update_user_meta( $user_id, 'contacthub_pending_management_key', $management_key );
+			update_user_meta( $user_id, 'contacthub_pending_management_expires', time() + DAY_IN_SECONDS );
+			$confirmation_sent = self::issue_confirmation( $user_id );
 		} else {
 			update_user_meta( $user_id, 'contacthub_email_verified', 1 );
 			if ( $stored ) ContactHub_Store::update_contact( $stored, array( 'meta' => array( 'email_confirmed' => 1, 'email_confirmed_at' => current_time( 'mysql' ) ) ) );
@@ -1330,7 +1519,11 @@ The link is valid for 24 hours.', 'contacthub' ),
 		do_action( 'business' === $type ? 'contacthub/business_registration_created' : 'contacthub/customer_registration_created', $user_id, $data );
 
 		$success_url = $settings['success_page_id'] ? get_permalink( $settings['success_page_id'] ) : $redirect;
-		self::redirect_notice( $success_url, 'success', 'business' === $type ? $settings['submission_message'] : $settings['customer_submission_message'] );
+		$extra = $management_token ? self::pending_notice_extra( $management_token, $data['email'], 'registration' ) : array();
+		if ( ! $confirmation_sent ) {
+			self::redirect_notice( $success_url, 'error', __( 'The confirmation email could not be sent. Please try again later.', 'contacthub' ), $extra );
+		}
+		self::redirect_notice( $success_url, 'success', 'business' === $type ? $settings['submission_message'] : $settings['customer_submission_message'], $extra );
 	}
 
 	private static function registration_data() {
@@ -1525,6 +1718,10 @@ The link is valid for 24 hours.', 'contacthub' ),
 		}
 		delete_user_meta( $user_id, 'contacthub_verification_token' );
 		delete_user_meta( $user_id, 'contacthub_verification_expires' );
+		$management_key = sanitize_key( get_user_meta( $user_id, 'contacthub_pending_management_key', true ) );
+		if ( $management_key ) delete_transient( 'contacthub_pending_confirmation_' . $management_key );
+		delete_user_meta( $user_id, 'contacthub_pending_management_key' );
+		delete_user_meta( $user_id, 'contacthub_pending_management_expires' );
 		if ( 'pending' === get_user_meta( $user_id, 'contacthub_marketing_status', true ) ) {
 			update_user_meta( $user_id, 'contacthub_marketing_status', 'confirmed' );
 			update_user_meta( $user_id, 'contacthub_marketing_confirmed_at', current_time( 'mysql', true ) );

@@ -326,8 +326,24 @@ final class ContactHub_Plugin {
 		$core       = array( 'first_name', 'last_name', 'email' );
 		$meta       = array( 'anrede', 'titel_vorangestellt', 'titel_nachgestellt', 'berufsbezeichnung', 'primary_phone' );
 
-		if ( ! $contact_id || ( ! in_array( $field, $core, true ) && ! in_array( $field, $meta, true ) && 'uid' !== $field ) ) {
+		if ( ! $contact_id || ( ! in_array( $field, $core, true ) && ! in_array( $field, $meta, true ) && ! in_array( $field, array( 'uid', 'company' ), true ) ) ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid person field.', 'contacthub' ) ), 400 );
+		}
+		if ( 'company' === $field ) {
+			if ( '' === trim( $value ) ) {
+				wp_send_json_error( array( 'message' => __( 'Please enter a company name.', 'contacthub' ) ), 400 );
+			}
+			if ( ! self::companies_available() ) {
+				wp_send_json_error( array( 'message' => __( 'Company management is unavailable because Groundhogg Companies is not active.', 'contacthub' ) ), 503 );
+			}
+			$result = self::assign_contact_company( $contact_id, 0, $value, '' );
+			if ( is_wp_error( $result ) ) {
+				wp_send_json_error( array( 'message' => $result->get_error_message() ), 500 );
+			}
+			$company_map = self::contact_company_map();
+			$assigned = isset( $company_map[ $contact_id ] ) ? $company_map[ $contact_id ] : array();
+			$names = array_values( array_filter( array_map( static function ( $company ) { return self::value( $company, array( 'name', 'company_name', 'get_name' ) ); }, $assigned ) ) );
+			wp_send_json_success( array( 'value' => $value, 'display' => $names ? implode( ', ', $names ) : $value ) );
 		}
 		if ( 'uid' === $field ) {
 			$value = self::normalize_vat( $value );
@@ -1717,7 +1733,7 @@ final class ContactHub_Plugin {
 			self::phone_field( __( 'Phone', 'contacthub' ), self::meta( $contact, array( 'primary_phone' ) ), 'primary_phone', $id, 'contact' );
 			self::editable_address_summary( __( 'Address', 'contacthub' ), $primary_address );
 			self::contact_editable_field( __( 'Position / Job title', 'contacthub' ), self::meta( $contact, array( 'berufsbezeichnung', 'job_title', 'position' ) ), 'berufsbezeichnung', $id );
-			self::field( __( 'Company', 'contacthub' ), implode( ', ', $company_names ) );
+			self::contact_editable_field( __( 'Company', 'contacthub' ), implode( ', ', $company_names ), 'company', $id );
 			if ( $company_function ) self::field( __( 'Function in company', 'contacthub' ), $company_function );
 			if ( $user ) self::uid_field( __( 'VAT ID', 'contacthub' ), $uid, $id, 'contact', $uid_verified );
 		}
