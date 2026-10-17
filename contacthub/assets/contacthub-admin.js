@@ -122,6 +122,7 @@
 
 	document.addEventListener('change', function (event) {
 		if (event.target.classList.contains('contacthub-salutation-select')) saveSalutation(event.target);
+		if (event.target.classList.contains('contacthub-new-salutation')) event.target.dataset.autoAssigned = '0';
 		if (event.target.classList.contains('contacthub-consent-decision')) updateConsentConfirmation(event.target.closest('.contacthub-marketing'));
 		if (event.target.classList.contains('contacthub-select-all')) {
 			document.querySelectorAll('.contacthub-person-select').forEach(function (checkbox) { checkbox.checked = event.target.checked; });
@@ -133,14 +134,6 @@
 	document.addEventListener('input', function (event) {
 		if (!event.target.classList.contains('contacthub-new-first-name')) return;
 		updateNewPersonSalutationSuggestion(event.target.closest('.contacthub-new-person-modal'));
-	});
-
-	document.addEventListener('click', function (event) {
-		var suggestion = event.target.closest('.contacthub-new-salutation-suggestion');
-		if (!suggestion) return;
-		var modal = suggestion.closest('.contacthub-new-person-modal');
-		modal.querySelector('.contacthub-new-salutation').value = suggestion.dataset.value;
-		suggestion.hidden = true;
 	});
 
 	document.addEventListener('click', function (event) {
@@ -302,6 +295,10 @@
 					if (mailLink) mailLink.href = 'mailto:' + result.data.value;
 				}
 				if (field.dataset.field === 'uid') setVatCheck(field, !!result.data.verified);
+				if (field.dataset.field === 'first_name' && result.data.salutation) {
+					var salutation = document.querySelector('.contacthub-salutation-field[data-contact="' + field.dataset.contact + '"] .contacthub-salutation-select');
+					if (salutation && !salutation.value) salutation.value = result.data.salutation;
+				}
 				stopEditing(field, true);
 				message.textContent = tr('saved', 'Saved.');
 				message.classList.add('is-success');
@@ -485,16 +482,16 @@
 
 	function updateNewPersonSalutationSuggestion(modal) {
 		if (!modal) return;
-		var button = modal.querySelector('.contacthub-new-salutation-suggestion');
 		var input = modal.querySelector('.contacthub-new-first-name');
-		if (!button || !input) return;
+		var select = modal.querySelector('.contacthub-new-salutation');
+		if (!select || !input) return;
 		var first = String(input.value || '').trim().split(/[\s-]+/)[0].toLocaleLowerCase();
 		var suggestions = CONTACTHUB_CONFIG.salutationSuggestions || {};
 		var value = suggestions[first] || '';
-		var labels = CONTACTHUB_CONFIG.salutationLabels || {};
-		button.hidden = !value;
-		button.dataset.value = value;
-		button.textContent = value ? format(tr('salutationSuggestion', 'Suggestion: %s'), labels[value] || value) : '';
+		if (!select.value || select.dataset.autoAssigned === '1') {
+			select.value = value;
+			select.dataset.autoAssigned = value ? '1' : '0';
+		}
 	}
 
 	function closeNewPerson() {

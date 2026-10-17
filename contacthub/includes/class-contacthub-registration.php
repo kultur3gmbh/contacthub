@@ -298,7 +298,7 @@ The link is valid for 24 hours.', 'contacthub' ),
 		echo '</nav>';
 		if ( 'salutations' !== $current ) { do_action( 'contacthub_render_misc_settings_section_' . $current ); return; }
 		$rows = ContactHub_Store::salutations();
-		echo '<section class="contacthub-card contacthub-settings-card"><h2>' . esc_html__( 'Salutation library', 'contacthub' ) . '</h2><p>' . esc_html__( 'Confirmed assignments can suggest a salutation for the same first name in future. A suggestion is never applied automatically.', 'contacthub' ) . '</p>';
+		echo '<section class="contacthub-card contacthub-settings-card"><h2>' . esc_html__( 'Salutation library', 'contacthub' ) . '</h2><p>' . esc_html__( 'Saved assignments are applied automatically when the same first name is entered again. A manually selected salutation updates the library.', 'contacthub' ) . '</p>';
 		$bulk = get_transient( 'contacthub_salutation_bulk_' . get_current_user_id() );
 		if ( is_array( $bulk ) ) { delete_transient( 'contacthub_salutation_bulk_' . get_current_user_id() ); echo '<div class="notice notice-info inline"><p>' . esc_html( $bulk['applied'] ? sprintf( __( '%d missing salutations were assigned.', 'contacthub' ), absint( $bulk['count'] ) ) : sprintf( __( '%d contacts can be assigned from the library. Confirm to apply the changes.', 'contacthub' ), absint( $bulk['count'] ) ) ) . '</p></div>'; }
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="contacthub-settings-grid"><input type="hidden" name="action" value="contacthub_salutation_dictionary"><input type="hidden" name="operation" value="save">'; wp_nonce_field( 'contacthub_salutation_dictionary' );
@@ -1352,6 +1352,9 @@ The link is valid for 24 hours.', 'contacthub' ),
 		$data['shipping_same'] = empty( $_POST['shipping_different'] ) ? 1 : 0;
 		$data['salutation'] = isset( $_POST['salutation'] ) ? sanitize_key( wp_unslash( $_POST['salutation'] ) ) : '';
 		if ( ! in_array( $data['salutation'], array( '', 'mr', 'ms', 'family', 'neutral' ), true ) ) $data['salutation'] = '';
+		if ( '' === $data['salutation'] && '' !== $data['first_name'] ) {
+			$data['salutation'] = ContactHub_Store::suggested_salutation( $data['first_name'] );
+		}
 		$data['requested_role'] = isset( $_POST['requested_role'] ) ? sanitize_key( wp_unslash( $_POST['requested_role'] ) ) : '';
 		$data['privacy_accepted'] = empty( $_POST['privacy_accepted'] ) ? 0 : 1;
 		$data['terms_accepted'] = empty( $_POST['terms_accepted'] ) ? 0 : 1;

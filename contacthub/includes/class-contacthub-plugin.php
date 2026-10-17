@@ -364,6 +364,14 @@ final class ContactHub_Plugin {
 			wp_send_json_error( array( 'message' => __( 'Please select a valid salutation.', 'contacthub' ) ), 400 );
 		}
 
+		$current_contact = self::contact( $contact_id );
+		$current_first_name = $current_contact ? self::value( $current_contact, array( 'first_name', 'get_first_name' ) ) : '';
+		$current_salutation = $current_contact ? sanitize_key( self::meta( $current_contact, array( 'anrede', 'salutation' ) ) ) : '';
+		$automatic_salutation = '';
+		if ( 'first_name' === $field && '' === $current_salutation ) {
+			$automatic_salutation = ContactHub_Store::suggested_salutation( $value );
+		}
+
 		$input = array( 'id' => $contact_id );
 		if ( in_array( $field, $core, true ) ) {
 			$input[ $field ] = $value;
@@ -372,22 +380,27 @@ final class ContactHub_Plugin {
 		}
 		if ( ContactHub_Store::standalone() ) {
 			$standalone_input = in_array( $field, $core, true ) ? array( $field => $value ) : array( 'meta' => array( $field => $value ) );
+			if ( $automatic_salutation ) {
+				$standalone_input['meta'] = array( 'anrede' => $automatic_salutation );
+			}
 			$result = ContactHub_Store::update_contact( $contact_id, $standalone_input );
 		} else {
+			if ( $automatic_salutation ) {
+				$input['meta'] = array( 'anrede' => $automatic_salutation );
+			}
 			$result = self::execute_ability( 'groundhogg/update-contact', $input );
 		}
 		if ( false === $result ) {
 			wp_send_json_error( array( 'message' => __( 'Groundhogg could not save the change.', 'contacthub' ) ), 500 );
 		}
-		if ( in_array( $field, array( 'anrede', 'first_name' ), true ) ) {
-			$contact = self::contact( $contact_id );
-			$first_name = $contact ? self::value( $contact, array( 'first_name', 'get_first_name' ) ) : '';
-			$salutation = $contact ? self::meta( $contact, array( 'anrede', 'salutation' ) ) : '';
-			if ( $first_name && in_array( $salutation, array( 'mr', 'ms', 'family', 'neutral' ), true ) ) ContactHub_Store::learn_salutation( $first_name, $salutation, 'confirmed' );
+		$library_first_name = 'first_name' === $field ? $value : $current_first_name;
+		$library_salutation = 'anrede' === $field ? $value : ( $automatic_salutation ?: $current_salutation );
+		if ( $library_first_name && in_array( $library_salutation, array( 'mr', 'ms', 'family', 'neutral' ), true ) ) {
+			ContactHub_Store::learn_salutation( $library_first_name, $library_salutation, 'confirmed' );
 		}
 
 		$display = 'primary_phone' === $field ? self::format_phone( $value ) : ( 'anrede' === $field ? self::salutation_label( $value ) : ( '' !== $value ? $value : '—' ) );
-		wp_send_json_success( array( 'value' => $value, 'display' => $display ) );
+		wp_send_json_success( array( 'value' => $value, 'display' => $display, 'salutation' => $automatic_salutation ) );
 	}
 
 	public static function assign_missing_salutations() {
@@ -740,6 +753,9 @@ final class ContactHub_Plugin {
 		$email = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
 		$salutation = isset( $_POST['salutation'] ) ? sanitize_key( wp_unslash( $_POST['salutation'] ) ) : '';
 		if ( ! in_array( $salutation, array( '', 'mr', 'ms', 'family', 'neutral' ), true ) ) $salutation = '';
+		if ( '' === $salutation && '' !== $first_name ) {
+			$salutation = ContactHub_Store::suggested_salutation( $first_name );
+		}
 		$company_id = isset( $_POST['company_id'] ) ? absint( $_POST['company_id'] ) : 0;
 		$company_name = isset( $_POST['company_name'] ) ? sanitize_text_field( wp_unslash( $_POST['company_name'] ) ) : '';
 		$position = isset( $_POST['company_position'] ) ? sanitize_text_field( wp_unslash( $_POST['company_position'] ) ) : '';
@@ -1798,7 +1814,6 @@ final class ContactHub_Plugin {
 		}
 
 		echo '<table class="widefat striped contacthub-table contacthub-companies-table"><thead><tr><th>' . esc_html__( 'Company', 'contacthub' ) . '</th>';
-		if ( ContactHub_Trash::available() ) echo '<th class="contacthub-trash-column"><span class="screen-reader-text">' . esc_html__( 'Trash', 'contacthub' ) . '</span></th>';
 		echo '<th>' . esc_html__( 'Assigned people', 'contacthub' ) . '</th><th>' . esc_html__( 'Website', 'contacthub' ) . '</th><th>' . esc_html__( 'Phone', 'contacthub' ) . '</th><th>' . esc_html__( 'Location', 'contacthub' ) . '</th></tr></thead><tbody>';
 		foreach ( $companies as $company ) {
 			$id = self::value( $company, array( 'get_id', 'ID', 'id' ) );
@@ -1821,8 +1836,9 @@ final class ContactHub_Plugin {
 					? '<a href="' . esc_url( admin_url( 'admin.php?page=' . self::people_page_slug() . '&person=' . $contact_id ) ) . '">' . esc_html( $name ) . '</a>'
 					: esc_html( $name );
 			}
-			echo '<tr><td><strong>' . esc_html( self::value( $company, array( 'get_name', 'name', 'company_name' ), __( 'Unnamed company', 'contacthub' ) ) ) . '</strong><div class="row-actions contacthub-row-actions"><span class="edit"><a href="' . esc_url( $edit_url ) . '">' . esc_html__( 'Edit', 'contacthub' ) . '</a> | </span><span class="view"><a href="' . esc_url( $view_url ) . '">' . esc_html__( 'View', 'contacthub' ) . '</a></span></div></td>';
-			self::render_trash_link( 'companies', $id, true );
+			echo '<tr><td><strong>' . esc_html( self::value( $company, array( 'get_name', 'name', 'company_name' ), __( 'Unnamed company', 'contacthub' ) ) ) . '</strong><div class="contacthub-person-actions contacthub-company-actions"><a class="contacthub-person-row-action" href="' . esc_url( $edit_url ) . '" aria-label="' . esc_attr__( 'Edit company', 'contacthub' ) . '" title="' . esc_attr__( 'Edit company', 'contacthub' ) . '"><span class="dashicons dashicons-edit" aria-hidden="true"></span></a><a class="contacthub-person-row-action" href="' . esc_url( $view_url ) . '" aria-label="' . esc_attr__( 'View company', 'contacthub' ) . '" title="' . esc_attr__( 'View company', 'contacthub' ) . '"><span class="dashicons dashicons-visibility" aria-hidden="true"></span></a>';
+			if ( ContactHub_Trash::available() ) echo self::trash_button_html( 'companies', $id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper escapes all dynamic values.
+			echo '</div></td>';
 			echo '<td class="contacthub-company-people">' . ( $person_links ? wp_kses_post( implode( ', ', $person_links ) ) : '&mdash;' ) . '</td>';
 			echo '<td>' . esc_html( self::value( $company, array( 'domain', 'website', 'get_website' ), '—' ) ) . '</td>';
 			echo '<td>' . esc_html( self::format_phone( self::value( $company, array( 'phone', 'get_phone' ) ) ) ) . '</td>';
@@ -2825,7 +2841,7 @@ final class ContactHub_Plugin {
 		echo '<h2 id="contacthub-new-person-title">' . esc_html__( 'Create new person', 'contacthub' ) . '</h2><p>' . esc_html__( 'The person is created in the selected data source with the marketing status “Unconfirmed”.', 'contacthub' ) . '</p>';
 		echo __( '<label>First name<input type="text" class="contacthub-new-first-name" autocomplete="given-name"></label>', 'contacthub' );
 		echo __( '<label>Last name<input type="text" class="contacthub-new-last-name" autocomplete="family-name"></label>', 'contacthub' );
-		echo '<label>' . esc_html__( 'Salutation', 'contacthub' ) . '<select class="contacthub-new-salutation"><option value="">' . esc_html__( '--- Please select ---', 'contacthub' ) . '</option><option value="neutral">' . esc_html__( 'Neutral', 'contacthub' ) . '</option><option value="mr">' . esc_html__( 'Mr', 'contacthub' ) . '</option><option value="ms">' . esc_html__( 'Ms', 'contacthub' ) . '</option><option value="family">' . esc_html__( 'Family', 'contacthub' ) . '</option></select><button type="button" class="button-link contacthub-new-salutation-suggestion" hidden></button></label>';
+		echo '<label>' . esc_html__( 'Salutation', 'contacthub' ) . '<select class="contacthub-new-salutation"><option value="">' . esc_html__( '--- Please select ---', 'contacthub' ) . '</option><option value="neutral">' . esc_html__( 'Neutral', 'contacthub' ) . '</option><option value="mr">' . esc_html__( 'Mr', 'contacthub' ) . '</option><option value="ms">' . esc_html__( 'Ms', 'contacthub' ) . '</option><option value="family">' . esc_html__( 'Family', 'contacthub' ) . '</option></select></label>';
 		echo __( '<label>Email address<input type="email" class="contacthub-new-email" autocomplete="email" required></label>', 'contacthub' );
 		if ( self::companies_available() ) {
 			echo '<fieldset class="contacthub-new-company-fields"><legend>' . esc_html__( 'Company assignment (optional)', 'contacthub' ) . '</legend><p class="description">' . esc_html__( 'Select an existing company by typing its name, or enter a new company name. Similar existing names are suggested to avoid duplicates.', 'contacthub' ) . '</p>';

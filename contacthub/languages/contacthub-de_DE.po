@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactHub 0.15.5\n"
+"Project-Id-Version: ContactHub 0.16.0\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-16 09:00+0200\n"
 "PO-Revision-Date: 2026-10-16 23:50+0200\n"
@@ -891,8 +891,8 @@ msgid "Confirmations"
 msgstr "Bestätigungen"
 
 #: contacthub/includes/class-contacthub-registration.php:301
-msgid "Confirmed assignments can suggest a salutation for the same first name in future. A suggestion is never applied automatically."
-msgstr "Bestätigt assignments can suggest a salutation for the same first name in future. A suggestion is never applied automatically."
+msgid "Saved assignments are applied automatically when the same first name is entered again. A manually selected salutation updates the library."
+msgstr "Gespeicherte Zuordnungen werden automatisch angewendet, wenn derselbe Vorname erneut eingegeben wird. Eine manuell gewählte Anrede aktualisiert die Bibliothek."
 
 #: contacthub/includes/class-contacthub-registration.php:310
 msgid "Confirmed selection"

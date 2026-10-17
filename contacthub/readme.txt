@@ -2,12 +2,17 @@
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.15.5
+Stable tag: 0.16.0
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a free WooCommerce customer overview, optional Groundhogg compatibility, and a stable extension API for ContactHub Plus.
 
 == Changelog ==
+
+= 0.16.0 =
+* Automatically applies learned salutation assignments when known first names are entered, while preserving every explicit selection and extending the library from confirmed assignments.
+* Groups the company-list edit, view, and trash controls into one compact and accessible action set.
+* Adds responsive shared administration styles for the ContactHub Plus form-field mapper without making Basic depend on Plus.
 
 = 0.15.5 =
 * Synchronized ContactHub Basic with ContactHub Plus and ContactHub Checkout 0.15.5 while keeping cart and checkout presentation outside the Basic plugin.
