@@ -2,7 +2,7 @@
 /**
  * Plugin Name: ContactHub Basic – User-Friendly CRM for WordPress
  * Description: Free contact and company management for WordPress with a complete WooCommerce customer overview and optional Groundhogg compatibility.
- * Version: 0.15.3
+ * Version: 0.15.4
  * Author: Kultur3 GmbH
  * Text Domain: contacthub
  * Domain Path: /languages
@@ -12,8 +12,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CONTACTHUB_VERSION', '0.15.3' );
-define( 'CONTACTHUB_ASSET_VERSION', '0.15.3-20261017-1' );
+define( 'CONTACTHUB_VERSION', '0.15.4' );
+define( 'CONTACTHUB_ASSET_VERSION', '0.15.4-20261017-1' );
 define( 'CONTACTHUB_FILE', __FILE__ );
 define( 'CONTACTHUB_PATH', plugin_dir_path( __FILE__ ) );
 define( 'CONTACTHUB_URL', plugin_dir_url( __FILE__ ) );
