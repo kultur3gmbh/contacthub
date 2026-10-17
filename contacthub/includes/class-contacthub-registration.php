@@ -490,7 +490,6 @@ The link is valid for 24 hours.', 'contacthub' ),
 			self::render_woocommerce_import();
 		}
 		self::render_newsletter_plugin_migration();
-		self::render_duplicate_preview();
 		do_action( 'contacthub_render_migration_tools' );
 	}
 
@@ -621,7 +620,7 @@ The link is valid for 24 hours.', 'contacthub' ),
 		return preg_match( '/^\d{4}-\d{2}-\d{2}$/', $date ) ? $date : current_time( 'Y-m-d' );
 	}
 
-	private static function render_duplicate_preview() {
+	public static function render_duplicate_preview() {
 		if ( ! ContactHub_Store::ready() ) return;
 		$candidates = ContactHub_Store::duplicate_candidates( 50 );
 		echo '<section class="contacthub-card contacthub-settings-card"><h2>' . esc_html__( 'Duplicate review', 'contacthub' ) . '</h2><p>' . esc_html__( 'ContactHub lists likely duplicates without changing them. Use the merge tool below to select a primary record and confirm every conflict.', 'contacthub' ) . '</p>';
@@ -633,8 +632,8 @@ The link is valid for 24 hours.', 'contacthub' ),
 		foreach ( $candidates as $pair ) {
 			$left = trim( $pair['left_first_name'] . ' ' . $pair['left_last_name'] );
 			$right = trim( $pair['right_first_name'] . ' ' . $pair['right_last_name'] );
-			$url_left = admin_url( 'admin.php?page=contacthub-person&id=' . absint( $pair['left_id'] ) );
-			$url_right = admin_url( 'admin.php?page=contacthub-person&id=' . absint( $pair['right_id'] ) );
+			$url_left = admin_url( 'admin.php?page=contacthub&person=' . absint( $pair['left_id'] ) );
+			$url_right = admin_url( 'admin.php?page=contacthub&person=' . absint( $pair['right_id'] ) );
 			echo '<tr><td>' . esc_html( ( $left ?: __( 'Unnamed contact', 'contacthub' ) ) . ' ↔ ' . ( $right ?: __( 'Unnamed contact', 'contacthub' ) ) ) . '</td><td>' . esc_html( $pair['reason'] ) . '</td><td><a href="' . esc_url( $url_left ) . '">' . esc_html__( 'Open first', 'contacthub' ) . '</a> · <a href="' . esc_url( $url_right ) . '">' . esc_html__( 'Open second', 'contacthub' ) . '</a></td></tr>';
 		}
 		echo '</tbody></table></section>';

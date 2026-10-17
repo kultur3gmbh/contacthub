@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactHub 0.17.0\n"
+"Project-Id-Version: ContactHub 0.17.1\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-17 18:00+0200\n"
 "PO-Revision-Date: 2026-10-16 09:00+0200\n"
@@ -3762,4 +3762,98 @@ msgstr ""
 
 #: contacthub/includes/class-contacthub-data-tools.php
 msgid "ContactHub lists likely duplicates without changing them. Use the merge tool below to select a primary record and confirm every conflict."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Duplicates"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Import vCard contacts"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Import Apple Contacts and other vCard/VCF files. ContactHub shows a preview first, matches existing people without deleting data, and never changes the source file."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Last vCard import"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Update with non-empty vCard values"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "vCard file"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "%d contact was found. No data has been changed yet."
+msgid_plural "%d contacts were found. No data has been changed yet."
+msgstr[0] ""
+msgstr[1] ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Optional tags for all imported contacts"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Tags separated by commas"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "I checked the vCard preview and want to start the non-destructive import."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Select a vCard file no larger than 5 MB."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "No readable contacts were found in the vCard file."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Confirm the vCard preview before importing."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "The vCard preview expired. Upload the file again."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Contact %1$d: %2$s"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "vCard import completed: %1$d created, %2$d updated, %3$d skipped, %4$d errors."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Groundhogg requires an email address for vCard imports."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Resolve and complete field values"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Choose an existing value or edit the final value directly before merging."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Available values"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Final value"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Neutral / not specified"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-store.php
+msgid "Enter a valid final email address before merging."
 msgstr ""

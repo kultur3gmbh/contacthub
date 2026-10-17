@@ -949,6 +949,12 @@
 	}
 
 	document.addEventListener('change', function (event) {
+		if (event.target.matches('[data-contacthub-merge-field]')) {
+			var mergeField = event.target.getAttribute('data-contacthub-merge-field');
+			var mergeTarget = document.querySelector('[data-contacthub-merge-target="' + mergeField + '"]');
+			if (mergeTarget) mergeTarget.value = event.target.getAttribute('data-contacthub-merge-value') || '';
+			return;
+		}
 		if (event.target.matches('.contacthub-settings-color-field input[type="color"]')) {
 			var colorValue = event.target.closest('.contacthub-settings-color-field').querySelector('.contacthub-settings-color-value');
 			if (colorValue) colorValue.textContent = event.target.value;

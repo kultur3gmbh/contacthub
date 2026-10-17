@@ -45,6 +45,7 @@
 .contacthub-master-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .contacthub-settings-subtabs{margin:18px 0}
 .contacthub-settings-grid input,.contacthub-settings-grid select{min-height:40px}
+.contacthub-merge-table th:first-child{width:180px}.contacthub-merge-table th:last-child{width:34%}.contacthub-merge-resolved{width:100%;max-width:none}.contacthub-merge-table select.contacthub-merge-resolved{min-height:36px}@media(max-width:782px){.contacthub-merge-table,.contacthub-merge-table tbody,.contacthub-merge-table tr,.contacthub-merge-table th,.contacthub-merge-table td{display:block;width:100%!important}.contacthub-merge-table tr{padding:10px 0}.contacthub-merge-table td{border:0}}
 .contacthub-salutation-bulk{margin-top:18px;padding-top:16px;border-top:1px solid #dcdcde}
 .contacthub-newsletter-topbar{display:grid!important;grid-template-columns:minmax(0,1.65fr) minmax(340px,.85fr);gap:30px;align-items:start;margin-bottom:18px}
 .contacthub-newsletter-meta,.contacthub-newsletter-template-sidebar{min-width:0}

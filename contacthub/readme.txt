@@ -2,12 +2,17 @@
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.17.0
+Stable tag: 0.17.1
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a free WooCommerce customer overview, optional Groundhogg compatibility, and a stable extension API for ContactHub Plus.
 
 == Changelog ==
+
+= 0.17.1 =
+* Moves duplicate review and merging into a dedicated Settings tab and corrects links to person details.
+* Allows administrators to complete or correct the final person or company fields before confirming a duplicate merge.
+* Adds previewed, non-destructive vCard/VCF imports for Apple Contacts and other vCard sources, with duplicate handling and optional tags.
 
 = 0.17.0 =
 * Adds previewed CSV imports for people and companies with flexible field mapping, duplicate handling, and direct Groundhogg imports when Groundhogg is the active data source.

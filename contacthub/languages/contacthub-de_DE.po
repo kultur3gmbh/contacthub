@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactHub 0.17.0\n"
+"Project-Id-Version: ContactHub 0.17.1\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-16 09:00+0200\n"
 "PO-Revision-Date: 2026-10-17 18:00+0200\n"
@@ -3763,3 +3763,97 @@ msgstr "Zentrale Bibliothek"
 #: contacthub/includes/class-contacthub-data-tools.php
 msgid "ContactHub lists likely duplicates without changing them. Use the merge tool below to select a primary record and confirm every conflict."
 msgstr "ContactHub zeigt wahrscheinliche Duplikate an, ohne sie zu verändern. Verwenden Sie unten die Zusammenführung, um einen Hauptdatensatz auszuwählen und jeden Konflikt zu bestätigen."
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Duplicates"
+msgstr "Dubletten"
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Import vCard contacts"
+msgstr "vCard-Kontakte importieren"
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Import Apple Contacts and other vCard/VCF files. ContactHub shows a preview first, matches existing people without deleting data, and never changes the source file."
+msgstr "Importieren Sie Apple-Kontakte und andere vCard-/VCF-Dateien. ContactHub zeigt zuerst eine Vorschau, gleicht bestehende Personen ab, ohne Daten zu löschen, und verändert die Quelldatei nie."
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Last vCard import"
+msgstr "Letzter vCard-Import"
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Update with non-empty vCard values"
+msgstr "Mit nicht leeren vCard-Werten aktualisieren"
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "vCard file"
+msgstr "vCard-Datei"
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "%d contact was found. No data has been changed yet."
+msgid_plural "%d contacts were found. No data has been changed yet."
+msgstr[0] "%d Kontakt wurde gefunden. Es wurden noch keine Daten geändert."
+msgstr[1] "%d Kontakte wurden gefunden. Es wurden noch keine Daten geändert."
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Optional tags for all imported contacts"
+msgstr "Optionale Tags für alle importierten Kontakte"
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Tags separated by commas"
+msgstr "Tags durch Kommas getrennt"
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "I checked the vCard preview and want to start the non-destructive import."
+msgstr "Ich habe die vCard-Vorschau geprüft und möchte den nicht-destruktiven Import starten."
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Select a vCard file no larger than 5 MB."
+msgstr "Wählen Sie eine vCard-Datei mit höchstens 5 MB aus."
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "No readable contacts were found in the vCard file."
+msgstr "In der vCard-Datei wurden keine lesbaren Kontakte gefunden."
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Confirm the vCard preview before importing."
+msgstr "Bestätigen Sie vor dem Import die vCard-Vorschau."
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "The vCard preview expired. Upload the file again."
+msgstr "Die vCard-Vorschau ist abgelaufen. Laden Sie die Datei erneut hoch."
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Contact %1$d: %2$s"
+msgstr "Kontakt %1$d: %2$s"
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "vCard import completed: %1$d created, %2$d updated, %3$d skipped, %4$d errors."
+msgstr "vCard-Import abgeschlossen: %1$d erstellt, %2$d aktualisiert, %3$d übersprungen, %4$d Fehler."
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Groundhogg requires an email address for vCard imports."
+msgstr "Groundhogg benötigt für vCard-Importe eine E-Mail-Adresse."
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Resolve and complete field values"
+msgstr "Feldwerte auswählen und ergänzen"
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Choose an existing value or edit the final value directly before merging."
+msgstr "Wählen Sie einen vorhandenen Wert oder bearbeiten Sie den endgültigen Wert vor dem Zusammenführen direkt."
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Available values"
+msgstr "Verfügbare Werte"
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Final value"
+msgstr "Endgültiger Wert"
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Neutral / not specified"
+msgstr "Neutral / nicht angegeben"
+
+#: contacthub/includes/class-contacthub-store.php
+msgid "Enter a valid final email address before merging."
+msgstr "Geben Sie vor dem Zusammenführen eine gültige endgültige E-Mail-Adresse ein."

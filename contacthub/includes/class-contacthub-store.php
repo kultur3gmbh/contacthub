@@ -60,6 +60,14 @@ final class ContactHub_Store {
 		return $row ? self::hydrate_contact( $row ) : false;
 	}
 
+	public static function contact_by_meta( $key, $value, $include_deleted = false ) {
+		global $wpdb;
+		$tables = ContactHub_Schema::table_names();
+		$state = $include_deleted ? '' : ' AND c.deleted_at IS NULL';
+		$row = $wpdb->get_row( $wpdb->prepare( "SELECT c.* FROM `{$tables['contacts']}` c INNER JOIN `{$tables['contactmeta']}` m ON m.contact_id=c.id WHERE m.meta_key=%s AND m.meta_value=%s{$state} ORDER BY c.id ASC LIMIT 1", sanitize_key( $key ), maybe_serialize( $value ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table names.
+		return $row ? self::hydrate_contact( $row ) : false;
+	}
+
 	public static function duplicate_candidates( $limit = 50 ) {
 		global $wpdb;
 		$tables = ContactHub_Schema::table_names();
@@ -401,13 +409,19 @@ final class ContactHub_Store {
 	 * External systems are deliberately never called from this method. All
 	 * relationships and history remain attached to the selected primary record.
 	 */
-	public static function merge_records( $entity, $ids, $primary_id, $choices = array() ) {
+	public static function merge_records( $entity, $ids, $primary_id, $choices = array(), $resolved = array() ) {
 		global $wpdb;
 		$entity = 'companies' === $entity ? 'companies' : 'contacts';
 		$ids = array_values( array_unique( array_filter( array_map( 'absint', (array) $ids ) ) ) );
 		$primary_id = absint( $primary_id );
 		if ( ! self::standalone() || count( $ids ) < 2 || ! in_array( $primary_id, $ids, true ) ) {
 			return new WP_Error( 'contacthub_merge_invalid', __( 'Select at least two active records and one primary record.', 'contacthub' ) );
+		}
+		if ( 'contacts' === $entity && isset( $resolved['email'] ) && '' !== trim( (string) $resolved['email'] ) && ! is_email( $resolved['email'] ) ) {
+			return new WP_Error( 'contacthub_merge_email', __( 'Enter a valid final email address before merging.', 'contacthub' ) );
+		}
+		if ( 'companies' === $entity && isset( $resolved['email'] ) && '' !== trim( (string) $resolved['email'] ) && ! is_email( $resolved['email'] ) ) {
+			return new WP_Error( 'contacthub_merge_email', __( 'Enter a valid final email address before merging.', 'contacthub' ) );
 		}
 		$tables = ContactHub_Schema::table_names();
 		$table = $tables[ $entity ];
@@ -426,10 +440,15 @@ final class ContactHub_Store {
 				foreach ( $fields as $field ) {
 					$source = absint( $choices[ $field ] ?? $primary_id );
 					if ( isset( $by_id[ $source ] ) && '' !== trim( (string) $by_id[ $source ][ $field ] ) ) $update[ $field ] = $by_id[ $source ][ $field ];
+					if ( array_key_exists( $field, $resolved ) ) $update[ $field ] = 'wp_user_id' === $field ? absint( $resolved[ $field ] ) : sanitize_text_field( $resolved[ $field ] );
 				}
 				// Release unique values on donor fragments before applying a selected value.
 				foreach ( $donors as $donor ) $wpdb->update( $table, array( 'email' => null, 'email_normalized' => null, 'wp_user_id' => null ), array( 'id' => $donor ) );
-				if ( isset( $update['email'] ) ) $update['email_normalized'] = strtolower( sanitize_email( $update['email'] ) );
+				if ( isset( $update['email'] ) ) {
+					$update['email'] = sanitize_email( $update['email'] );
+					$update['email_normalized'] = $update['email'] ? strtolower( $update['email'] ) : null;
+				}
+				if ( isset( $update['wp_user_id'] ) && ! $update['wp_user_id'] ) $update['wp_user_id'] = null;
 				$update['updated_at'] = $now;
 				if ( false === $wpdb->update( $table, $update, array( 'id' => $primary_id ) ) ) throw new Exception( 'update' );
 
@@ -438,6 +457,12 @@ final class ContactHub_Store {
 					$choice_key = 'meta__' . $meta_key;
 					$source = absint( $choices[ $choice_key ] ?? 0 );
 					if ( $source && isset( $by_id[ $source ] ) ) { $source_meta = self::contact_meta( $source ); if ( '' !== trim( (string) ( $source_meta[ $meta_key ] ?? '' ) ) ) self::set_contact_meta( $primary_id, $meta_key, $source_meta[ $meta_key ] ); }
+					if ( array_key_exists( $choice_key, $resolved ) ) {
+						$value = sanitize_text_field( $resolved[ $choice_key ] );
+						if ( 'anrede' === $meta_key && ! in_array( $value, array( '', 'mr', 'ms', 'family', 'neutral' ), true ) ) $value = '';
+						if ( 'country' === $meta_key ) $value = strtoupper( $value );
+						self::set_contact_meta( $primary_id, $meta_key, $value );
+					}
 				}
 				$status_priority = array( 'spam' => 6, 'complained' => 6, 'blocked' => 6, 'bounced' => 5, 'hard_bounce' => 5, 'unsubscribed' => 4, 'confirmed' => 3, 'unconfirmed' => 1 );
 				$best_status = ''; $best_priority = -1;
@@ -447,7 +472,7 @@ final class ContactHub_Store {
 				$aliases = array();
 				foreach ( $rows as $row ) if ( ! empty( $row['email'] ) ) $aliases[] = strtolower( sanitize_email( $row['email'] ) );
 				foreach ( $donors as $donor ) {
-					foreach ( self::contact_meta( $donor ) as $key => $value ) if ( ! isset( $primary_meta[ $key ] ) || '' === (string) $primary_meta[ $key ] ) self::set_contact_meta( $primary_id, $key, $value );
+					foreach ( self::contact_meta( $donor ) as $key => $value ) if ( ! array_key_exists( 'meta__' . $key, $resolved ) && ( ! isset( $primary_meta[ $key ] ) || '' === (string) $primary_meta[ $key ] ) ) self::set_contact_meta( $primary_id, $key, $value );
 					$wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO `{$tables['contact_tags']}` (contact_id,tag_id,assigned_at,assigned_by,source) SELECT %d,tag_id,assigned_at,assigned_by,source FROM `{$tables['contact_tags']}` WHERE contact_id=%d", $primary_id, $donor ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 					$wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO `{$tables['company_contacts']}` (company_id,contact_id,relationship_type,position,is_primary,created_at,updated_at) SELECT company_id,%d,relationship_type,position,is_primary,created_at,%s FROM `{$tables['company_contacts']}` WHERE contact_id=%d", $primary_id, $now, $donor ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 					$wpdb->update( $tables['consents'], array( 'contact_id' => $primary_id ), array( 'contact_id' => $donor ) );
@@ -465,6 +490,10 @@ final class ContactHub_Store {
 				foreach ( $fields as $field ) {
 					$source = absint( $choices[ $field ] ?? $primary_id );
 					if ( isset( $by_id[ $source ] ) && '' !== trim( (string) $by_id[ $source ][ $field ] ) ) $update[ $field ] = $by_id[ $source ][ $field ];
+					if ( array_key_exists( $field, $resolved ) ) {
+						$value = 'website' === $field ? esc_url_raw( $resolved[ $field ] ) : ( 'email' === $field ? sanitize_email( $resolved[ $field ] ) : sanitize_text_field( $resolved[ $field ] ) );
+						$update[ $field ] = 'country' === $field ? strtoupper( $value ) : $value;
+					}
 				}
 				$update['updated_at'] = $now;
 				if ( false === $wpdb->update( $table, $update, array( 'id' => $primary_id ) ) ) throw new Exception( 'update' );
