@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactHub 0.16.6\n"
+"Project-Id-Version: ContactHub 0.17.0\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
-"POT-Creation-Date: 2026-10-16 23:50+0200\n"
+"POT-Creation-Date: 2026-10-17 18:00+0200\n"
 "PO-Revision-Date: 2026-10-16 09:00+0200\n"
 "Last-Translator: Kultur3 GmbH\n"
 "Language-Team: German\n"
@@ -3338,4 +3338,428 @@ msgstr ""
 
 #: contacthub/includes/class-contacthub-registration.php
 msgid "Save and send again"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Once weekly"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Admin notices"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Import CSV data"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Import people or companies from a CSV file. The preview and field mapping are shown before anything is saved. Empty CSV values never erase existing data."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Last CSV import"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "%1$d created, %2$d updated, %3$d skipped, %4$d errors."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Show import errors"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Data type"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Duplicate handling"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Fill missing values"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Skip existing records"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Update with non-empty CSV values"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "CSV file"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Upload and preview"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "In Groundhogg frontend mode, people are imported directly into Groundhogg and companies into Groundhogg Companies when available. Source files and external records are never changed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "%1$d data rows detected using “%2$s” as the delimiter. Map the columns before importing."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "ContactHub field"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "CSV column"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Do not import"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "First rows"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "I checked the preview and field mapping."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Start import"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Select a CSV file no larger than 5 MB."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "The CSV file could not be read."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "No CSV header row was detected."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "The CSV file contains no data rows."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "tab"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Legal name"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Street address"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Title before name"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Title after name"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Position"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "State"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Tags (comma separated)"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Marketing consent"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Confirm the field mapping before importing."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "The import preview expired. Upload the CSV file again."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Map the required identifying field before importing."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Row %1$d: %2$s"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "CSV import completed: %1$d created, %2$d updated, %3$d skipped, %4$d errors."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Company name is missing."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "A valid email address is required."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Person could not be saved."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Imported from a confirmed CSV field."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Merge duplicates"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Record merging is available in standalone ContactHub mode. Groundhogg records must be merged in Groundhogg so its source identifiers remain authoritative."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Select two or more fragments, choose the primary record, and resolve conflicting fields. Related tags, consents, notes, and company links are retained; source fragments are moved to Trash."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Search records"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Enter a name, company, or email fragment to find records to merge."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Record"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Details"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Record #%d"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "No matching records found."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Compare selected records"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Select between two and twenty records to merge."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "WordPress user"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Choose the primary record"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Unnamed record"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Resolve field values"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Field"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Keep value from"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "After confirmation, source fragments are moved to the ContactHub Trash. External systems, orders, invoices, and source records are not changed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "I reviewed the primary record and every conflicting value."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Merge records"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Confirm the reviewed merge before continuing."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "The merge preview expired. Select the records again."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "%d duplicate fragments were merged and moved to Trash."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Optional central salutation library"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "You can optionally supplement your local library with a centrally maintained name list. Local and manually confirmed assignments always take precedence. No contact or customer data is uploaded."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Enable the central library"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "I understand that name-based salutations may be incomplete or incorrect and remain responsible for reviewing them."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Check weekly for library updates"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Save library settings"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Update central library now"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Installed central version: %1$s. Last check: %2$s."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Accept the library disclaimer before enabling it."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Central library updated: %d new names added."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Enable the central library before updating it."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "The central library could not be downloaded. Your local library was not changed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Optional notice cleanup"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "ContactHub can add a Hide link to non-critical promotional, license-key, and upgrade reminders. Error messages, security warnings, and WordPress core update notices are never hidden."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Allow me to hide non-critical reminders"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Restore all hidden reminders for my account (%d)"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Save notice settings"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Hide this reminder"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Company could not be created."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Company could not be updated."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Select at least two active records and one primary record."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "The merge could not start safely."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "One of the selected records is no longer active."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Contact records merged"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Source record IDs moved to Trash: %s"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Company records merged"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "The records could not be merged safely. No changes were retained."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Groundhogg Companies is required for this company import."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Groundhogg Companies could not update this company."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Groundhogg Companies could not create this company."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "A valid Groundhogg email address is required."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Groundhogg could not update this person."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Groundhogg could not create this person."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Marketing consent imported from CSV"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "The mapped CSV consent field contained an affirmative value."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Save changes"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Add entry"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "Central library"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-data-tools.php
+msgid "ContactHub lists likely duplicates without changing them. Use the merge tool below to select a primary record and confirm every conflict."
 msgstr ""

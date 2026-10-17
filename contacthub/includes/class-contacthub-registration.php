@@ -294,6 +294,8 @@ The link is valid for 24 hours.', 'contacthub' ),
 	}
 
 	private static function render_misc_settings() {
+		$notice = get_transient( 'contacthub_database_notice_' . get_current_user_id() );
+		if ( $notice ) { delete_transient( 'contacthub_database_notice_' . get_current_user_id() ); echo '<div class="notice notice-' . ( 'success' === $notice['type'] ? 'success' : 'error' ) . ' is-dismissible"><p>' . esc_html( $notice['message'] ) . '</p></div>'; }
 		$sections = (array) apply_filters( 'contacthub_misc_settings_sections', array( 'salutations' => __( 'First names', 'contacthub' ) ) );
 		$current = isset( $_GET['misc_section'] ) ? sanitize_key( wp_unslash( $_GET['misc_section'] ) ) : 'salutations'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display routing.
 		if ( ! isset( $sections[ $current ] ) ) $current = 'salutations';
@@ -302,23 +304,27 @@ The link is valid for 24 hours.', 'contacthub' ),
 		echo '</nav>';
 		if ( 'salutations' !== $current ) { do_action( 'contacthub_render_misc_settings_section_' . $current ); return; }
 		$rows = ContactHub_Store::salutations();
+		$edit_id = isset( $_GET['edit_salutation'] ) ? absint( $_GET['edit_salutation'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only editor selection.
+		$editing = $edit_id ? ContactHub_Store::salutation( $edit_id ) : false;
 		echo '<section class="contacthub-card contacthub-settings-card"><h2>' . esc_html__( 'Salutation library', 'contacthub' ) . '</h2><p>' . esc_html__( 'Saved assignments are applied automatically when the same first name is entered again. A manually selected salutation updates the library.', 'contacthub' ) . '</p>';
 		$bulk = get_transient( 'contacthub_salutation_bulk_' . get_current_user_id() );
 		if ( is_array( $bulk ) ) { delete_transient( 'contacthub_salutation_bulk_' . get_current_user_id() ); echo '<div class="notice notice-info inline"><p>' . esc_html( $bulk['applied'] ? sprintf( __( '%d missing salutations were assigned.', 'contacthub' ), absint( $bulk['count'] ) ) : sprintf( __( '%d contacts can be assigned from the library. Confirm to apply the changes.', 'contacthub' ), absint( $bulk['count'] ) ) ) . '</p></div>'; }
-		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="contacthub-settings-grid"><input type="hidden" name="action" value="contacthub_salutation_dictionary"><input type="hidden" name="operation" value="save">'; wp_nonce_field( 'contacthub_salutation_dictionary' );
-		echo '<label><span>' . esc_html__( 'First name', 'contacthub' ) . '</span><input required name="first_name"></label><label><span>' . esc_html__( 'Salutation', 'contacthub' ) . '</span><select name="salutation"><option value="">' . esc_html__( '--- Please select ---', 'contacthub' ) . '</option><option value="mr">' . esc_html__( 'Mr', 'contacthub' ) . '</option><option value="ms">' . esc_html__( 'Ms', 'contacthub' ) . '</option><option value="family">' . esc_html__( 'Family', 'contacthub' ) . '</option><option value="neutral">' . esc_html__( 'Neutral', 'contacthub' ) . '</option></select></label><p><button class="button button-primary">' . esc_html__( 'Add or update entry', 'contacthub' ) . '</button></p></form>';
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="contacthub-settings-grid"><input type="hidden" name="action" value="contacthub_salutation_dictionary"><input type="hidden" name="operation" value="save"><input type="hidden" name="original_id" value="' . esc_attr( $edit_id ) . '">'; wp_nonce_field( 'contacthub_salutation_dictionary' );
+		echo '<label><span>' . esc_html__( 'First name', 'contacthub' ) . '</span><input required name="first_name" value="' . esc_attr( $editing['first_name'] ?? '' ) . '"></label><label><span>' . esc_html__( 'Salutation', 'contacthub' ) . '</span><select name="salutation" required><option value="">' . esc_html__( '--- Please select ---', 'contacthub' ) . '</option><option value="mr"' . selected( $editing['salutation'] ?? '', 'mr', false ) . '>' . esc_html__( 'Mr', 'contacthub' ) . '</option><option value="ms"' . selected( $editing['salutation'] ?? '', 'ms', false ) . '>' . esc_html__( 'Ms', 'contacthub' ) . '</option><option value="family"' . selected( $editing['salutation'] ?? '', 'family', false ) . '>' . esc_html__( 'Family', 'contacthub' ) . '</option><option value="neutral"' . selected( $editing['salutation'] ?? '', 'neutral', false ) . '>' . esc_html__( 'Neutral', 'contacthub' ) . '</option></select></label><p><button class="button button-primary">' . ( $editing ? esc_html__( 'Save changes', 'contacthub' ) : esc_html__( 'Add entry', 'contacthub' ) ) . '</button>' . ( $editing ? ' <a class="button" href="' . esc_url( admin_url( 'admin.php?page=contacthub-settings&tab=misc&misc_section=salutations' ) ) . '">' . esc_html__( 'Cancel', 'contacthub' ) . '</a>' : '' ) . '</p></form>';
 		echo '<table class="widefat striped contacthub-table"><thead><tr><th>' . esc_html__( 'First name', 'contacthub' ) . '</th><th>' . esc_html__( 'Salutation', 'contacthub' ) . '</th><th>' . esc_html__( 'Source', 'contacthub' ) . '</th><th>' . esc_html__( 'Actions', 'contacthub' ) . '</th></tr></thead><tbody>';
 		foreach ( $rows as $row ) {
 			$delete = wp_nonce_url( admin_url( 'admin-post.php?action=contacthub_salutation_dictionary&operation=delete&id=' . absint( $row['id'] ) ), 'contacthub_salutation_dictionary' );
+			$edit = admin_url( 'admin.php?page=contacthub-settings&tab=misc&misc_section=salutations&edit_salutation=' . absint( $row['id'] ) );
 			$salutation_labels = array( 'mr' => __( 'Mr', 'contacthub' ), 'ms' => __( 'Ms', 'contacthub' ), 'family' => __( 'Family', 'contacthub' ), 'neutral' => __( 'Neutral', 'contacthub' ) );
-			$source_labels = array( 'manual' => __( 'Manual', 'contacthub' ), 'confirmed' => __( 'Confirmed selection', 'contacthub' ), 'import' => __( 'Import', 'contacthub' ) );
-			echo '<tr><td>' . esc_html( $row['first_name'] ) . '</td><td>' . esc_html( $salutation_labels[ $row['salutation'] ] ?? $row['salutation'] ) . '</td><td>' . esc_html( $source_labels[ $row['source'] ] ?? $row['source'] ) . '</td><td><a href="' . esc_url( $delete ) . '">' . esc_html__( 'Delete', 'contacthub' ) . '</a></td></tr>';
+			$source_labels = array( 'manual' => __( 'Manual', 'contacthub' ), 'confirmed' => __( 'Confirmed selection', 'contacthub' ), 'import' => __( 'Import', 'contacthub' ), 'central' => __( 'Central library', 'contacthub' ) );
+			echo '<tr><td>' . esc_html( $row['first_name'] ) . '</td><td>' . esc_html( $salutation_labels[ $row['salutation'] ] ?? $row['salutation'] ) . '</td><td>' . esc_html( $source_labels[ $row['source'] ] ?? $row['source'] ) . '</td><td><a href="' . esc_url( $edit ) . '">' . esc_html__( 'Edit', 'contacthub' ) . '</a> · <a href="' . esc_url( $delete ) . '">' . esc_html__( 'Delete', 'contacthub' ) . '</a></td></tr>';
 		}
 		if ( ! $rows ) echo '<tr><td colspan="4">' . esc_html__( 'The dictionary is empty.', 'contacthub' ) . '</td></tr>';
 		echo '</tbody></table><div class="contacthub-database-actions"><a class="button" href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=contacthub_export_salutations' ), 'contacthub_export_salutations' ) ) . '">' . esc_html__( 'Export CSV', 'contacthub' ) . '</a>';
 		echo '<form method="post" enctype="multipart/form-data" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contacthub_salutation_dictionary"><input type="hidden" name="operation" value="import">'; wp_nonce_field( 'contacthub_salutation_dictionary' );
 		echo '<input type="file" name="dictionary_file" accept=".csv,text/csv" required><button class="button">' . esc_html__( 'Import and merge CSV', 'contacthub' ) . '</button></form></div>';
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="contacthub-salutation-bulk">'; wp_nonce_field( 'contacthub_assign_missing_salutations' ); echo '<input type="hidden" name="action" value="contacthub_assign_missing_salutations"><label><input type="checkbox" name="confirm_apply" value="1"> ' . esc_html__( 'Apply the assignments immediately after checking.', 'contacthub' ) . '</label> <button class="button">' . esc_html__( 'Assign missing salutations', 'contacthub' ) . '</button></form></section>';
+		do_action( 'contacthub_render_salutation_tools' );
 	}
 
 	public static function handle_salutation_dictionary() {
@@ -328,7 +334,11 @@ The link is valid for 24 hours.', 'contacthub' ),
 		if ( 'delete' === $operation ) {
 			ContactHub_Store::delete_salutation( absint( $_GET['id'] ?? 0 ) );
 		} elseif ( 'save' === $operation ) {
-			ContactHub_Store::learn_salutation( sanitize_text_field( wp_unslash( $_POST['first_name'] ?? '' ) ), sanitize_key( wp_unslash( $_POST['salutation'] ?? '' ) ), 'manual' );
+			$original_id = absint( $_POST['original_id'] ?? 0 );
+			$original = $original_id ? ContactHub_Store::salutation( $original_id ) : false;
+			$first_name = sanitize_text_field( wp_unslash( $_POST['first_name'] ?? '' ) );
+			if ( $original && 0 !== strcasecmp( $original['first_name'], $first_name ) ) ContactHub_Store::delete_salutation( $original_id );
+			ContactHub_Store::learn_salutation( $first_name, sanitize_key( wp_unslash( $_POST['salutation'] ?? '' ) ), 'manual' );
 		} elseif ( 'import' === $operation && ! empty( $_FILES['dictionary_file']['tmp_name'] ) ) {
 			$handle = fopen( $_FILES['dictionary_file']['tmp_name'], 'r' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- protected uploaded CSV stream.
 			if ( $handle ) {
@@ -481,6 +491,7 @@ The link is valid for 24 hours.', 'contacthub' ),
 		}
 		self::render_newsletter_plugin_migration();
 		self::render_duplicate_preview();
+		do_action( 'contacthub_render_migration_tools' );
 	}
 
 	private static function render_woocommerce_import() {
@@ -613,7 +624,7 @@ The link is valid for 24 hours.', 'contacthub' ),
 	private static function render_duplicate_preview() {
 		if ( ! ContactHub_Store::ready() ) return;
 		$candidates = ContactHub_Store::duplicate_candidates( 50 );
-		echo '<section class="contacthub-card contacthub-settings-card"><h2>' . esc_html__( 'Duplicate review', 'contacthub' ) . '</h2><p>' . esc_html__( 'ContactHub only lists possible duplicates here. No records are merged automatically. A later merge step will require selecting a primary record and confirming every conflict.', 'contacthub' ) . '</p>';
+		echo '<section class="contacthub-card contacthub-settings-card"><h2>' . esc_html__( 'Duplicate review', 'contacthub' ) . '</h2><p>' . esc_html__( 'ContactHub lists likely duplicates without changing them. Use the merge tool below to select a primary record and confirm every conflict.', 'contacthub' ) . '</p>';
 		if ( ! $candidates ) {
 			echo '<p>' . esc_html__( 'No likely duplicates were found using phone number, WordPress account, or matching name and address.', 'contacthub' ) . '</p></section>';
 			return;

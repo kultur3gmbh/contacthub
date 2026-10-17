@@ -2,12 +2,19 @@
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.16.6
+Stable tag: 0.17.0
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a free WooCommerce customer overview, optional Groundhogg compatibility, and a stable extension API for ContactHub Plus.
 
 == Changelog ==
+
+= 0.17.0 =
+* Adds previewed CSV imports for people and companies with flexible field mapping, duplicate handling, and direct Groundhogg imports when Groundhogg is the active data source.
+* Adds a guided duplicate merge for local people and companies with a selected primary record, per-field conflict choices, relationship preservation, an activity log, and recoverable source fragments in Trash.
+* Makes salutation-library entries editable and adds an explicitly optional central library that never uploads customer data or overwrites local decisions.
+* Adds an administrator preference for dismissing non-critical license and upgrade reminders while preserving errors, security warnings, and WordPress core update notices.
+* Corrects vertical alignment of the Export and Print icons.
 
 = 0.16.6 =
 * Adds a reusable double-opt-in confirmation notice with the submitted email address, spam-folder reminder, resend action, and protected email correction.

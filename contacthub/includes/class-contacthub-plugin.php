@@ -2156,6 +2156,30 @@ final class ContactHub_Plugin {
 		return self::contact_company_map();
 	}
 
+	public static function extension_companies_available() {
+		return self::companies_available();
+	}
+
+	/** Import one CSV company into Groundhogg Companies when that extension exists. */
+	public static function extension_import_company( $record, $mode = 'fill', $source_id = '' ) {
+		if ( ContactHub_Store::standalone() || ! self::companies_available() ) return new WP_Error( 'contacthub_csv_groundhogg_companies', __( 'Groundhogg Companies is required for this company import.', 'contacthub' ) );
+		$name = sanitize_text_field( $record['name'] ?? '' );
+		if ( '' === $name ) return new WP_Error( 'contacthub_csv_company_name', __( 'Company name is missing.', 'contacthub' ) );
+		$existing = false;
+		foreach ( self::companies() as $company ) if ( 0 === strcasecmp( self::value( $company, array( 'name', 'company_name', 'get_name' ) ), $name ) ) { $existing = $company; break; }
+		if ( $existing && 'skip' === $mode ) return 'skipped';
+		$input = array( 'name' => $name, 'meta' => array( 'contacthub_csv_source_id' => sanitize_text_field( $source_id ) ) );
+		$map = array( 'legal_name', 'email', 'phone', 'website', 'industry', 'vat_id', 'address_1', 'address_2', 'postcode', 'city', 'country' );
+		foreach ( $map as $field ) if ( ! empty( $record[ $field ] ) ) $input['meta'][ $field ] = sanitize_text_field( $record[ $field ] );
+		if ( $existing ) {
+			$input['id'] = absint( self::value( $existing, array( 'id', 'ID', 'get_id' ) ) );
+			if ( ! self::execute_ability( 'groundhogg-companies/update-company', $input ) ) return new WP_Error( 'contacthub_csv_groundhogg_company_update', __( 'Groundhogg Companies could not update this company.', 'contacthub' ) );
+			return 'updated';
+		}
+		$result = self::execute_ability( 'groundhogg-companies/create-company', $input );
+		return $result ? 'created' : new WP_Error( 'contacthub_csv_groundhogg_company_create', __( 'Groundhogg Companies could not create this company.', 'contacthub' ) );
+	}
+
 	/** Public, read-only user-managed tags for separately loadable modules. */
 	public static function extension_tags() {
 		return self::all_tags();
@@ -2196,6 +2220,54 @@ final class ContactHub_Plugin {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Import one CSV person into the active Groundhogg data source.
+	 * Existing contacts are matched by email and source data is never removed.
+	 */
+	public static function extension_import_contact( $record, $mode = 'fill', $source_id = '' ) {
+		$email = strtolower( sanitize_email( $record['email'] ?? '' ) );
+		if ( ContactHub_Store::standalone() || ! is_email( $email ) ) return new WP_Error( 'contacthub_csv_groundhogg', __( 'A valid Groundhogg email address is required.', 'contacthub' ) );
+		$existing = self::extension_contact_by_email( $email );
+		if ( $existing && 'skip' === $mode ) return 'skipped';
+		$payload = array( 'email' => $email, 'meta' => array( 'contacthub_csv_source_id' => sanitize_text_field( $source_id ) ), 'expand' => array( 'tags', 'meta' ) );
+		foreach ( array( 'first_name', 'last_name' ) as $field ) {
+			$value = sanitize_text_field( $record[ $field ] ?? '' );
+			$current = $existing ? self::value( $existing, array( $field, 'get_' . $field ) ) : '';
+			if ( $value && ( 'update' === $mode || '' === $current ) ) $payload[ $field ] = $value;
+		}
+		$meta_map = array( 'salutation' => 'anrede', 'title_prefix' => 'titel_vorangestellt', 'title_suffix' => 'titel_nachgestellt', 'phone' => 'primary_phone', 'position' => 'position', 'company' => 'company_name', 'address_1' => 'billing_address_1', 'address_2' => 'billing_address_2', 'postcode' => 'billing_postcode', 'city' => 'billing_city', 'state' => 'billing_state', 'country' => 'billing_country' );
+		foreach ( $meta_map as $input => $key ) {
+			$value = sanitize_text_field( $record[ $input ] ?? '' );
+			$current = $existing ? self::meta( $existing, array( $key ) ) : '';
+			if ( $value && ( 'update' === $mode || '' === $current ) ) $payload['meta'][ $key ] = $value;
+		}
+		if ( $existing ) {
+			$id = absint( self::value( $existing, array( 'id', 'ID', 'get_id' ) ) );
+			$payload['id'] = $id;
+			if ( ! self::execute_ability( 'groundhogg/update-contact', $payload ) ) return new WP_Error( 'contacthub_csv_groundhogg_update', __( 'Groundhogg could not update this person.', 'contacthub' ) );
+		} else {
+			$result = self::execute_ability( 'groundhogg/create-contact', $payload );
+			$id = is_array( $result ) && isset( $result['contact']['id'] ) ? absint( $result['contact']['id'] ) : 0;
+			if ( ! $id ) return new WP_Error( 'contacthub_csv_groundhogg_create', __( 'Groundhogg could not create this person.', 'contacthub' ) );
+		}
+		$current_status = $existing ? self::optin_status( $existing ) : '';
+		$protected_statuses = array( 3, 6, 7, 8, 9, 'unsubscribed', 'hard_bounce', 'bounced', 'spam', 'complained', 'blocked' );
+		if ( ! empty( $record['marketing'] ) && in_array( strtolower( $record['marketing'] ), array( '1', 'yes', 'ja', 'true', 'confirmed' ), true ) && ! in_array( $current_status, $protected_statuses, true ) ) {
+			self::execute_ability( 'groundhogg/update-contact', array( 'id' => $id, 'optin_status' => 'confirmed', 'meta' => array( 'marketing_consent' => 'yes', 'marketing_consent_source' => 'csv_import', 'marketing_consent_date' => current_time( 'Y-m-d' ) ) ) );
+			self::execute_ability( 'groundhogg/add-contact-note', array( 'contact_id' => $id, 'summary' => __( 'Marketing consent imported from CSV', 'contacthub' ), 'content' => __( 'The mapped CSV consent field contained an affirmative value.', 'contacthub' ) ) );
+		}
+		if ( ! empty( $record['tags'] ) ) {
+			$existing_tags = self::all_tags();
+			foreach ( preg_split( '/[,;]+/', $record['tags'] ) as $tag_name ) {
+				$tag_name = trim( sanitize_text_field( $tag_name ) ); if ( '' === $tag_name ) continue;
+				$tag_id = 0; foreach ( $existing_tags as $tag ) if ( 0 === strcasecmp( self::value( $tag, array( 'name', 'tag_name' ) ), $tag_name ) ) { $tag_id = absint( self::value( $tag, array( 'id', 'tag_id', 'ID' ) ) ); break; }
+				if ( ! $tag_id ) { $created = self::execute_ability( 'groundhogg/create-tag', array( 'name' => $tag_name ) ); $tag_id = is_array( $created ) ? absint( $created['tag']['id'] ?? $created['id'] ?? 0 ) : 0; }
+				if ( $tag_id ) self::execute_ability( 'groundhogg/update-contact', array( 'id' => $id, 'add_tags' => array( $tag_id ) ) );
+			}
+		}
+		return $existing ? 'updated' : 'created';
 	}
 
 	/**
@@ -3593,7 +3665,7 @@ final class ContactHub_Plugin {
 		$emails = array();
 		$user_ids = array();
 		foreach ( $contacts as $contact ) {
-			$emails[] = self::value( $contact, array( 'email', 'get_email' ) );
+			$emails = array_merge( $emails, self::contact_emails( $contact ) );
 			$user = self::contact_user( $contact );
 			if ( $user ) {
 				$user_ids[] = (int) $user->ID;
@@ -3660,7 +3732,7 @@ final class ContactHub_Plugin {
 			if ( $user ) {
 				$user_map[ (int) $user->ID ][] = $contact_id;
 			}
-			$emails = array( self::value( $contact, array( 'email', 'get_email' ) ) );
+			$emails = self::contact_emails( $contact );
 			if ( $user ) {
 				$emails[] = $user->user_email;
 				$emails[] = get_user_meta( $user->ID, 'billing_email', true );
@@ -3723,6 +3795,15 @@ final class ContactHub_Plugin {
 			return array();
 		}
 		return array_values( array_diff( array_keys( wc_get_order_statuses() ), array( 'wc-cancelled', 'wc-failed', 'wc-checkout-draft' ) ) );
+	}
+
+	/** Include historical aliases retained by the local duplicate merge. */
+	private static function contact_emails( $contact ) {
+		$emails = array( self::value( $contact, array( 'email', 'get_email' ) ) );
+		if ( is_array( $contact ) && ! empty( $contact['meta']['merged_email_aliases'] ) && is_array( $contact['meta']['merged_email_aliases'] ) ) {
+			$emails = array_merge( $emails, $contact['meta']['merged_email_aliases'] );
+		}
+		return array_values( array_unique( array_filter( array_map( 'sanitize_email', $emails ) ) ) );
 	}
 
 	private static function accumulate_order_summaries( $args, $user_map, $email_map, &$summaries ) {

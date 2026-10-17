@@ -191,6 +191,34 @@ final class ContactHub_Store {
 		return $wpdb->insert_id ? (int) $wpdb->insert_id : 0;
 	}
 
+	/** Import one standalone company row without clearing existing non-empty data. */
+	public static function import_company_row( $data, $mode = 'fill', $source_id = '' ) {
+		global $wpdb;
+		$name = sanitize_text_field( $data['name'] ?? '' );
+		if ( '' === $name ) return new WP_Error( 'contacthub_import_company_name', __( 'Company name is missing.', 'contacthub' ) );
+		$id = self::company_by_name( $name );
+		$existed = (bool) $id;
+		if ( $id && 'skip' === $mode ) return 'skipped';
+		if ( ! $id ) {
+			$id = self::create_company( array( 'name' => $name, 'legal_name' => $data['legal_name'] ?? $name, 'industry' => $data['industry'] ?? '', 'website' => $data['website'] ?? '', 'vat_id' => $data['vat_id'] ?? '' ) );
+			if ( ! $id ) return new WP_Error( 'contacthub_import_company_create', __( 'Company could not be created.', 'contacthub' ) );
+		}
+		$current = self::company( $id );
+		$map = array( 'name', 'legal_name', 'industry', 'website', 'email', 'vat_id', 'street', 'address_2', 'postcode', 'city', 'country' );
+		$input_map = array( 'street' => 'address_1' );
+		$update = array();
+		foreach ( $map as $field ) {
+			$input = $input_map[ $field ] ?? $field;
+			$value = sanitize_text_field( $data[ $input ] ?? '' );
+			if ( '' !== $value && ( ! $current || 'update' === $mode || '' === trim( (string) ( $current[ $field ] ?? '' ) ) ) ) $update[ $field ] = 'website' === $field ? esc_url_raw( $value ) : $value;
+		}
+		if ( ! empty( $data['phone'] ) && ( ! $current || 'update' === $mode || empty( $current['phone_number'] ) ) ) $update['phone_number'] = sanitize_text_field( $data['phone'] );
+		$update['updated_at'] = current_time( 'mysql' );
+		if ( false === $wpdb->update( ContactHub_Schema::table_names()['companies'], $update, array( 'id' => $id ) ) ) return new WP_Error( 'contacthub_import_company_update', __( 'Company could not be updated.', 'contacthub' ) );
+		self::set_company_meta( $id, 'csv_source_id', sanitize_text_field( $source_id ) );
+		return $existed ? 'updated' : 'created';
+	}
+
 	public static function company_by_name( $name, $include_deleted = false ) {
 		global $wpdb;
 		$table = ContactHub_Schema::table_names()['companies'];
@@ -357,6 +385,105 @@ final class ContactHub_Store {
 		global $wpdb;
 		if ( ! self::ready() ) { $target = array(); foreach ( self::salutations() as $row ) if ( absint( $row['id'] ?? 0 ) === absint( $id ) ) { $target = $row; break; } if ( empty( $target['first_name_normalized'] ) ) return false; $library = (array) get_option( 'contacthub_salutation_library', array() ); unset( $library[ $target['first_name_normalized'] ] ); return update_option( 'contacthub_salutation_library', $library, false ); }
 		return false !== $wpdb->delete( ContactHub_Schema::table_names()['salutations'], array( 'id' => absint( $id ) ) );
+	}
+
+	/** Return one salutation-library row by its local identifier. */
+	public static function salutation( $id ) {
+		foreach ( self::salutations() as $row ) {
+			if ( absint( $row['id'] ?? 0 ) === absint( $id ) ) return $row;
+		}
+		return false;
+	}
+
+	/**
+	 * Merge local ContactHub records and move the source fragments to Trash.
+	 *
+	 * External systems are deliberately never called from this method. All
+	 * relationships and history remain attached to the selected primary record.
+	 */
+	public static function merge_records( $entity, $ids, $primary_id, $choices = array() ) {
+		global $wpdb;
+		$entity = 'companies' === $entity ? 'companies' : 'contacts';
+		$ids = array_values( array_unique( array_filter( array_map( 'absint', (array) $ids ) ) ) );
+		$primary_id = absint( $primary_id );
+		if ( ! self::standalone() || count( $ids ) < 2 || ! in_array( $primary_id, $ids, true ) ) {
+			return new WP_Error( 'contacthub_merge_invalid', __( 'Select at least two active records and one primary record.', 'contacthub' ) );
+		}
+		$tables = ContactHub_Schema::table_names();
+		$table = $tables[ $entity ];
+		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+		if ( false === $wpdb->query( 'START TRANSACTION' ) ) return new WP_Error( 'contacthub_merge_transaction', __( 'The merge could not start safely.', 'contacthub' ) );
+		$rows = (array) $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `{$table}` WHERE id IN ({$placeholders}) AND deleted_at IS NULL FOR UPDATE", $ids ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table and numeric placeholders.
+		if ( count( $rows ) !== count( $ids ) ) { $wpdb->query( 'ROLLBACK' ); return new WP_Error( 'contacthub_merge_missing', __( 'One of the selected records is no longer active.', 'contacthub' ) ); }
+		$by_id = array();
+		foreach ( $rows as $row ) $by_id[ absint( $row['id'] ) ] = $row;
+		$donors = array_values( array_diff( $ids, array( $primary_id ) ) );
+		$now = current_time( 'mysql' );
+		try {
+			if ( 'contacts' === $entity ) {
+				$fields = array( 'first_name', 'last_name', 'email', 'position', 'wp_user_id' );
+				$update = array();
+				foreach ( $fields as $field ) {
+					$source = absint( $choices[ $field ] ?? $primary_id );
+					if ( isset( $by_id[ $source ] ) && '' !== trim( (string) $by_id[ $source ][ $field ] ) ) $update[ $field ] = $by_id[ $source ][ $field ];
+				}
+				// Release unique values on donor fragments before applying a selected value.
+				foreach ( $donors as $donor ) $wpdb->update( $table, array( 'email' => null, 'email_normalized' => null, 'wp_user_id' => null ), array( 'id' => $donor ) );
+				if ( isset( $update['email'] ) ) $update['email_normalized'] = strtolower( sanitize_email( $update['email'] ) );
+				$update['updated_at'] = $now;
+				if ( false === $wpdb->update( $table, $update, array( 'id' => $primary_id ) ) ) throw new Exception( 'update' );
+
+				$merge_meta = array( 'anrede', 'titel_vorangestellt', 'titel_nachgestellt', 'berufsbezeichnung', 'primary_phone', 'address_1', 'address_2', 'postcode', 'city', 'state', 'country' );
+				foreach ( $merge_meta as $meta_key ) {
+					$choice_key = 'meta__' . $meta_key;
+					$source = absint( $choices[ $choice_key ] ?? 0 );
+					if ( $source && isset( $by_id[ $source ] ) ) { $source_meta = self::contact_meta( $source ); if ( '' !== trim( (string) ( $source_meta[ $meta_key ] ?? '' ) ) ) self::set_contact_meta( $primary_id, $meta_key, $source_meta[ $meta_key ] ); }
+				}
+				$status_priority = array( 'spam' => 6, 'complained' => 6, 'blocked' => 6, 'bounced' => 5, 'hard_bounce' => 5, 'unsubscribed' => 4, 'confirmed' => 3, 'unconfirmed' => 1 );
+				$best_status = ''; $best_priority = -1;
+				foreach ( $ids as $source ) { $source_meta = self::contact_meta( $source ); $status = sanitize_key( $source_meta['optin_status'] ?? '' ); $priority = $status_priority[ $status ] ?? 0; if ( $priority > $best_priority ) { $best_status = $status; $best_priority = $priority; } }
+				if ( $best_status ) self::set_contact_meta( $primary_id, 'optin_status', $best_status );
+				$primary_meta = self::contact_meta( $primary_id );
+				$aliases = array();
+				foreach ( $rows as $row ) if ( ! empty( $row['email'] ) ) $aliases[] = strtolower( sanitize_email( $row['email'] ) );
+				foreach ( $donors as $donor ) {
+					foreach ( self::contact_meta( $donor ) as $key => $value ) if ( ! isset( $primary_meta[ $key ] ) || '' === (string) $primary_meta[ $key ] ) self::set_contact_meta( $primary_id, $key, $value );
+					$wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO `{$tables['contact_tags']}` (contact_id,tag_id,assigned_at,assigned_by,source) SELECT %d,tag_id,assigned_at,assigned_by,source FROM `{$tables['contact_tags']}` WHERE contact_id=%d", $primary_id, $donor ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					$wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO `{$tables['company_contacts']}` (company_id,contact_id,relationship_type,position,is_primary,created_at,updated_at) SELECT company_id,%d,relationship_type,position,is_primary,created_at,%s FROM `{$tables['company_contacts']}` WHERE contact_id=%d", $primary_id, $now, $donor ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					$wpdb->update( $tables['consents'], array( 'contact_id' => $primary_id ), array( 'contact_id' => $donor ) );
+					$wpdb->update( $tables['activities'], array( 'contact_id' => $primary_id ), array( 'contact_id' => $donor ) );
+					$wpdb->delete( $tables['contact_tags'], array( 'contact_id' => $donor ) );
+					$wpdb->delete( $tables['company_contacts'], array( 'contact_id' => $donor ) );
+				}
+				self::set_contact_meta( $primary_id, 'merged_contact_ids', $ids );
+				self::set_contact_meta( $primary_id, 'merged_email_aliases', array_values( array_unique( array_filter( $aliases ) ) ) );
+				$wpdb->query( $wpdb->prepare( "UPDATE `{$table}` SET deleted_at=%s, updated_at=%s WHERE id IN (" . implode( ',', array_fill( 0, count( $donors ), '%d' ) ) . ')', array_merge( array( $now, $now ), $donors ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table and numeric placeholders.
+				self::add_activity( $primary_id, 0, 'merge', __( 'Contact records merged', 'contacthub' ), sprintf( __( 'Source record IDs moved to Trash: %s', 'contacthub' ), implode( ', ', $donors ) ) );
+			} else {
+				$fields = array( 'name', 'legal_name', 'industry', 'website', 'email', 'phone_number', 'vat_id', 'street', 'address_2', 'postcode', 'city', 'country' );
+				$update = array();
+				foreach ( $fields as $field ) {
+					$source = absint( $choices[ $field ] ?? $primary_id );
+					if ( isset( $by_id[ $source ] ) && '' !== trim( (string) $by_id[ $source ][ $field ] ) ) $update[ $field ] = $by_id[ $source ][ $field ];
+				}
+				$update['updated_at'] = $now;
+				if ( false === $wpdb->update( $table, $update, array( 'id' => $primary_id ) ) ) throw new Exception( 'update' );
+				foreach ( $donors as $donor ) {
+					foreach ( self::company_meta( $donor ) as $key => $value ) if ( '' === (string) ( self::company_meta( $primary_id )[ $key ] ?? '' ) ) self::set_company_meta( $primary_id, $key, $value );
+					$wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO `{$tables['company_contacts']}` (company_id,contact_id,relationship_type,position,is_primary,created_at,updated_at) SELECT %d,contact_id,relationship_type,position,is_primary,created_at,%s FROM `{$tables['company_contacts']}` WHERE company_id=%d", $primary_id, $now, $donor ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					$wpdb->update( $tables['activities'], array( 'company_id' => $primary_id ), array( 'company_id' => $donor ) );
+					$wpdb->delete( $tables['company_contacts'], array( 'company_id' => $donor ) );
+				}
+				self::set_company_meta( $primary_id, 'merged_company_ids', $ids );
+				$wpdb->query( $wpdb->prepare( "UPDATE `{$table}` SET deleted_at=%s, updated_at=%s WHERE id IN (" . implode( ',', array_fill( 0, count( $donors ), '%d' ) ) . ')', array_merge( array( $now, $now ), $donors ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				self::add_activity( 0, $primary_id, 'merge', __( 'Company records merged', 'contacthub' ), sprintf( __( 'Source record IDs moved to Trash: %s', 'contacthub' ), implode( ', ', $donors ) ) );
+			}
+			if ( false === $wpdb->query( 'COMMIT' ) ) throw new Exception( 'commit' );
+		} catch ( Throwable $error ) {
+			$wpdb->query( 'ROLLBACK' );
+			return new WP_Error( 'contacthub_merge_failed', __( 'The records could not be merged safely. No changes were retained.', 'contacthub' ) );
+		}
+		return array( 'primary_id' => $primary_id, 'merged' => count( $donors ), 'trashed_ids' => $donors );
 	}
 
 	public static function import_woocommerce( $dry_run = true ) {
