@@ -964,7 +964,9 @@ The link is valid for 24 hours.', 'contacthub' ),
 		}
 		if ( ! empty( $settings['business_enabled'] ) && '' === sanitize_key( $atts['type'] ) ) {
 			$base = remove_query_arg( 'contacthub_registration_type', self::current_url() );
-			echo '<nav class="contacthub-registration-types" aria-label="' . esc_attr__( 'Registration type', 'contacthub' ) . '"><a class="' . ( 'customer' === $type ? 'is-active' : '' ) . '" href="' . esc_url( add_query_arg( 'contacthub_registration_type', 'customer', $base ) ) . '">' . esc_html__( 'Private customer', 'contacthub' ) . '</a><a class="' . ( 'business' === $type ? 'is-active' : '' ) . '" href="' . esc_url( add_query_arg( 'contacthub_registration_type', 'business', $base ) ) . '">' . esc_html__( 'Business customer', 'contacthub' ) . '</a></nav>';
+			$customer_url = add_query_arg( 'contacthub_registration_type', 'customer', $base ) . '#contacthub-account-registration-form';
+			$business_url = add_query_arg( 'contacthub_registration_type', 'business', $base ) . '#contacthub-account-registration-form';
+			echo '<nav class="contacthub-registration-types" role="tablist" aria-label="' . esc_attr__( 'Registration type', 'contacthub' ) . '"><a role="tab" aria-selected="' . ( 'customer' === $type ? 'true' : 'false' ) . '" class="' . ( 'customer' === $type ? 'is-active' : '' ) . '" href="' . esc_url( $customer_url ) . '">' . esc_html__( 'Private customer', 'contacthub' ) . '</a><a role="tab" aria-selected="' . ( 'business' === $type ? 'true' : 'false' ) . '" class="' . ( 'business' === $type ? 'is-active' : '' ) . '" href="' . esc_url( $business_url ) . '">' . esc_html__( 'Business customer', 'contacthub' ) . '</a></nav>';
 		}
 		echo '<form class="contacthub-registration-form' . esc_attr( $theme_class ) . '" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contacthub_register"><input type="hidden" name="registration_type" value="' . esc_attr( $type ) . '"><input type="hidden" name="redirect_to" value="' . esc_url( self::current_url() ) . '">';
 		wp_nonce_field( 'contacthub_register', 'contacthub_registration_nonce' );

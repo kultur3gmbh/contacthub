@@ -72,13 +72,15 @@ final class ContactHub_My_Account {
 		if ( is_user_logged_in() ) {
 			return;
 		}
+		$requested_type = isset( $_GET['contacthub_registration_type'] ) ? sanitize_key( wp_unslash( $_GET['contacthub_registration_type'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display choice only.
+		$is_open        = in_array( $requested_type, array( 'customer', 'business' ), true );
 		$form = do_shortcode( '[contacthub_registration]' );
 		if ( '' === trim( $form ) ) {
 			return;
 		}
 		echo '<section class="contacthub-account-registration"><h2>' . esc_html__( 'New here?', 'contacthub' ) . '</h2><p>' . esc_html__( 'Create a customer account to manage your profile, addresses, orders, and bookings.', 'contacthub' ) . '</p>';
-		echo '<button type="button" class="button contacthub-registration-toggle" aria-expanded="false" aria-controls="contacthub-account-registration-form" data-open-label="' . esc_attr__( 'Register now', 'contacthub' ) . '" data-close-label="' . esc_attr__( 'Close registration', 'contacthub' ) . '">' . esc_html__( 'Register now', 'contacthub' ) . '</button>';
-		echo '<div id="contacthub-account-registration-form" class="contacthub-account-registration-form" hidden>' . $form . '</div></section>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ContactHub shortcode returns escaped form markup.
+		echo '<button type="button" class="button contacthub-registration-toggle" aria-expanded="' . ( $is_open ? 'true' : 'false' ) . '" aria-controls="contacthub-account-registration-form" data-open-label="' . esc_attr__( 'Register now', 'contacthub' ) . '" data-close-label="' . esc_attr__( 'Close registration', 'contacthub' ) . '">' . esc_html( $is_open ? __( 'Close registration', 'contacthub' ) : __( 'Register now', 'contacthub' ) ) . '</button>';
+		echo '<div id="contacthub-account-registration-form" class="contacthub-account-registration-form"' . ( $is_open ? '' : ' hidden' ) . '>' . $form . '</div></section>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ContactHub shortcode returns escaped form markup.
 	}
 
 	public static function account_menu( $items ) {
