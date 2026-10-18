@@ -98,3 +98,4 @@
 	.contacthub-registration-types a { flex: 1 1 50%; min-width: 0; padding-inline: 10px; }
 }
 
+.contacthub-virtual-registration{width:min(1120px,calc(100% - 40px));margin:48px auto}.contacthub-virtual-registration-inner{width:100%}

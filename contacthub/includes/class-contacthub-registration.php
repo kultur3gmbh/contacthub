@@ -41,6 +41,7 @@ final class ContactHub_Registration {
 		add_filter( 'authenticate', array( __CLASS__, 'guard_login' ), 40, 3 );
 		add_filter( 'register_url', array( __CLASS__, 'registration_url' ) );
 		add_action( 'login_form_register', array( __CLASS__, 'maybe_redirect_registration' ) );
+		add_action( 'template_redirect', array( __CLASS__, 'render_virtual_registration' ) );
 	}
 
 	public static function menu() {
@@ -259,13 +260,15 @@ The link is valid for 24 hours.', 'contacthub' ),
 			wp_die( esc_html__( 'You do not have permission to view this page.', 'contacthub' ) );
 		}
 		$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'general'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only tab navigation.
+		if ( in_array( $tab, array( 'migration', 'duplicates' ), true ) ) { $_GET['other_section'] = $tab; $tab = 'other'; }
+		if ( 'registration' === $tab ) { $_GET['general_section'] = 'registration'; $tab = 'general'; }
 		$tabs = (array) apply_filters(
 			'contacthub_settings_tabs',
 			array(
 				'general'      => __( 'General', 'contacthub' ),
-				'migration'    => __( 'Migration', 'contacthub' ),
-				'registration' => __( 'Registration', 'contacthub' ),
+				'integrations' => __( 'Integrations', 'contacthub' ),
 				'misc'         => __( 'Miscellaneous parameters', 'contacthub' ),
+				'other'        => __( 'Miscellaneous', 'contacthub' ),
 			)
 		);
 		if ( ! isset( $tabs[ $tab ] ) ) {
@@ -279,18 +282,32 @@ The link is valid for 24 hours.', 'contacthub' ),
 		}
 		echo '</nav>';
 		settings_errors();
-		if ( 'registration' === $tab ) {
-			self::render_registration_settings();
-		} elseif ( 'migration' === $tab ) {
-			self::render_migration_settings();
-		} elseif ( 'misc' === $tab ) {
+		if ( 'misc' === $tab ) {
 			self::render_misc_settings();
 		} elseif ( 'general' === $tab ) {
-			self::render_general_settings();
+			self::render_general_tab();
+		} elseif ( 'integrations' === $tab ) {
+			self::render_integrations_settings();
+		} elseif ( 'other' === $tab ) {
+			self::render_other_settings();
 		} else {
 			do_action( 'contacthub_render_settings_tab_' . $tab );
 		}
 		echo '</div>';
+	}
+
+	private static function render_general_tab() {
+		$section = isset( $_GET['general_section'] ) ? sanitize_key( wp_unslash( $_GET['general_section'] ) ) : 'settings'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		echo '<nav class="nav-tab-wrapper contacthub-settings-subtabs"><a class="nav-tab ' . ( 'settings' === $section ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contacthub-settings&tab=general' ) ) . '">' . esc_html__( 'General settings', 'contacthub' ) . '</a><a class="nav-tab ' . ( 'registration' === $section ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contacthub-settings&tab=general&general_section=registration' ) ) . '">' . esc_html__( 'Registration', 'contacthub' ) . '</a></nav>';
+		if ( 'registration' === $section ) self::render_registration_settings(); else self::render_general_settings();
+	}
+
+	private static function render_other_settings() {
+		$sections = (array) apply_filters( 'contacthub_other_settings_sections', array( 'migration' => __( 'Migration', 'contacthub' ), 'duplicates' => __( 'Duplicates', 'contacthub' ), 'admin_notices' => __( 'Admin notices', 'contacthub' ) ) );
+		$current = isset( $_GET['other_section'] ) ? sanitize_key( wp_unslash( $_GET['other_section'] ) ) : 'migration'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( ! isset( $sections[ $current ] ) ) $current = 'migration';
+		echo '<nav class="nav-tab-wrapper contacthub-settings-subtabs">'; foreach ( $sections as $key => $label ) echo '<a class="nav-tab ' . ( $current === $key ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contacthub-settings&tab=other&other_section=' . sanitize_key( $key ) ) ) . '">' . esc_html( $label ) . '</a>'; echo '</nav>';
+		if ( 'migration' === $current ) self::render_migration_settings(); elseif ( 'admin_notices' === $current ) ContactHub_Data_Tools::render_notice_settings(); else do_action( 'contacthub_render_other_settings_section_' . $current );
 	}
 
 	private static function render_misc_settings() {
@@ -323,7 +340,7 @@ The link is valid for 24 hours.', 'contacthub' ),
 		echo '</tbody></table><div class="contacthub-database-actions"><a class="button" href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=contacthub_export_salutations' ), 'contacthub_export_salutations' ) ) . '">' . esc_html__( 'Export CSV', 'contacthub' ) . '</a>';
 		echo '<form method="post" enctype="multipart/form-data" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contacthub_salutation_dictionary"><input type="hidden" name="operation" value="import">'; wp_nonce_field( 'contacthub_salutation_dictionary' );
 		echo '<input type="file" name="dictionary_file" accept=".csv,text/csv" required><button class="button">' . esc_html__( 'Import and merge CSV', 'contacthub' ) . '</button></form></div>';
-		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="contacthub-salutation-bulk">'; wp_nonce_field( 'contacthub_assign_missing_salutations' ); echo '<input type="hidden" name="action" value="contacthub_assign_missing_salutations"><label><input type="checkbox" name="confirm_apply" value="1"> ' . esc_html__( 'Apply the assignments immediately after checking.', 'contacthub' ) . '</label> <button class="button">' . esc_html__( 'Assign missing salutations', 'contacthub' ) . '</button></form></section>';
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="contacthub-salutation-bulk">'; wp_nonce_field( 'contacthub_assign_missing_salutations' ); echo '<input type="hidden" name="action" value="contacthub_assign_missing_salutations"><label><input type="checkbox" name="confirm_apply" value="1"> ' . esc_html__( 'Apply the assignments immediately after checking.', 'contacthub' ) . '</label> <button class="button">' . esc_html__( 'Reconcile now', 'contacthub' ) . '</button></form></section>';
 		do_action( 'contacthub_render_salutation_tools' );
 	}
 
@@ -377,7 +394,7 @@ The link is valid for 24 hours.', 'contacthub' ),
 		}
 		echo '<nav class="nav-tab-wrapper contacthub-settings-subtabs">';
 		$registration_sections = array( 'customers' => __( 'General customer registration', 'contacthub' ), 'business' => __( 'Business customers', 'contacthub' ), 'newsletter' => __( 'Newsletter signup', 'contacthub' ) );
-		foreach ( $registration_sections as $key => $label ) echo '<a class="nav-tab ' . ( $section === $key ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contacthub-settings&tab=registration&registration_section=' . $key ) ) . '">' . esc_html( $label ) . '</a>';
+		foreach ( $registration_sections as $key => $label ) echo '<a class="nav-tab ' . ( $section === $key ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contacthub-settings&tab=general&general_section=registration&registration_section=' . $key ) ) . '">' . esc_html( $label ) . '</a>';
 		echo '</nav><form method="post" action="options.php"><section class="contacthub-card contacthub-settings-card"><h2>' . esc_html__( 'Customer account registration', 'contacthub' ) . '</h2>';
 		settings_fields( 'contacthub_registration' );
 		echo '<div class="contacthub-registration-panel"' . ( 'customers' === $section ? '' : ' hidden' ) . '>';
@@ -386,6 +403,7 @@ The link is valid for 24 hours.', 'contacthub' ),
 		echo '<input type="hidden" name="' . esc_attr( self::OPTION ) . '[allow_marketing]" value="1"><p class="description">' . esc_html__( 'Every account registration offers an optional, unchecked marketing consent. Account registration never implies marketing consent.', 'contacthub' ) . '</p>';
 		self::checkbox_setting( 'replace_registration', __( 'Replace the standard WordPress registration', 'contacthub' ), __( 'Redirects the public WordPress registration to the selected ContactHub registration page. Administrative login remains available.', 'contacthub' ), $settings );
 		self::page_setting( 'registration_page_id', __( 'Registration page', 'contacthub' ), $settings );
+		if ( ! $settings['registration_page_id'] ) echo '<div class="contacthub-setting-row"><strong>' . esc_html__( 'Built-in registration page', 'contacthub' ) . '</strong><p><a class="button" href="' . esc_url( self::virtual_registration_url() ) . '" target="_blank" rel="noopener">' . esc_html__( 'View registration page', 'contacthub' ) . '</a></p><p class="description">' . esc_html__( 'ContactHub uses a theme-compatible built-in page while no WordPress page is selected.', 'contacthub' ) . '</p></div>';
 		self::page_setting( 'privacy_page_id', __( 'Privacy policy page', 'contacthub' ), $settings );
 		self::page_setting( 'terms_page_id', __( 'Terms and conditions page', 'contacthub' ), $settings );
 		self::page_setting( 'success_page_id', __( 'Page after successful submission', 'contacthub' ), $settings );
@@ -522,7 +540,7 @@ The link is valid for 24 hours.', 'contacthub' ),
 	}
 
 	private static function render_newsletter_plugin_migration() {
-		if ( ! self::newsletter_plugin_installed() ) return;
+		if ( ! self::newsletter_plugin_installed() || ! apply_filters( 'contacthub_can_migrate_newsletter_plugin', false ) ) return;
 		$table = self::newsletter_plugin_table();
 		echo '<section class="contacthub-card contacthub-settings-card"><h2>' . esc_html__( 'Import The Newsletter Plugin data', 'contacthub' ) . '</h2>';
 		if ( ! defined( 'NEWSLETTER_VERSION' ) && ! class_exists( 'Newsletter' ) ) echo '<div class="notice notice-warning inline"><p>' . esc_html__( 'The Newsletter Plugin is installed but inactive. Existing source tables can still be read without changing them.', 'contacthub' ) . '</p></div>';
@@ -540,6 +558,7 @@ The link is valid for 24 hours.', 'contacthub' ),
 		if ( $preview ) echo '<div class="contacthub-migration-report"><h3>' . esc_html__( 'Import preview', 'contacthub' ) . '</h3><p>' . esc_html( sprintf( __( '%1$d subscribers and %2$d historical mailings were found. No data has been changed yet.', 'contacthub' ), absint( $preview['subscribers'] ?? 0 ), absint( $preview['mailings'] ?? 0 ) ) ) . '</p></div>';
 		if ( $report ) {
 			echo '<p><strong>' . esc_html__( 'Last import:', 'contacthub' ) . '</strong> ' . esc_html( sprintf( __( '%1$d new, %2$d updated, %3$d mailings, %4$d skipped, %5$d errors. Completed: %6$s', 'contacthub' ), absint( $report['new'] ?? 0 ), absint( $report['updated'] ?? 0 ), absint( $report['mailings'] ?? 0 ), absint( $report['skipped'] ?? 0 ), absint( $report['errors'] ?? 0 ), sanitize_text_field( $report['completed_at'] ?? '' ) ) ) . '</p>';
+			if ( isset( $report['mailing_recipients'] ) ) echo '<p>' . esc_html( sprintf( __( '%d historical recipient assignments were imported and linked to matching people.', 'contacthub' ), absint( $report['mailing_recipients'] ) ) ) . '</p>';
 		}
 		echo '<div class="contacthub-database-actions">';
 		self::newsletter_import_form( 'preview', __( 'Preview import', 'contacthub' ), 'button-secondary' );
@@ -556,6 +575,7 @@ The link is valid for 24 hours.', 'contacthub' ),
 
 	public static function handle_migrate_newsletter_plugin() {
 		self::guard_database_action( 'contacthub_migrate_newsletter_plugin' );
+		if ( ! apply_filters( 'contacthub_can_migrate_newsletter_plugin', false ) ) wp_die( esc_html__( 'The Newsletter Plugin migration is available with ContactHub Plus.', 'contacthub' ), '', array( 'response' => 403 ) );
 		$table = self::newsletter_plugin_table();
 		if ( ! $table || ! ContactHub_Store::ready() ) {
 			self::database_redirect( 'error', __( 'The newsletter subscriber source or the ContactHub database is not available.', 'contacthub' ) );
@@ -622,21 +642,57 @@ The link is valid for 24 hours.', 'contacthub' ),
 
 	public static function render_duplicate_preview() {
 		if ( ! ContactHub_Store::ready() ) return;
-		$candidates = ContactHub_Store::duplicate_candidates( 50 );
+		$candidates = ContactHub_Store::duplicate_groups( 50 );
 		echo '<section class="contacthub-card contacthub-settings-card"><h2>' . esc_html__( 'Duplicate review', 'contacthub' ) . '</h2><p>' . esc_html__( 'ContactHub lists likely duplicates without changing them. Use the merge tool below to select a primary record and confirm every conflict.', 'contacthub' ) . '</p>';
 		if ( ! $candidates ) {
 			echo '<p>' . esc_html__( 'No likely duplicates were found using phone number, WordPress account, or matching name and address.', 'contacthub' ) . '</p></section>';
 			return;
 		}
 		echo '<table class="widefat striped"><thead><tr><th>' . esc_html__( 'Possible duplicate', 'contacthub' ) . '</th><th>' . esc_html__( 'Match', 'contacthub' ) . '</th><th>' . esc_html__( 'Review', 'contacthub' ) . '</th></tr></thead><tbody>';
-		foreach ( $candidates as $pair ) {
-			$left = trim( $pair['left_first_name'] . ' ' . $pair['left_last_name'] );
-			$right = trim( $pair['right_first_name'] . ' ' . $pair['right_last_name'] );
-			$url_left = admin_url( 'admin.php?page=contacthub&person=' . absint( $pair['left_id'] ) );
-			$url_right = admin_url( 'admin.php?page=contacthub&person=' . absint( $pair['right_id'] ) );
-			echo '<tr><td>' . esc_html( ( $left ?: __( 'Unnamed contact', 'contacthub' ) ) . ' ↔ ' . ( $right ?: __( 'Unnamed contact', 'contacthub' ) ) ) . '</td><td>' . esc_html( $pair['reason'] ) . '</td><td><a href="' . esc_url( $url_left ) . '">' . esc_html__( 'Open first', 'contacthub' ) . '</a> · <a href="' . esc_url( $url_right ) . '">' . esc_html__( 'Open second', 'contacthub' ) . '</a></td></tr>';
+		foreach ( $candidates as $group ) {
+			$names = array_values( $group['names'] );
+			$primary = array_shift( $names );
+			echo '<tr><td><strong>' . esc_html( $primary ) . '</strong>' . ( $names ? '<br><span class="contacthub-muted">' . esc_html( implode( ', ', $names ) ) . '</span>' : '' ) . '</td><td>' . esc_html( implode( ', ', $group['reasons'] ) ) . '</td><td><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contacthub_merge_group">';
+			foreach ( $group['ids'] as $id ) echo '<input type="hidden" name="ids[]" value="' . esc_attr( $id ) . '">';
+			wp_nonce_field( 'contacthub_merge_group' ); echo '<button class="button">' . esc_html__( 'Edit duplicates', 'contacthub' ) . '</button></form></td></tr>';
 		}
 		echo '</tbody></table></section>';
+	}
+
+	private static function render_integrations_settings() {
+		echo '<section class="contacthub-card contacthub-settings-card"><h2>' . esc_html__( 'Integrations', 'contacthub' ) . '</h2><p>' . esc_html__( 'Connected systems remain the owners of their source data. ContactHub Basic displays compatible data without changing it.', 'contacthub' ) . '</p></section>';
+		if ( class_exists( 'WooCommerce' ) ) {
+			echo '<section class="contacthub-card contacthub-settings-card"><h2>WooCommerce</h2><p>' . esc_html__( 'WooCommerce is active. Orders and customer information can be displayed in ContactHub; existing orders, invoices, prices, and WooCommerce records are never changed.', 'contacthub' ) . '</p>';
+			self::render_plus_promotion( 'woocommerce' ); echo '</section>';
+		}
+		if ( self::newsletter_plugin_installed() ) self::render_newsletter_plugin_readonly();
+		if ( self::groundhogg_active() ) echo '<section class="contacthub-card contacthub-settings-card"><h2>Groundhogg</h2><p>' . esc_html__( 'Groundhogg is active and can remain the leading contact data source.', 'contacthub' ) . '</p></section>';
+		do_action( 'contacthub_render_integrations_settings' );
+	}
+
+	private static function render_newsletter_plugin_readonly() {
+		global $wpdb;
+		$email_table = $wpdb->prefix . 'newsletter_emails';
+		$exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $email_table ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+		echo '<section class="contacthub-card contacthub-settings-card"><h2>The Newsletter Plugin</h2><p>' . esc_html__( 'The Newsletter Plugin is active. ContactHub Basic provides a read-only overview; the source plugin remains unchanged.', 'contacthub' ) . '</p>';
+		if ( $exists ) {
+			$columns = (array) $wpdb->get_col( "SHOW COLUMNS FROM `{$email_table}`", 0 ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$title_column = in_array( 'subject', $columns, true ) ? 'subject' : ( in_array( 'name', $columns, true ) ? 'name' : 'id' );
+			$sent_column = in_array( 'sent', $columns, true ) ? 'sent' : ( in_array( 'total', $columns, true ) ? 'total' : '0' );
+			$open_column = in_array( 'open', $columns, true ) ? 'open' : ( in_array( 'opens', $columns, true ) ? 'opens' : '0' );
+			$rows = (array) $wpdb->get_results( "SELECT id, `{$title_column}` AS title, {$sent_column} AS sent, {$open_column} AS opened FROM `{$email_table}` ORDER BY id DESC LIMIT 20", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery
+			echo '<table class="widefat striped"><thead><tr><th>' . esc_html__( 'Mailing', 'contacthub' ) . '</th><th>' . esc_html__( 'Delivered', 'contacthub' ) . '</th><th>' . esc_html__( 'Opened', 'contacthub' ) . '</th></tr></thead><tbody>';
+			foreach ( $rows as $row ) echo '<tr><td>' . esc_html( $row['title'] ?: sprintf( __( 'Mailing #%d', 'contacthub' ), $row['id'] ) ) . '</td><td>' . esc_html( absint( $row['sent'] ) ) . '</td><td>' . esc_html( absint( $row['opened'] ) ) . '</td></tr>';
+			if ( ! $rows ) echo '<tr><td colspan="3">' . esc_html__( 'No previous mailings were found.', 'contacthub' ) . '</td></tr>';
+			echo '</tbody></table>';
+		}
+		self::render_plus_promotion( 'newsletter' ); echo '</section>';
+	}
+
+	public static function render_plus_promotion( $context = '' ) {
+		if ( ! current_user_can( 'manage_options' ) || defined( 'CONTACTHUB_PLUS_VERSION' ) ) return;
+		$url = apply_filters( 'contacthub_plus_url', 'https://contacthub.com/', $context );
+		echo '<div class="contacthub-plus-promotion"><p><strong>' . esc_html__( 'Manage this data centrally in ContactHub Plus.', 'contacthub' ) . '</strong> ' . esc_html__( 'Save time and costs, avoid duplicate work, and unlock additional automation, newsletter, and reporting options.', 'contacthub' ) . '</p><p><a class="button button-primary" href="' . esc_url( $url ) . '" target="_blank" rel="noopener">' . esc_html__( 'Learn about ContactHub Plus', 'contacthub' ) . '</a></p></div>';
 	}
 
 	private static function woocommerce_import_form( $mode, $label, $class ) {
@@ -714,6 +770,9 @@ The link is valid for 24 hours.', 'contacthub' ),
 				}
 				if ( isset( $report['email_templates'] ) || isset( $report['broadcasts'] ) ) {
 					echo '<p>' . esc_html( sprintf( __( 'Newsletter archive: %1$d email templates and %2$d completed broadcasts imported; %3$d errors.', 'contacthub' ), absint( $report['email_templates'] ?? 0 ), absint( $report['broadcasts'] ?? 0 ), absint( $report['newsletter_errors'] ?? 0 ) ) ) . '</p>';
+					if ( isset( $report['broadcast_recipients'] ) ) {
+						echo '<p>' . esc_html( sprintf( __( '%d historical broadcast recipient assignments were imported where Groundhogg made them available.', 'contacthub' ), absint( $report['broadcast_recipients'] ) ) ) . '</p>';
+					}
 				}
 				if ( ! empty( $report['missing_tags'] ) && is_array( $report['missing_tags'] ) ) {
 					echo '<details><summary>' . esc_html( sprintf( __( 'Tag warnings: %d', 'contacthub' ), count( $report['missing_tags'] ) ) ) . '</summary><ul>';
@@ -777,7 +836,7 @@ The link is valid for 24 hours.', 'contacthub' ),
 
 	private static function database_redirect( $type, $message ) {
 		set_transient( 'contacthub_database_notice_' . get_current_user_id(), array( 'type' => $type, 'message' => $message ), MINUTE_IN_SECONDS );
-		wp_safe_redirect( admin_url( 'admin.php?page=contacthub-settings&tab=migration' ) ); exit;
+		wp_safe_redirect( admin_url( 'admin.php?page=contacthub-settings&tab=other&other_section=migration' ) ); exit;
 	}
 
 	private static function render_preserved_integrations() {
@@ -1072,7 +1131,8 @@ The link is valid for 24 hours.', 'contacthub' ),
 			'source'         => sanitize_key( $data['source'] ?? 'newsletter_signup' ),
 			'management_key' => sanitize_key( $management_key ),
 		);
-		set_transient( 'contacthub_newsletter_verify_' . $verification_key, $payload, DAY_IN_SECONDS );
+		$verification_ttl = max( HOUR_IN_SECONDS, absint( apply_filters( 'contacthub_newsletter_confirmation_ttl', DAY_IN_SECONDS, $payload ) ) );
+		set_transient( 'contacthub_newsletter_verify_' . $verification_key, $payload, $verification_ttl );
 		$link = add_query_arg( array( 'contacthub_newsletter_verify' => $token ), home_url( '/' ) );
 		$replacements = array( '{first_name}' => esc_html( $payload['first_name'] ), '{site_name}' => esc_html( wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ) ), '{confirmation_link}' => '<a href="' . esc_url( $link ) . '">' . esc_html__( 'Confirm newsletter subscription', 'contacthub' ) . '</a>' );
 		$subject = strtr( $settings['newsletter_subject'], $replacements );
@@ -1082,6 +1142,7 @@ The link is valid for 24 hours.', 'contacthub' ),
 			delete_transient( 'contacthub_newsletter_verify_' . $verification_key );
 			return new WP_Error( 'contacthub_optin_mail', __( 'The confirmation email could not be sent. Please try again later.', 'contacthub' ) );
 		}
+		do_action( 'contacthub_newsletter_confirmation_sent', $verification_key, $token, $payload );
 		return $verification_key;
 	}
 
@@ -1712,7 +1773,7 @@ The link is valid for 24 hours.', 'contacthub' ),
 			return;
 		}
 		$settings = self::settings();
-		$notice_page = $settings['registration_page_id'] ? get_permalink( $settings['registration_page_id'] ) : home_url( '/' );
+		$notice_page = $settings['registration_page_id'] ? get_permalink( $settings['registration_page_id'] ) : self::virtual_registration_url();
 		$user_id = absint( $_GET['contacthub_verify'] );
 		$key = sanitize_text_field( wp_unslash( $_GET['key'] ) );
 		$stored = (string) get_user_meta( $user_id, 'contacthub_verification_token', true );
@@ -1775,21 +1836,33 @@ The link is valid for 24 hours.', 'contacthub' ),
 
 	public static function registration_url( $url ) {
 		$settings = self::settings();
-		if ( ! is_multisite() && ! empty( $settings['enabled'] ) && ! empty( $settings['replace_registration'] ) && $settings['registration_page_id'] ) {
-			$page_url = get_permalink( $settings['registration_page_id'] );
-			if ( $page_url ) {
-				return $page_url;
-			}
+		if ( ! is_multisite() && ! empty( $settings['enabled'] ) && ! empty( $settings['replace_registration'] ) ) {
+			$page_url = $settings['registration_page_id'] ? get_permalink( $settings['registration_page_id'] ) : self::virtual_registration_url();
+			if ( $page_url ) return $page_url;
 		}
 		return $url;
 	}
 
+	private static function virtual_registration_url() {
+		return add_query_arg( 'contacthub_registration', '1', home_url( '/' ) );
+	}
+
+	public static function render_virtual_registration() {
+		$virtual = isset( $_GET['contacthub_registration'] ) ? sanitize_key( wp_unslash( $_GET['contacthub_registration'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public read-only endpoint.
+		if ( is_admin() || '1' !== $virtual ) return;
+		$settings = self::settings();
+		if ( empty( $settings['enabled'] ) || $settings['registration_page_id'] ) return;
+		status_header( 200 ); nocache_headers(); get_header();
+		echo '<main id="primary" class="site-main contacthub-virtual-registration"><div class="contacthub-virtual-registration-inner"><h1>' . esc_html__( 'Registration', 'contacthub' ) . '</h1>' . do_shortcode( '[contacthub_registration]' ) . '</div></main>';
+		get_footer(); exit;
+	}
+
 	public static function maybe_redirect_registration() {
 		$settings = self::settings();
-		if ( is_multisite() || empty( $settings['enabled'] ) || empty( $settings['replace_registration'] ) || ! $settings['registration_page_id'] ) {
+		if ( is_multisite() || empty( $settings['enabled'] ) || empty( $settings['replace_registration'] ) ) {
 			return;
 		}
-		$page_url = get_permalink( $settings['registration_page_id'] );
+		$page_url = $settings['registration_page_id'] ? get_permalink( $settings['registration_page_id'] ) : self::virtual_registration_url();
 		if ( $page_url ) {
 			wp_safe_redirect( $page_url );
 			exit;

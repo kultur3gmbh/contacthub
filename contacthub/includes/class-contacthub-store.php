@@ -103,6 +103,44 @@ final class ContactHub_Store {
 		return array_values( $pairs );
 	}
 
+	/**
+	 * Return transitive duplicate groups instead of isolated pairs.
+	 *
+	 * A-B and B-C are deliberately presented as one review group. No records are
+	 * changed here; the administrator still resolves every value in the merge UI.
+	 */
+	public static function duplicate_groups( $limit = 50 ) {
+		$pairs = self::duplicate_candidates( max( 200, absint( $limit ) * 10 ) );
+		$parents = array();
+		$names = array();
+		$reasons = array();
+		$find = static function ( $id ) use ( &$parents, &$find ) {
+			if ( ! isset( $parents[ $id ] ) ) $parents[ $id ] = $id;
+			if ( $parents[ $id ] !== $id ) $parents[ $id ] = $find( $parents[ $id ] );
+			return $parents[ $id ];
+		};
+		foreach ( $pairs as $pair ) {
+			$left = absint( $pair['left_id'] ); $right = absint( $pair['right_id'] );
+			$left_root = $find( $left ); $right_root = $find( $right );
+			if ( $left_root !== $right_root ) $parents[ $right_root ] = $left_root;
+			$names[ $left ] = trim( $pair['left_first_name'] . ' ' . $pair['left_last_name'] );
+			$names[ $right ] = trim( $pair['right_first_name'] . ' ' . $pair['right_last_name'] );
+			$reasons[ $left . ':' . $right ] = $pair['reason'];
+		}
+		$groups = array();
+		foreach ( array_keys( $parents ) as $id ) $groups[ $find( $id ) ][] = $id;
+		$result = array();
+		foreach ( $groups as $ids ) {
+			$ids = array_values( array_unique( array_map( 'absint', $ids ) ) );
+			if ( count( $ids ) < 2 ) continue;
+			$group_reasons = array();
+			foreach ( $reasons as $key => $reason ) { list( $a, $b ) = array_map( 'absint', explode( ':', $key ) ); if ( in_array( $a, $ids, true ) && in_array( $b, $ids, true ) ) $group_reasons[] = $reason; }
+			$result[] = array( 'ids' => $ids, 'names' => array_map( static function ( $id ) use ( $names ) { return $names[ $id ] ?: sprintf( __( 'Record #%d', 'contacthub' ), $id ); }, $ids ), 'reasons' => array_values( array_unique( $group_reasons ) ) );
+			if ( count( $result ) >= absint( $limit ) ) break;
+		}
+		return $result;
+	}
+
 	public static function create_contact( $data ) {
 		global $wpdb;
 		$table = ContactHub_Schema::table_names()['contacts'];

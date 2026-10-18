@@ -10,7 +10,7 @@ final class ContactHub_Data_Tools {
 	public static function boot() {
 		add_filter( 'cron_schedules', array( __CLASS__, 'cron_schedules' ) );
 		add_filter( 'contacthub_settings_tabs', array( __CLASS__, 'settings_tabs' ) );
-		add_action( 'contacthub_render_settings_tab_duplicates', array( __CLASS__, 'render_duplicate_settings' ) );
+		add_action( 'contacthub_render_other_settings_section_duplicates', array( __CLASS__, 'render_duplicate_settings' ) );
 		add_action( 'contacthub_render_migration_tools', array( __CLASS__, 'render_migration_tools' ) );
 		add_action( 'contacthub_render_salutation_tools', array( __CLASS__, 'render_central_library' ) );
 		add_filter( 'contacthub_misc_settings_sections', array( __CLASS__, 'misc_sections' ) );
@@ -20,6 +20,7 @@ final class ContactHub_Data_Tools {
 		add_action( 'admin_post_contacthub_vcard_preview', array( __CLASS__, 'handle_vcard_preview' ) );
 		add_action( 'admin_post_contacthub_vcard_import', array( __CLASS__, 'handle_vcard_import' ) );
 		add_action( 'admin_post_contacthub_merge_preview', array( __CLASS__, 'handle_merge_preview' ) );
+		add_action( 'admin_post_contacthub_merge_group', array( __CLASS__, 'handle_merge_group' ) );
 		add_action( 'admin_post_contacthub_merge_commit', array( __CLASS__, 'handle_merge_commit' ) );
 		add_action( 'admin_post_contacthub_central_salutations', array( __CLASS__, 'handle_central_settings' ) );
 		add_action( 'admin_post_contacthub_sync_central_salutations', array( __CLASS__, 'handle_central_sync' ) );
@@ -30,7 +31,6 @@ final class ContactHub_Data_Tools {
 	}
 
 	public static function settings_tabs( $tabs ) {
-		$tabs['duplicates'] = __( 'Duplicates', 'contacthub' );
 		return $tabs;
 	}
 
@@ -40,7 +40,6 @@ final class ContactHub_Data_Tools {
 	}
 
 	public static function misc_sections( $sections ) {
-		$sections['admin_notices'] = __( 'Admin notices', 'contacthub' );
 		return $sections;
 	}
 
@@ -50,11 +49,11 @@ final class ContactHub_Data_Tools {
 	}
 
 	private static function migration_url( $args = array() ) {
-		return add_query_arg( $args, admin_url( 'admin.php?page=contacthub-settings&tab=migration' ) );
+		return add_query_arg( $args, admin_url( 'admin.php?page=contacthub-settings&tab=other&other_section=migration' ) );
 	}
 
 	private static function duplicates_url( $args = array() ) {
-		return add_query_arg( $args, admin_url( 'admin.php?page=contacthub-settings&tab=duplicates' ) );
+		return add_query_arg( $args, admin_url( 'admin.php?page=contacthub-settings&tab=other&other_section=duplicates' ) );
 	}
 
 	private static function redirect_notice( $type, $message, $args = array() ) {
@@ -356,7 +355,7 @@ final class ContactHub_Data_Tools {
 		if ( $state ) { self::render_merge_preview( $token, $state ); echo '</section>'; return; }
 		$entity = isset( $_GET['merge_entity'] ) && 'companies' === $_GET['merge_entity'] ? 'companies' : 'contacts'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$search = isset( $_GET['merge_search'] ) ? sanitize_text_field( wp_unslash( $_GET['merge_search'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		echo '<form method="get" class="contacthub-search"><input type="hidden" name="page" value="contacthub-settings"><input type="hidden" name="tab" value="duplicates"><select name="merge_entity"><option value="contacts"' . selected( $entity, 'contacts', false ) . '>' . esc_html__( 'People', 'contacthub' ) . '</option><option value="companies"' . selected( $entity, 'companies', false ) . '>' . esc_html__( 'Companies', 'contacthub' ) . '</option></select><input type="search" name="merge_search" value="' . esc_attr( $search ) . '" placeholder="' . esc_attr__( 'Search records', 'contacthub' ) . '"><button class="button">' . esc_html__( 'Search', 'contacthub' ) . '</button></form>';
+		echo '<form method="get" class="contacthub-search"><input type="hidden" name="page" value="contacthub-settings"><input type="hidden" name="tab" value="other"><input type="hidden" name="other_section" value="duplicates"><select name="merge_entity"><option value="contacts"' . selected( $entity, 'contacts', false ) . '>' . esc_html__( 'People', 'contacthub' ) . '</option><option value="companies"' . selected( $entity, 'companies', false ) . '>' . esc_html__( 'Companies', 'contacthub' ) . '</option></select><input type="search" name="merge_search" value="' . esc_attr( $search ) . '" placeholder="' . esc_attr__( 'Search records', 'contacthub' ) . '"><button class="button">' . esc_html__( 'Search', 'contacthub' ) . '</button></form>';
 		if ( '' === $search ) { echo '<p class="description">' . esc_html__( 'Enter a name, company, or email fragment to find records to merge.', 'contacthub' ) . '</p></section>'; return; }
 		$records = 'contacts' === $entity ? ContactHub_Store::search_contacts( $search, 50, 0 )['contacts'] : array_values( array_filter( ContactHub_Store::companies(), static function ( $company ) use ( $search ) { return false !== stripos( (string) $company['name'], $search ); } ) );
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contacthub_merge_preview"><input type="hidden" name="entity" value="' . esc_attr( $entity ) . '">'; wp_nonce_field( 'contacthub_merge_preview' );
@@ -372,6 +371,15 @@ final class ContactHub_Data_Tools {
 		if ( count( $ids ) < 2 || count( $ids ) > 20 ) self::redirect_duplicate_notice( 'error', __( 'Select between two and twenty records to merge.', 'contacthub' ) );
 		$token = wp_generate_password( 12, false, false ); $state = array( 'entity' => 'companies' === ( $_POST['entity'] ?? '' ) ? 'companies' : 'contacts', 'ids' => $ids );
 		set_transient( 'contacthub_merge_' . get_current_user_id() . '_' . $token, $state, HOUR_IN_SECONDS ); wp_safe_redirect( self::duplicates_url( array( 'merge_token' => $token ) ) ); exit;
+	}
+
+	public static function handle_merge_group() {
+		self::require_admin( 'contacthub_merge_group' );
+		$ids = isset( $_POST['ids'] ) && is_array( $_POST['ids'] ) ? array_values( array_unique( array_filter( array_map( 'absint', $_POST['ids'] ) ) ) ) : array();
+		if ( count( $ids ) < 2 || count( $ids ) > 20 ) self::redirect_duplicate_notice( 'error', __( 'Select between two and twenty records to merge.', 'contacthub' ) );
+		$token = wp_generate_password( 12, false, false );
+		set_transient( 'contacthub_merge_' . get_current_user_id() . '_' . $token, array( 'entity' => 'contacts', 'ids' => $ids ), HOUR_IN_SECONDS );
+		wp_safe_redirect( self::duplicates_url( array( 'merge_token' => $token ) ) ); exit;
 	}
 
 	private static function render_merge_preview( $token, $state ) {
@@ -457,7 +465,7 @@ final class ContactHub_Data_Tools {
 		echo '<label><input type="checkbox" name="enabled" value="1"' . checked( ! empty( $settings['enabled'] ), true, false ) . '> ' . esc_html__( 'Allow me to hide non-critical reminders', 'contacthub' ) . '</label><p><label><input type="checkbox" name="restore" value="1"> ' . esc_html( sprintf( __( 'Restore all hidden reminders for my account (%d)', 'contacthub' ), count( $hidden ) ) ) . '</label></p><p><button class="button button-primary">' . esc_html__( 'Save notice settings', 'contacthub' ) . '</button></p></form></section>';
 	}
 
-	public static function handle_notice_settings() { self::require_admin( 'contacthub_admin_notice_settings' ); update_option( self::NOTICE_OPTION, array( 'enabled' => empty( $_POST['enabled'] ) ? 0 : 1 ), false ); if ( ! empty( $_POST['restore'] ) ) delete_user_meta( get_current_user_id(), 'contacthub_hidden_admin_notices' ); wp_safe_redirect( admin_url( 'admin.php?page=contacthub-settings&tab=misc&misc_section=admin_notices' ) ); exit; }
+	public static function handle_notice_settings() { self::require_admin( 'contacthub_admin_notice_settings' ); update_option( self::NOTICE_OPTION, array( 'enabled' => empty( $_POST['enabled'] ) ? 0 : 1 ), false ); if ( ! empty( $_POST['restore'] ) ) delete_user_meta( get_current_user_id(), 'contacthub_hidden_admin_notices' ); wp_safe_redirect( admin_url( 'admin.php?page=contacthub-settings&tab=other&other_section=admin_notices' ) ); exit; }
 
 	public static function enqueue_notice_helper() {
 		$settings = (array) get_option( self::NOTICE_OPTION, array() );

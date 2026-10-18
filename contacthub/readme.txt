@@ -2,12 +2,20 @@
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.17.1
+Stable tag: 0.17.2
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a free WooCommerce customer overview, optional Groundhogg compatibility, and a stable extension API for ContactHub Plus.
 
 == Changelog ==
+
+= 0.17.2 =
+* Reorganizes settings into General, Integrations, Miscellaneous parameters, Forms, Newsletter, and Miscellaneous areas while preserving legacy settings links.
+* Adds a theme-compatible built-in registration page when no WordPress registration page is selected.
+* Groups transitive duplicate candidates and opens all records directly in the editable, non-destructive merge comparison.
+* Adds a read-only overview for The Newsletter Plugin and central administrator-only ContactHub Plus guidance without changing source-plugin data.
+* Moves migration, duplicate review, administrator-notice controls, and optional CSS extensions into the consolidated Miscellaneous area.
+* Renames the salutation bulk action to Reconcile now and reports imported Groundhogg broadcast-recipient assignments when available.
 
 = 0.17.1 =
 * Moves duplicate review and merging into a dedicated Settings tab and corrects links to person details.

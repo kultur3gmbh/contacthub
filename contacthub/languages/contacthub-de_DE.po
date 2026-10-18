@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactHub 0.17.1\n"
+"Project-Id-Version: ContactHub 0.17.2\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-16 09:00+0200\n"
-"PO-Revision-Date: 2026-10-17 18:00+0200\n"
+"PO-Revision-Date: 2026-10-18 12:00+0200\n"
 "Last-Translator: Kultur3 GmbH\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -3857,3 +3857,66 @@ msgstr "Neutral / nicht angegeben"
 #: contacthub/includes/class-contacthub-store.php
 msgid "Enter a valid final email address before merging."
 msgstr "Geben Sie vor dem Zusammenführen eine gültige endgültige E-Mail-Adresse ein."
+
+msgid "%d historical broadcast recipient assignments were imported where Groundhogg made them available."
+msgstr "%d historische Zuordnungen von Aussendungsempfängern wurden importiert, sofern Groundhogg sie bereitgestellt hat."
+
+msgid "%d historical recipient assignments were imported and linked to matching people."
+msgstr "%d historische Empfängerzuordnungen wurden importiert und mit den passenden Personen verknüpft."
+
+msgid "Built-in registration page"
+msgstr "Integrierte Registrierungsseite"
+
+msgid "Connected systems remain the owners of their source data. ContactHub Basic displays compatible data without changing it."
+msgstr "Verbundene Systeme bleiben Eigentümer ihrer Quelldaten. ContactHub Basic zeigt kompatible Daten an, ohne sie zu verändern."
+
+msgid "ContactHub uses a theme-compatible built-in page while no WordPress page is selected."
+msgstr "ContactHub verwendet eine zum Theme passende integrierte Seite, solange keine WordPress-Seite ausgewählt ist."
+
+msgid "Edit duplicates"
+msgstr "Dublette bearbeiten"
+
+msgid "General settings"
+msgstr "Allgemeine Einstellungen"
+
+msgid "Groundhogg is active and can remain the leading contact data source."
+msgstr "Groundhogg ist aktiv und kann weiterhin die führende Kontaktdatenquelle bleiben."
+
+msgid "Integrations"
+msgstr "Integrationen"
+
+msgid "Job title"
+msgstr "Berufsbezeichnung"
+
+msgid "Learn about ContactHub Plus"
+msgstr "ContactHub Plus kennenlernen"
+
+msgid "Mailing #%d"
+msgstr "Aussendung Nr. %d"
+
+msgid "Manage this data centrally in ContactHub Plus."
+msgstr "Verwalten Sie diese Daten zentral in ContactHub Plus."
+
+msgid "Miscellaneous"
+msgstr "Sonstiges"
+
+msgid "No previous mailings were found."
+msgstr "Es wurden keine früheren Aussendungen gefunden."
+
+msgid "Reconcile now"
+msgstr "Jetzt abgleichen"
+
+msgid "Save time and costs, avoid duplicate work, and unlock additional automation, newsletter, and reporting options."
+msgstr "Sparen Sie Zeit und Kosten, vermeiden Sie doppelte Arbeit und nutzen Sie zusätzliche Möglichkeiten für Automatisierung, Newsletter und Auswertungen."
+
+msgid "The Newsletter Plugin is active. ContactHub Basic provides a read-only overview; the source plugin remains unchanged."
+msgstr "The Newsletter Plugin ist aktiv. ContactHub Basic bietet eine schreibgeschützte Übersicht; das Quell-Plugin bleibt unverändert."
+
+msgid "The Newsletter Plugin migration is available with ContactHub Plus."
+msgstr "Die Migration von The Newsletter Plugin ist mit ContactHub Plus verfügbar."
+
+msgid "View registration page"
+msgstr "Registrierungsseite anzeigen"
+
+msgid "WooCommerce is active. Orders and customer information can be displayed in ContactHub; existing orders, invoices, prices, and WooCommerce records are never changed."
+msgstr "WooCommerce ist aktiv. Bestellungen und Kundendaten können in ContactHub angezeigt werden; bestehende Bestellungen, Rechnungen, Preise und WooCommerce-Datensätze werden niemals verändert."
