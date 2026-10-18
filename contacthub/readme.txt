@@ -2,12 +2,18 @@
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.17.2
+Stable tag: 0.17.15
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a free WooCommerce customer overview, optional Groundhogg compatibility, and a stable extension API for ContactHub Plus.
 
 == Changelog ==
+
+= 0.17.15 =
+* Adds Notes as the first person-detail tab, with typed notes, optional titles, and an editable date and time.
+* Adds dedicated Import subtabs and actions to People and Companies while retaining previewed, non-destructive CSV and vCard workflows.
+* Adds accessible drag-and-drop file areas for CSV and vCard imports.
+* Shows the most recent central salutation-library synchronization in the salutation settings.
 
 = 0.17.2 =
 * Reorganizes settings into General, Integrations, Miscellaneous parameters, Forms, Newsletter, and Miscellaneous areas while preserving legacy settings links.

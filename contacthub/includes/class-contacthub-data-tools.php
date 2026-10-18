@@ -52,6 +52,13 @@ final class ContactHub_Data_Tools {
 		return add_query_arg( $args, admin_url( 'admin.php?page=contacthub-settings&tab=other&other_section=migration' ) );
 	}
 
+	private static function import_url( $return_page = '', $args = array() ) {
+		if ( in_array( $return_page, array( 'contacthub', 'contacthub-firmen' ), true ) ) {
+			return add_query_arg( array_merge( array( 'page' => $return_page, 'section' => 'import' ), $args ), admin_url( 'admin.php' ) );
+		}
+		return self::migration_url( $args );
+	}
+
 	private static function duplicates_url( $args = array() ) {
 		return add_query_arg( $args, admin_url( 'admin.php?page=contacthub-settings&tab=other&other_section=duplicates' ) );
 	}
@@ -59,6 +66,12 @@ final class ContactHub_Data_Tools {
 	private static function redirect_notice( $type, $message, $args = array() ) {
 		set_transient( 'contacthub_database_notice_' . get_current_user_id(), array( 'type' => $type, 'message' => $message ), MINUTE_IN_SECONDS );
 		wp_safe_redirect( self::migration_url( $args ) );
+		exit;
+	}
+
+	private static function redirect_import_notice( $type, $message, $return_page = '', $args = array() ) {
+		set_transient( 'contacthub_database_notice_' . get_current_user_id(), array( 'type' => $type, 'message' => $message ), MINUTE_IN_SECONDS );
+		wp_safe_redirect( self::import_url( $return_page, $args ) );
 		exit;
 	}
 
@@ -73,6 +86,18 @@ final class ContactHub_Data_Tools {
 		self::render_vcard_import();
 	}
 
+	/** Render the same non-destructive import workflow on People or Companies. */
+	public static function render_entity_import( $entity, $return_page ) {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			echo '<div class="notice notice-error inline"><p>' . esc_html__( 'You do not have permission to import data.', 'contacthub' ) . '</p></div>';
+			return;
+		}
+		$entity = 'companies' === $entity ? 'companies' : 'contacts';
+		echo '<div class="contacthub-heading"><div><p class="contacthub-eyebrow">CRM</p><h1>' . esc_html__( 'Import', 'contacthub' ) . '</h1><p>' . esc_html__( 'Review every file in a preview before ContactHub saves any records.', 'contacthub' ) . '</p></div></div>';
+		self::render_csv_import( $entity, $return_page );
+		if ( 'contacts' === $entity ) self::render_vcard_import( $return_page );
+	}
+
 	public static function render_duplicate_settings() {
 		$notice = get_transient( 'contacthub_database_notice_' . get_current_user_id() );
 		if ( $notice ) {
@@ -83,18 +108,19 @@ final class ContactHub_Data_Tools {
 		self::render_merge_tool();
 	}
 
-	private static function render_csv_import() {
+	private static function render_csv_import( $forced_entity = '', $return_page = '' ) {
 		$token = isset( $_GET['csv_token'] ) ? sanitize_key( wp_unslash( $_GET['csv_token'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- opaque transient reference.
 		$preview = $token ? get_transient( 'contacthub_csv_' . get_current_user_id() . '_' . $token ) : false;
 		echo '<section class="contacthub-card contacthub-settings-card"><h2>' . esc_html__( 'Import CSV data', 'contacthub' ) . '</h2><p>' . esc_html__( 'Import people or companies from a CSV file. The preview and field mapping are shown before anything is saved. Empty CSV values never erase existing data.', 'contacthub' ) . '</p>';
 		$report = get_transient( 'contacthub_csv_report_' . get_current_user_id() );
 		if ( is_array( $report ) ) { delete_transient( 'contacthub_csv_report_' . get_current_user_id() ); echo '<div class="contacthub-migration-report"><h3>' . esc_html__( 'Last CSV import', 'contacthub' ) . '</h3><p>' . esc_html( sprintf( __( '%1$d created, %2$d updated, %3$d skipped, %4$d errors.', 'contacthub' ), $report['created'], $report['updated'], $report['skipped'], count( $report['errors'] ) ) ) . '</p>'; if ( $report['errors'] ) { echo '<details><summary>' . esc_html__( 'Show import errors', 'contacthub' ) . '</summary><ul>'; foreach ( array_slice( $report['errors'], 0, 100 ) as $error ) echo '<li>' . esc_html( $error ) . '</li>'; echo '</ul></details>'; } echo '</div>'; }
 		if ( ! $preview ) {
-			echo '<form method="post" enctype="multipart/form-data" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="contacthub-settings-grid"><input type="hidden" name="action" value="contacthub_csv_preview">';
+			echo '<form method="post" enctype="multipart/form-data" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="contacthub-settings-grid"><input type="hidden" name="action" value="contacthub_csv_preview"><input type="hidden" name="return_page" value="' . esc_attr( $return_page ) . '">';
 			wp_nonce_field( 'contacthub_csv_preview' );
-			echo '<label><span>' . esc_html__( 'Data type', 'contacthub' ) . '</span><select name="entity"><option value="contacts">' . esc_html__( 'People', 'contacthub' ) . '</option><option value="companies">' . esc_html__( 'Companies', 'contacthub' ) . '</option></select></label>';
+			if ( $forced_entity ) echo '<input type="hidden" name="entity" value="' . esc_attr( $forced_entity ) . '">';
+			else echo '<label><span>' . esc_html__( 'Data type', 'contacthub' ) . '</span><select name="entity"><option value="contacts">' . esc_html__( 'People', 'contacthub' ) . '</option><option value="companies">' . esc_html__( 'Companies', 'contacthub' ) . '</option></select></label>';
 			echo '<label><span>' . esc_html__( 'Duplicate handling', 'contacthub' ) . '</span><select name="mode"><option value="fill">' . esc_html__( 'Fill missing values', 'contacthub' ) . '</option><option value="skip">' . esc_html__( 'Skip existing records', 'contacthub' ) . '</option><option value="update">' . esc_html__( 'Update with non-empty CSV values', 'contacthub' ) . '</option></select></label>';
-			echo '<label><span>' . esc_html__( 'CSV file', 'contacthub' ) . '</span><input type="file" name="csv_file" accept=".csv,text/csv,text/plain" required></label><p><button class="button button-primary">' . esc_html__( 'Upload and preview', 'contacthub' ) . '</button></p></form>';
+			echo '<label class="contacthub-file-drop"><span class="dashicons dashicons-upload" aria-hidden="true"></span><strong>' . esc_html__( 'Drop a CSV file here', 'contacthub' ) . '</strong><span>' . esc_html__( 'or click to select a file', 'contacthub' ) . '</span><input type="file" name="csv_file" accept=".csv,text/csv,text/plain" required><small class="contacthub-file-drop-name"></small></label><p><button class="button button-primary">' . esc_html__( 'Upload and preview', 'contacthub' ) . '</button></p></form>';
 			echo '<p class="description">' . esc_html__( 'In Groundhogg frontend mode, people are imported directly into Groundhogg and companies into Groundhogg Companies when available. Source files and external records are never changed.', 'contacthub' ) . '</p></section>';
 			return;
 		}
@@ -114,21 +140,23 @@ final class ContactHub_Data_Tools {
 		foreach ( $preview['headers'] as $header ) echo '<th>' . esc_html( $header ) . '</th>';
 		echo '</tr></thead><tbody>';
 		foreach ( array_slice( $preview['rows'], 0, 10 ) as $row ) { echo '<tr>'; foreach ( $preview['headers'] as $index => $unused ) echo '<td>' . esc_html( $row[ $index ] ?? '' ) . '</td>'; echo '</tr>'; }
-		echo '</tbody></table></div><p><label><input type="checkbox" name="confirmed" value="1" required> ' . esc_html__( 'I checked the preview and field mapping.', 'contacthub' ) . '</label></p><p><button class="button button-primary">' . esc_html__( 'Start import', 'contacthub' ) . '</button> <a class="button" href="' . esc_url( self::migration_url() ) . '">' . esc_html__( 'Cancel', 'contacthub' ) . '</a></p></form></section>';
+		echo '</tbody></table></div><p><label><input type="checkbox" name="confirmed" value="1" required> ' . esc_html__( 'I checked the preview and field mapping.', 'contacthub' ) . '</label></p><p><button class="button button-primary">' . esc_html__( 'Start import', 'contacthub' ) . '</button> <a class="button" href="' . esc_url( self::import_url( $preview['return_page'] ?? '' ) ) . '">' . esc_html__( 'Cancel', 'contacthub' ) . '</a></p></form></section>';
 	}
 
 	public static function handle_csv_preview() {
 		self::require_admin( 'contacthub_csv_preview' );
-		if ( empty( $_FILES['csv_file']['tmp_name'] ) || ! is_uploaded_file( $_FILES['csv_file']['tmp_name'] ) || (int) $_FILES['csv_file']['size'] > 5 * MB_IN_BYTES ) self::redirect_notice( 'error', __( 'Select a CSV file no larger than 5 MB.', 'contacthub' ) );
+		$return_page = sanitize_key( wp_unslash( $_POST['return_page'] ?? '' ) );
+		if ( ! in_array( $return_page, array( 'contacthub', 'contacthub-firmen' ), true ) ) $return_page = '';
+		if ( empty( $_FILES['csv_file']['tmp_name'] ) || ! is_uploaded_file( $_FILES['csv_file']['tmp_name'] ) || (int) $_FILES['csv_file']['size'] > 5 * MB_IN_BYTES ) { set_transient( 'contacthub_database_notice_' . get_current_user_id(), array( 'type' => 'error', 'message' => __( 'Select a CSV file no larger than 5 MB.', 'contacthub' ) ), MINUTE_IN_SECONDS ); wp_safe_redirect( self::import_url( $return_page ) ); exit; }
 		$entity = 'companies' === sanitize_key( wp_unslash( $_POST['entity'] ?? '' ) ) ? 'companies' : 'contacts';
 		$mode = sanitize_key( wp_unslash( $_POST['mode'] ?? 'fill' ) );
 		if ( ! in_array( $mode, array( 'skip', 'fill', 'update' ), true ) ) $mode = 'fill';
 		$parsed = self::parse_csv( $_FILES['csv_file']['tmp_name'] );
-		if ( is_wp_error( $parsed ) ) self::redirect_notice( 'error', $parsed->get_error_message() );
+		if ( is_wp_error( $parsed ) ) { set_transient( 'contacthub_database_notice_' . get_current_user_id(), array( 'type' => 'error', 'message' => $parsed->get_error_message() ), MINUTE_IN_SECONDS ); wp_safe_redirect( self::import_url( $return_page ) ); exit; }
 		$token = wp_generate_password( 12, false, false );
-		$parsed['entity'] = $entity; $parsed['mode'] = $mode; $parsed['source_hash'] = hash_file( 'sha256', $_FILES['csv_file']['tmp_name'] );
+		$parsed['entity'] = $entity; $parsed['mode'] = $mode; $parsed['source_hash'] = hash_file( 'sha256', $_FILES['csv_file']['tmp_name'] ); $parsed['return_page'] = $return_page;
 		set_transient( 'contacthub_csv_' . get_current_user_id() . '_' . $token, $parsed, HOUR_IN_SECONDS );
-		wp_safe_redirect( self::migration_url( array( 'csv_token' => $token ) ) ); exit;
+		wp_safe_redirect( self::import_url( $return_page, array( 'csv_token' => $token ) ) ); exit;
 	}
 
 	private static function parse_csv( $path ) {
@@ -163,13 +191,14 @@ final class ContactHub_Data_Tools {
 
 	public static function handle_csv_import() {
 		self::require_admin( 'contacthub_csv_import' );
-		if ( '1' !== ( $_POST['confirmed'] ?? '' ) ) self::redirect_notice( 'error', __( 'Confirm the field mapping before importing.', 'contacthub' ) );
 		$token = sanitize_key( wp_unslash( $_POST['csv_token'] ?? '' ) );
 		$data = get_transient( 'contacthub_csv_' . get_current_user_id() . '_' . $token );
-		if ( ! is_array( $data ) ) self::redirect_notice( 'error', __( 'The import preview expired. Upload the CSV file again.', 'contacthub' ) );
+		$return_page = is_array( $data ) ? sanitize_key( $data['return_page'] ?? '' ) : '';
+		if ( '1' !== ( $_POST['confirmed'] ?? '' ) ) self::redirect_import_notice( 'error', __( 'Confirm the field mapping before importing.', 'contacthub' ), $return_page, array( 'csv_token' => $token ) );
+		if ( ! is_array( $data ) ) self::redirect_import_notice( 'error', __( 'The import preview expired. Upload the CSV file again.', 'contacthub' ), $return_page );
 		$mapping = isset( $_POST['mapping'] ) && is_array( $_POST['mapping'] ) ? array_map( 'absint', wp_unslash( $_POST['mapping'] ) ) : array();
 		$required = 'companies' === $data['entity'] ? 'name' : 'email';
-		if ( ! isset( $_POST['mapping'][ $required ] ) || '' === (string) $_POST['mapping'][ $required ] ) self::redirect_notice( 'error', __( 'Map the required identifying field before importing.', 'contacthub' ), array( 'csv_token' => $token ) );
+		if ( ! isset( $_POST['mapping'][ $required ] ) || '' === (string) $_POST['mapping'][ $required ] ) self::redirect_import_notice( 'error', __( 'Map the required identifying field before importing.', 'contacthub' ), $return_page, array( 'csv_token' => $token ) );
 		$report = array( 'created' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => array() );
 		foreach ( $data['rows'] as $number => $row ) {
 			$record = array(); foreach ( self::csv_fields( $data['entity'] ) as $field => $label ) if ( isset( $_POST['mapping'][ $field ] ) && '' !== (string) $_POST['mapping'][ $field ] ) $record[ $field ] = sanitize_text_field( $row[ $mapping[ $field ] ] ?? '' );
@@ -179,7 +208,7 @@ final class ContactHub_Data_Tools {
 		}
 		delete_transient( 'contacthub_csv_' . get_current_user_id() . '_' . $token );
 		set_transient( 'contacthub_csv_report_' . get_current_user_id(), $report, HOUR_IN_SECONDS );
-		self::redirect_notice( 'success', sprintf( __( 'CSV import completed: %1$d created, %2$d updated, %3$d skipped, %4$d errors.', 'contacthub' ), $report['created'], $report['updated'], $report['skipped'], count( $report['errors'] ) ) );
+		self::redirect_import_notice( 'success', sprintf( __( 'CSV import completed: %1$d created, %2$d updated, %3$d skipped, %4$d errors.', 'contacthub' ), $report['created'], $report['updated'], $report['skipped'], count( $report['errors'] ) ), $return_page );
 	}
 
 	private static function import_csv_record( $entity, $record, $mode, $source_id ) {
@@ -205,7 +234,7 @@ final class ContactHub_Data_Tools {
 		return $current ? 'updated' : 'created';
 	}
 
-	private static function render_vcard_import() {
+	private static function render_vcard_import( $return_page = '' ) {
 		$token = isset( $_GET['vcard_token'] ) ? sanitize_key( wp_unslash( $_GET['vcard_token'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- opaque transient reference.
 		$preview = $token ? get_transient( 'contacthub_vcard_' . get_current_user_id() . '_' . $token ) : false;
 		echo '<section class="contacthub-card contacthub-settings-card"><h2>' . esc_html__( 'Import vCard contacts', 'contacthub' ) . '</h2><p>' . esc_html__( 'Import Apple Contacts and other vCard/VCF files. ContactHub shows a preview first, matches existing people without deleting data, and never changes the source file.', 'contacthub' ) . '</p>';
@@ -217,10 +246,10 @@ final class ContactHub_Data_Tools {
 			echo '</div>';
 		}
 		if ( ! $preview ) {
-			echo '<form method="post" enctype="multipart/form-data" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="contacthub-settings-grid"><input type="hidden" name="action" value="contacthub_vcard_preview">';
+			echo '<form method="post" enctype="multipart/form-data" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="contacthub-settings-grid"><input type="hidden" name="action" value="contacthub_vcard_preview"><input type="hidden" name="return_page" value="' . esc_attr( $return_page ) . '">';
 			wp_nonce_field( 'contacthub_vcard_preview' );
 			echo '<label><span>' . esc_html__( 'Duplicate handling', 'contacthub' ) . '</span><select name="mode"><option value="fill">' . esc_html__( 'Fill missing values', 'contacthub' ) . '</option><option value="skip">' . esc_html__( 'Skip existing records', 'contacthub' ) . '</option><option value="update">' . esc_html__( 'Update with non-empty vCard values', 'contacthub' ) . '</option></select></label>';
-			echo '<label><span>' . esc_html__( 'vCard file', 'contacthub' ) . '</span><input type="file" name="vcard_file" accept=".vcf,.vcard,text/vcard,text/x-vcard" required></label><p><button class="button button-primary">' . esc_html__( 'Upload and preview', 'contacthub' ) . '</button></p></form></section>';
+			echo '<label class="contacthub-file-drop"><span class="dashicons dashicons-id-alt" aria-hidden="true"></span><strong>' . esc_html__( 'Drop a vCard file here', 'contacthub' ) . '</strong><span>' . esc_html__( 'or click to select a VCF file', 'contacthub' ) . '</span><input type="file" name="vcard_file" accept=".vcf,.vcard,text/vcard,text/x-vcard" required><small class="contacthub-file-drop-name"></small></label><p><button class="button button-primary">' . esc_html__( 'Upload and preview', 'contacthub' ) . '</button></p></form></section>';
 			return;
 		}
 		echo '<div class="contacthub-migration-report"><h3>' . esc_html__( 'Import preview', 'contacthub' ) . '</h3><p>' . esc_html( sprintf( _n( '%d contact was found. No data has been changed yet.', '%d contacts were found. No data has been changed yet.', count( $preview['records'] ), 'contacthub' ), count( $preview['records'] ) ) ) . '</p></div>';
@@ -228,20 +257,22 @@ final class ContactHub_Data_Tools {
 		foreach ( array_slice( $preview['records'], 0, 10 ) as $record ) echo '<tr><td>' . esc_html( trim( $record['first_name'] . ' ' . $record['last_name'] ) ) . '</td><td>' . esc_html( $record['email'] ) . '</td><td>' . esc_html( $record['phone'] ) . '</td><td>' . esc_html( $record['company'] ) . '</td></tr>';
 		echo '</tbody></table></div><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contacthub_vcard_import"><input type="hidden" name="vcard_token" value="' . esc_attr( $token ) . '">';
 		wp_nonce_field( 'contacthub_vcard_import' );
-		echo '<p><label><strong>' . esc_html__( 'Optional tags for all imported contacts', 'contacthub' ) . '</strong><br><input class="regular-text" type="text" name="tags" placeholder="' . esc_attr__( 'Tags separated by commas', 'contacthub' ) . '"></label></p><p><label><input type="checkbox" name="confirmed" value="1" required> ' . esc_html__( 'I checked the vCard preview and want to start the non-destructive import.', 'contacthub' ) . '</label></p><p><button class="button button-primary">' . esc_html__( 'Start import', 'contacthub' ) . '</button> <a class="button" href="' . esc_url( self::migration_url() ) . '">' . esc_html__( 'Cancel', 'contacthub' ) . '</a></p></form></section>';
+		echo '<p><label><strong>' . esc_html__( 'Optional tags for all imported contacts', 'contacthub' ) . '</strong><br><input class="regular-text" type="text" name="tags" placeholder="' . esc_attr__( 'Tags separated by commas', 'contacthub' ) . '"></label></p><p><label><input type="checkbox" name="confirmed" value="1" required> ' . esc_html__( 'I checked the vCard preview and want to start the non-destructive import.', 'contacthub' ) . '</label></p><p><button class="button button-primary">' . esc_html__( 'Start import', 'contacthub' ) . '</button> <a class="button" href="' . esc_url( self::import_url( $preview['return_page'] ?? '' ) ) . '">' . esc_html__( 'Cancel', 'contacthub' ) . '</a></p></form></section>';
 	}
 
 	public static function handle_vcard_preview() {
 		self::require_admin( 'contacthub_vcard_preview' );
-		if ( empty( $_FILES['vcard_file']['tmp_name'] ) || ! is_uploaded_file( $_FILES['vcard_file']['tmp_name'] ) || (int) $_FILES['vcard_file']['size'] > 5 * MB_IN_BYTES ) self::redirect_notice( 'error', __( 'Select a vCard file no larger than 5 MB.', 'contacthub' ) );
+		$return_page = sanitize_key( wp_unslash( $_POST['return_page'] ?? '' ) );
+		if ( ! in_array( $return_page, array( 'contacthub', 'contacthub-firmen' ), true ) ) $return_page = '';
+		if ( empty( $_FILES['vcard_file']['tmp_name'] ) || ! is_uploaded_file( $_FILES['vcard_file']['tmp_name'] ) || (int) $_FILES['vcard_file']['size'] > 5 * MB_IN_BYTES ) self::redirect_import_notice( 'error', __( 'Select a vCard file no larger than 5 MB.', 'contacthub' ), $return_page );
 		$contents = file_get_contents( $_FILES['vcard_file']['tmp_name'] ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- protected upload stream.
 		$records = self::parse_vcard_contents( (string) $contents );
-		if ( is_wp_error( $records ) ) self::redirect_notice( 'error', $records->get_error_message() );
+		if ( is_wp_error( $records ) ) self::redirect_import_notice( 'error', $records->get_error_message(), $return_page );
 		$mode = sanitize_key( wp_unslash( $_POST['mode'] ?? 'fill' ) );
 		if ( ! in_array( $mode, array( 'skip', 'fill', 'update' ), true ) ) $mode = 'fill';
 		$token = wp_generate_password( 12, false, false );
-		set_transient( 'contacthub_vcard_' . get_current_user_id() . '_' . $token, array( 'records' => $records, 'mode' => $mode ), HOUR_IN_SECONDS );
-		wp_safe_redirect( self::migration_url( array( 'vcard_token' => $token ) ) ); exit;
+		set_transient( 'contacthub_vcard_' . get_current_user_id() . '_' . $token, array( 'records' => $records, 'mode' => $mode, 'return_page' => $return_page ), HOUR_IN_SECONDS );
+		wp_safe_redirect( self::import_url( $return_page, array( 'vcard_token' => $token ) ) ); exit;
 	}
 
 	/** Parse vCard 2.1, 3.0, and 4.0 text without retaining the source file. */
@@ -312,9 +343,10 @@ final class ContactHub_Data_Tools {
 
 	public static function handle_vcard_import() {
 		self::require_admin( 'contacthub_vcard_import' );
-		if ( '1' !== ( $_POST['confirmed'] ?? '' ) ) self::redirect_notice( 'error', __( 'Confirm the vCard preview before importing.', 'contacthub' ) );
 		$token = sanitize_key( wp_unslash( $_POST['vcard_token'] ?? '' ) ); $data = get_transient( 'contacthub_vcard_' . get_current_user_id() . '_' . $token );
-		if ( ! is_array( $data ) ) self::redirect_notice( 'error', __( 'The vCard preview expired. Upload the file again.', 'contacthub' ) );
+		$return_page = is_array( $data ) ? sanitize_key( $data['return_page'] ?? '' ) : '';
+		if ( '1' !== ( $_POST['confirmed'] ?? '' ) ) self::redirect_import_notice( 'error', __( 'Confirm the vCard preview before importing.', 'contacthub' ), $return_page, array( 'vcard_token' => $token ) );
+		if ( ! is_array( $data ) ) self::redirect_import_notice( 'error', __( 'The vCard preview expired. Upload the file again.', 'contacthub' ), $return_page );
 		$tags = sanitize_text_field( wp_unslash( $_POST['tags'] ?? '' ) );
 		$report = array( 'created' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => array() );
 		foreach ( $data['records'] as $index => $record ) {
@@ -324,7 +356,7 @@ final class ContactHub_Data_Tools {
 			$report[ $result ]++;
 		}
 		delete_transient( 'contacthub_vcard_' . get_current_user_id() . '_' . $token ); set_transient( 'contacthub_vcard_report_' . get_current_user_id(), $report, HOUR_IN_SECONDS );
-		self::redirect_notice( 'success', sprintf( __( 'vCard import completed: %1$d created, %2$d updated, %3$d skipped, %4$d errors.', 'contacthub' ), $report['created'], $report['updated'], $report['skipped'], count( $report['errors'] ) ) );
+		self::redirect_import_notice( 'success', sprintf( __( 'vCard import completed: %1$d created, %2$d updated, %3$d skipped, %4$d errors.', 'contacthub' ), $report['created'], $report['updated'], $report['skipped'], count( $report['errors'] ) ), $return_page );
 	}
 
 	private static function import_vcard_record( $record, $mode ) {
@@ -426,7 +458,7 @@ final class ContactHub_Data_Tools {
 	}
 
 	public static function render_central_library() {
-		$settings = wp_parse_args( (array) get_option( self::CENTRAL_OPTION, array() ), array( 'enabled' => 0, 'auto' => 0, 'source_url' => '', 'version' => '', 'updated_at' => '', 'error' => '' ) );
+		$settings = wp_parse_args( (array) get_option( self::CENTRAL_OPTION, array() ), array( 'enabled' => 0, 'auto' => 0, 'source_url' => '', 'version' => '', 'updated_at' => '', 'last_success_at' => '', 'error' => '' ) );
 		echo '<section class="contacthub-card contacthub-settings-card"><h2>' . esc_html__( 'Optional central salutation library', 'contacthub' ) . '</h2><p>' . esc_html__( 'You can optionally supplement your local library with a centrally maintained name list. Local and manually confirmed assignments always take precedence. No contact or customer data is uploaded.', 'contacthub' ) . '</p>';
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contacthub_central_salutations">'; wp_nonce_field( 'contacthub_central_salutations' );
 		echo '<p><label><input type="checkbox" name="enabled" value="1"' . checked( ! empty( $settings['enabled'] ), true, false ) . '> ' . esc_html__( 'Enable the central library', 'contacthub' ) . '</label></p><p><label><input type="checkbox" name="accepted" value="1"' . checked( ! empty( $settings['enabled'] ), true, false ) . '> ' . esc_html__( 'I understand that name-based salutations may be incomplete or incorrect and remain responsible for reviewing them.', 'contacthub' ) . '</label></p><p><label><input type="checkbox" name="auto" value="1"' . checked( ! empty( $settings['auto'] ), true, false ) . '> ' . esc_html__( 'Check weekly for library updates', 'contacthub' ) . '</label></p><p><button class="button button-primary">' . esc_html__( 'Save library settings', 'contacthub' ) . '</button></p></form>';
@@ -449,14 +481,14 @@ final class ContactHub_Data_Tools {
 	public static function scheduled_central_sync() { $settings = (array) get_option( self::CENTRAL_OPTION, array() ); if ( ! empty( $settings['enabled'] ) && ! empty( $settings['auto'] ) ) self::sync_central_library(); }
 
 	private static function sync_central_library() {
-		$settings = wp_parse_args( (array) get_option( self::CENTRAL_OPTION, array() ), array( 'enabled' => 0, 'source_url' => '', 'version' => '', 'updated_at' => '', 'error' => '' ) );
+		$settings = wp_parse_args( (array) get_option( self::CENTRAL_OPTION, array() ), array( 'enabled' => 0, 'source_url' => '', 'version' => '', 'updated_at' => '', 'last_success_at' => '', 'error' => '' ) );
 		if ( empty( $settings['enabled'] ) ) return new WP_Error( 'contacthub_central_disabled', __( 'Enable the central library before updating it.', 'contacthub' ) );
 		$url = apply_filters( 'contacthub_central_salutation_library_url', 'https://raw.githubusercontent.com/kultur3gmbh/contacthub-salutations/main/salutations.json' );
 		$response = wp_safe_remote_get( $url, array( 'timeout' => 15, 'user-agent' => 'ContactHub/' . CONTACTHUB_VERSION ) );
 		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) { $settings['error'] = __( 'The central library could not be downloaded. Your local library was not changed.', 'contacthub' ); $settings['updated_at'] = current_time( 'mysql' ); update_option( self::CENTRAL_OPTION, $settings, false ); return new WP_Error( 'contacthub_central_download', $settings['error'] ); }
 		$json = json_decode( wp_remote_retrieve_body( $response ), true ); $entries = isset( $json['entries'] ) && is_array( $json['entries'] ) ? $json['entries'] : ( is_array( $json ) ? $json : array() ); $added = 0;
 		foreach ( $entries as $entry ) { if ( ! is_array( $entry ) ) continue; $name = sanitize_text_field( $entry['first_name'] ?? '' ); $salutation = sanitize_key( $entry['salutation'] ?? '' ); if ( $name && ! ContactHub_Store::suggested_salutation( $name ) && ContactHub_Store::learn_salutation( $name, $salutation, 'central' ) ) $added++; }
-		$settings['version'] = sanitize_text_field( $json['version'] ?? gmdate( 'Y-m-d' ) ); $settings['source_url'] = esc_url_raw( $url ); $settings['updated_at'] = current_time( 'mysql' ); $settings['error'] = ''; update_option( self::CENTRAL_OPTION, $settings, false ); return $added;
+		$settings['version'] = sanitize_text_field( $json['version'] ?? gmdate( 'Y-m-d' ) ); $settings['source_url'] = esc_url_raw( $url ); $settings['updated_at'] = current_time( 'mysql' ); $settings['last_success_at'] = $settings['updated_at']; $settings['error'] = ''; update_option( self::CENTRAL_OPTION, $settings, false ); return $added;
 	}
 
 	public static function render_notice_settings() {

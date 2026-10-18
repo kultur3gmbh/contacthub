@@ -685,19 +685,20 @@ final class ContactHub_Store {
 		return self::add_activity( $contact_id, 0, 'consent', 'granted' === $status ? __( 'Marketing consent granted manually', 'contacthub' ) : __( 'Marketing consent revoked manually', 'contacthub' ), $note );
 	}
 
-	public static function add_activity( $contact_id, $company_id, $type, $title, $content ) {
+	public static function add_activity( $contact_id, $company_id, $type, $title, $content, $occurred_at = '' ) {
 		global $wpdb;
 		$table = ContactHub_Schema::table_names()['activities'];
-		return false !== $wpdb->insert( $table, array( 'contact_id' => $contact_id ? absint( $contact_id ) : null, 'company_id' => $company_id ? absint( $company_id ) : null, 'activity_type' => sanitize_key( $type ), 'title' => sanitize_text_field( $title ), 'content' => wp_kses_post( $content ), 'source' => 'contacthub', 'actor_user_id' => get_current_user_id(), 'occurred_at' => current_time( 'mysql' ), 'created_at' => current_time( 'mysql' ) ) );
+		$occurred_at = preg_match( '/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', (string) $occurred_at ) ? $occurred_at : current_time( 'mysql' );
+		return false !== $wpdb->insert( $table, array( 'contact_id' => $contact_id ? absint( $contact_id ) : null, 'company_id' => $company_id ? absint( $company_id ) : null, 'activity_type' => sanitize_key( $type ), 'title' => sanitize_text_field( $title ), 'content' => wp_kses_post( $content ), 'source' => 'contacthub', 'actor_user_id' => get_current_user_id(), 'occurred_at' => $occurred_at, 'created_at' => current_time( 'mysql' ) ) );
 	}
 
 	public static function activities( $contact_id = 0, $company_id = 0 ) {
 		global $wpdb;
 		$table = ContactHub_Schema::table_names()['activities'];
 		if ( $contact_id ) {
-			return (array) $wpdb->get_results( $wpdb->prepare( "SELECT title AS summary, content, occurred_at AS created_at FROM `{$table}` WHERE contact_id = %d ORDER BY occurred_at DESC LIMIT 20", absint( $contact_id ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+			return (array) $wpdb->get_results( $wpdb->prepare( "SELECT id, activity_type, title AS summary, content, occurred_at AS created_at FROM `{$table}` WHERE contact_id = %d ORDER BY occurred_at DESC LIMIT 50", absint( $contact_id ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
 		}
-		return (array) $wpdb->get_results( $wpdb->prepare( "SELECT title AS summary, content, occurred_at AS created_at FROM `{$table}` WHERE company_id = %d ORDER BY occurred_at DESC LIMIT 20", absint( $company_id ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+		return (array) $wpdb->get_results( $wpdb->prepare( "SELECT id, activity_type, title AS summary, content, occurred_at AS created_at FROM `{$table}` WHERE company_id = %d ORDER BY occurred_at DESC LIMIT 50", absint( $company_id ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
 	}
 
 	public static function link_user( $contact_id, $user_id ) {

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactHub 0.17.2\n"
+"Project-Id-Version: ContactHub 0.17.15\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-16 09:00+0200\n"
 "PO-Revision-Date: 2026-10-18 12:00+0200\n"
@@ -3920,3 +3920,90 @@ msgstr "Registrierungsseite anzeigen"
 
 msgid "WooCommerce is active. Orders and customer information can be displayed in ContactHub; existing orders, invoices, prices, and WooCommerce records are never changed."
 msgstr "WooCommerce ist aktiv. Bestellungen und Kundendaten können in ContactHub angezeigt werden; bestehende Bestellungen, Rechnungen, Preise und WooCommerce-Datensätze werden niemals verändert."
+
+msgid "You do not have permission to import data."
+msgstr "Sie haben keine Berechtigung, Daten zu importieren."
+
+msgid "Review every file in a preview before ContactHub saves any records."
+msgstr "Prüfen Sie jede Datei in der Vorschau, bevor ContactHub Datensätze speichert."
+
+msgid "Drop a CSV file here"
+msgstr "CSV-Datei hier ablegen"
+
+msgid "or click to select a file"
+msgstr "oder klicken, um eine Datei auszuwählen"
+
+msgid "Drop a vCard file here"
+msgstr "vCard-Datei hier ablegen"
+
+msgid "or click to select a VCF file"
+msgstr "oder klicken, um eine VCF-Datei auszuwählen"
+
+msgid "View selection"
+msgstr "Ansicht auswählen"
+
+msgid "Notes"
+msgstr "Notizen"
+
+msgid "The person could not be found."
+msgstr "Die Person wurde nicht gefunden."
+
+msgid "General note"
+msgstr "Allgemeine Notiz"
+
+msgid "Telephone call"
+msgstr "Telefongespräch"
+
+msgid "Message"
+msgstr "Nachricht"
+
+msgid "Meeting"
+msgstr "Besprechung"
+
+msgid "Callback"
+msgstr "Rückruf"
+
+msgid "Enter note content."
+msgstr "Geben Sie einen Notiztext ein."
+
+msgid "The note was saved."
+msgstr "Die Notiz wurde gespeichert."
+
+msgid "The note could not be saved."
+msgstr "Die Notiz konnte nicht gespeichert werden."
+
+msgid "Add note"
+msgstr "Notiz hinzufügen"
+
+msgid "Date and time"
+msgstr "Datum und Uhrzeit"
+
+msgid "Title (optional)"
+msgstr "Titel (optional)"
+
+msgid "Note"
+msgstr "Notiz"
+
+msgid "Save note"
+msgstr "Notiz speichern"
+
+msgid "No notes yet"
+msgstr "Noch keine Notizen"
+
+msgid "Create the first note for this person."
+msgstr "Erstellen Sie die erste Notiz für diese Person."
+
+msgid "Last central synchronization:"
+msgstr "Letzte zentrale Synchronisierung:"
+
+msgid "Never"
+msgstr "Noch nie"
+
+msgid "A unified view of companies, contacts, orders, and invoices."
+msgstr "Eine gemeinsame Übersicht über Firmen, Personen, Bestellungen und Rechnungen."
+
+msgid "Add company"
+msgstr "Firma hinzufügen"
+
+msgid "Add person"
+msgstr "Person hinzufügen"

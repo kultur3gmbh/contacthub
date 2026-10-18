@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactHub 0.17.2\n"
+"Project-Id-Version: ContactHub 0.17.15\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-18 12:00+0200\n"
 "PO-Revision-Date: 2026-10-16 09:00+0200\n"
@@ -3919,4 +3919,91 @@ msgid "View registration page"
 msgstr ""
 
 msgid "WooCommerce is active. Orders and customer information can be displayed in ContactHub; existing orders, invoices, prices, and WooCommerce records are never changed."
+msgstr ""
+
+msgid "You do not have permission to import data."
+msgstr ""
+
+msgid "Review every file in a preview before ContactHub saves any records."
+msgstr ""
+
+msgid "Drop a CSV file here"
+msgstr ""
+
+msgid "or click to select a file"
+msgstr ""
+
+msgid "Drop a vCard file here"
+msgstr ""
+
+msgid "or click to select a VCF file"
+msgstr ""
+
+msgid "View selection"
+msgstr ""
+
+msgid "Notes"
+msgstr ""
+
+msgid "The person could not be found."
+msgstr ""
+
+msgid "General note"
+msgstr ""
+
+msgid "Telephone call"
+msgstr ""
+
+msgid "Message"
+msgstr ""
+
+msgid "Meeting"
+msgstr ""
+
+msgid "Callback"
+msgstr ""
+
+msgid "Enter note content."
+msgstr ""
+
+msgid "The note was saved."
+msgstr ""
+
+msgid "The note could not be saved."
+msgstr ""
+
+msgid "Add note"
+msgstr ""
+
+msgid "Date and time"
+msgstr ""
+
+msgid "Title (optional)"
+msgstr ""
+
+msgid "Note"
+msgstr ""
+
+msgid "Save note"
+msgstr ""
+
+msgid "No notes yet"
+msgstr ""
+
+msgid "Create the first note for this person."
+msgstr ""
+
+msgid "Last central synchronization:"
+msgstr ""
+
+msgid "Never"
+msgstr ""
+
+msgid "A unified view of companies, contacts, orders, and invoices."
+msgstr ""
+
+msgid "Add company"
+msgstr ""
+
+msgid "Add person"
 msgstr ""

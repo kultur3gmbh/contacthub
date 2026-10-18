@@ -1001,4 +1001,35 @@
 		var question = template.replace('%1$s', link.dataset.name || '').replace('%2$d', link.dataset.count || '0');
 		if (!window.confirm(question)) event.preventDefault();
 	});
+
+	document.addEventListener('change', function (event) {
+		if (!event.target.matches('.contacthub-file-drop input[type="file"]')) return;
+		var drop = event.target.closest('.contacthub-file-drop');
+		var name = drop && drop.querySelector('.contacthub-file-drop-name');
+		if (name) name.textContent = event.target.files.length ? event.target.files[0].name : '';
+		if (drop) drop.classList.toggle('has-file', !!event.target.files.length);
+	});
+
+	document.addEventListener('dragover', function (event) {
+		var drop = event.target.closest('.contacthub-file-drop');
+		if (!drop) return;
+		event.preventDefault();
+		drop.classList.add('is-dragging');
+	});
+
+	document.addEventListener('dragleave', function (event) {
+		var drop = event.target.closest('.contacthub-file-drop');
+		if (drop) drop.classList.remove('is-dragging');
+	});
+
+	document.addEventListener('drop', function (event) {
+		var drop = event.target.closest('.contacthub-file-drop');
+		if (!drop) return;
+		event.preventDefault();
+		drop.classList.remove('is-dragging');
+		var input = drop.querySelector('input[type="file"]');
+		if (!input || !event.dataTransfer || !event.dataTransfer.files.length) return;
+		input.files = event.dataTransfer.files;
+		input.dispatchEvent(new Event('change', { bubbles: true }));
+	});
 }());

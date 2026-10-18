@@ -321,9 +321,12 @@ The link is valid for 24 hours.', 'contacthub' ),
 		echo '</nav>';
 		if ( 'salutations' !== $current ) { do_action( 'contacthub_render_misc_settings_section_' . $current ); return; }
 		$rows = ContactHub_Store::salutations();
+		$central_settings = (array) get_option( 'contacthub_central_salutation_library', array() );
+		$last_sync_value = $central_settings['last_success_at'] ?? ( empty( $central_settings['error'] ) ? ( $central_settings['updated_at'] ?? '' ) : '' );
+		$last_sync = $last_sync_value ? mysql2date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $last_sync_value ) : __( 'Never', 'contacthub' );
 		$edit_id = isset( $_GET['edit_salutation'] ) ? absint( $_GET['edit_salutation'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only editor selection.
 		$editing = $edit_id ? ContactHub_Store::salutation( $edit_id ) : false;
-		echo '<section class="contacthub-card contacthub-settings-card"><h2>' . esc_html__( 'Salutation library', 'contacthub' ) . '</h2><p>' . esc_html__( 'Saved assignments are applied automatically when the same first name is entered again. A manually selected salutation updates the library.', 'contacthub' ) . '</p>';
+		echo '<section class="contacthub-card contacthub-settings-card"><h2>' . esc_html__( 'Salutation library', 'contacthub' ) . '</h2><p>' . esc_html__( 'Saved assignments are applied automatically when the same first name is entered again. A manually selected salutation updates the library.', 'contacthub' ) . '</p><p class="description"><strong>' . esc_html__( 'Last central synchronization:', 'contacthub' ) . '</strong> ' . esc_html( $last_sync ) . '</p>';
 		$bulk = get_transient( 'contacthub_salutation_bulk_' . get_current_user_id() );
 		if ( is_array( $bulk ) ) { delete_transient( 'contacthub_salutation_bulk_' . get_current_user_id() ); echo '<div class="notice notice-info inline"><p>' . esc_html( $bulk['applied'] ? sprintf( __( '%d missing salutations were assigned.', 'contacthub' ), absint( $bulk['count'] ) ) : sprintf( __( '%d contacts can be assigned from the library. Confirm to apply the changes.', 'contacthub' ), absint( $bulk['count'] ) ) ) . '</p></div>'; }
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="contacthub-settings-grid"><input type="hidden" name="action" value="contacthub_salutation_dictionary"><input type="hidden" name="operation" value="save"><input type="hidden" name="original_id" value="' . esc_attr( $edit_id ) . '">'; wp_nonce_field( 'contacthub_salutation_dictionary' );

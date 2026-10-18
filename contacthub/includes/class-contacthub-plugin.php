@@ -28,6 +28,7 @@ final class ContactHub_Plugin {
 		add_action( 'admin_post_contacthub_export_contacts', array( __CLASS__, 'export_contacts' ) );
 		add_action( 'admin_post_contacthub_print_contacts', array( __CLASS__, 'print_contacts' ) );
 		add_action( 'admin_post_contacthub_assign_missing_salutations', array( __CLASS__, 'assign_missing_salutations' ) );
+		add_action( 'admin_post_contacthub_add_contact_note', array( __CLASS__, 'handle_add_contact_note' ) );
 	}
 
 	public static function menu() {
@@ -1421,10 +1422,15 @@ final class ContactHub_Plugin {
 		}
 
 		$company_id = isset( $_GET['firma'] ) ? absint( $_GET['firma'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only navigation.
+		$section = isset( $_GET['section'] ) && 'import' === sanitize_key( wp_unslash( $_GET['section'] ) ) ? 'import' : 'list'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display routing.
 		echo '<div class="wrap contacthub-wrap">';
 		if ( $company_id ) {
 			self::render_company( $company_id );
+		} elseif ( 'import' === $section ) {
+			self::render_entity_navigation( 'contacthub-firmen', 'import' );
+			ContactHub_Data_Tools::render_entity_import( 'companies', 'contacthub-firmen' );
 		} else {
+			self::render_entity_navigation( 'contacthub-firmen', 'list' );
 			self::render_index();
 		}
 		echo '</div>';
@@ -1436,13 +1442,27 @@ final class ContactHub_Plugin {
 		}
 
 		$contact_id = isset( $_GET['person'] ) ? absint( $_GET['person'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only navigation.
+		$section = isset( $_GET['section'] ) && 'import' === sanitize_key( wp_unslash( $_GET['section'] ) ) ? 'import' : 'list'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display routing.
 		echo '<div class="wrap contacthub-wrap">';
 		if ( $contact_id ) {
 			self::render_person( $contact_id );
+		} elseif ( 'import' === $section ) {
+			self::render_entity_navigation( 'contacthub', 'import' );
+			ContactHub_Data_Tools::render_entity_import( 'contacts', 'contacthub' );
 		} else {
+			self::render_entity_navigation( 'contacthub', 'list' );
 			self::render_people_index();
 		}
 		echo '</div>';
+	}
+
+	private static function render_entity_navigation( $page, $current ) {
+		echo '<nav class="nav-tab-wrapper contacthub-entity-tabs" aria-label="' . esc_attr__( 'View selection', 'contacthub' ) . '">';
+		echo '<a class="nav-tab' . ( 'list' === $current ? ' nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=' . $page ) ) . '">' . esc_html__( 'Overview', 'contacthub' ) . '</a>';
+		if ( current_user_can( 'manage_options' ) ) echo '<a class="nav-tab' . ( 'import' === $current ? ' nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=' . $page . '&section=import' ) ) . '">' . esc_html__( 'Import', 'contacthub' ) . '</a>';
+		echo '</nav>';
+		$notice = get_transient( 'contacthub_database_notice_' . get_current_user_id() );
+		if ( is_array( $notice ) ) { delete_transient( 'contacthub_database_notice_' . get_current_user_id() ); echo '<div class="notice notice-' . ( 'success' === ( $notice['type'] ?? '' ) ? 'success' : 'error' ) . ' is-dismissible"><p>' . esc_html( $notice['message'] ?? '' ) . '</p></div>'; }
 	}
 
 	private static function render_people_index() {
@@ -1533,7 +1553,9 @@ final class ContactHub_Plugin {
 			: ( $companies_enabled
 			? __( 'Groundhogg contacts, company relationships, and marketing status in one view.', 'contacthub' )
 			: __( 'Groundhogg contacts, orders, and marketing status in one view.', 'contacthub' ) );
-		echo __( '<div class="contacthub-heading"><div><p class="contacthub-eyebrow">CRM</p><h1>People</h1><p>', 'contacthub' ) . esc_html( $heading_text ) . __( '</p></div><button type="button" class="button button-primary contacthub-heading-action contacthub-open-new-person">Add person</button></div>', 'contacthub' );
+		echo __( '<div class="contacthub-heading"><div><p class="contacthub-eyebrow">CRM</p><h1>People</h1><p>', 'contacthub' ) . esc_html( $heading_text ) . '</p></div><div class="contacthub-heading-actions">';
+		if ( current_user_can( 'manage_options' ) ) echo '<a class="button contacthub-heading-action" href="' . esc_url( admin_url( 'admin.php?page=contacthub&section=import' ) ) . '">' . esc_html__( 'Import', 'contacthub' ) . '</a>';
+		echo '<button type="button" class="button button-primary contacthub-heading-action contacthub-open-new-person">' . esc_html__( 'Add person', 'contacthub' ) . '</button></div></div>';
 		echo __( '<section class="contacthub-card"><div class="contacthub-toolbar"><h2>People overview</h2><span class="contacthub-count">', 'contacthub' ) . esc_html( $total ) . __( ' entries</span></div>', 'contacthub' );
 		echo '<form class="contacthub-search" method="get"><input type="hidden" name="page" value="' . esc_attr( self::people_page_slug() ) . '">';
 		do_action( 'contacthub_people_filter_controls', $segment_id );
@@ -1798,7 +1820,9 @@ final class ContactHub_Plugin {
 
 	private static function render_index() {
 		$search = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only search.
-		echo __( '<div class="contacthub-heading"><div><p class="contacthub-eyebrow">CRM</p><h1>Companies</h1><p>A unified view of companies, contacts, orders, and invoices.</p></div><button type="button" class="button button-primary contacthub-heading-action contacthub-open-new-company">Add company</button></div>', 'contacthub' );
+		echo '<div class="contacthub-heading"><div><p class="contacthub-eyebrow">CRM</p><h1>' . esc_html__( 'Companies', 'contacthub' ) . '</h1><p>' . esc_html__( 'A unified view of companies, contacts, orders, and invoices.', 'contacthub' ) . '</p></div><div class="contacthub-heading-actions">';
+		if ( current_user_can( 'manage_options' ) ) echo '<a class="button contacthub-heading-action" href="' . esc_url( admin_url( 'admin.php?page=contacthub-firmen&section=import' ) ) . '">' . esc_html__( 'Import', 'contacthub' ) . '</a>';
+		echo '<button type="button" class="button button-primary contacthub-heading-action contacthub-open-new-company">' . esc_html__( 'Add company', 'contacthub' ) . '</button></div></div>';
 
 		$missing = array_filter( self::dependencies(), static function ( $value ) { return false === $value; } );
 		if ( $missing ) {
@@ -2801,14 +2825,17 @@ final class ContactHub_Plugin {
 		$broadcast_page_arg = isset( $_GET['broadcast_page'] ) && is_scalar( $_GET['broadcast_page'] ) ? wp_unslash( $_GET['broadcast_page'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only pagination.
 		$show_broadcasts = absint( $broadcast_page_arg ) > 0;
 		echo __( '<section class="contacthub-card contacthub-tabs-card" data-tabs><div class="contacthub-tabs" role="tablist" aria-label="Person data">', 'contacthub' );
-		echo '<button type="button" class="contacthub-tab' . ( $show_broadcasts ? '' : ' is-active' ) . '" id="' . esc_attr( $tabs_id . '-orders-tab' ) . '" role="tab" aria-selected="' . ( $show_broadcasts ? 'false' : 'true' ) . '" aria-controls="' . esc_attr( $tabs_id . '-orders' ) . '" tabindex="' . ( $show_broadcasts ? '-1' : '0' ) . '">' . esc_html__( 'Orders', 'contacthub' ) . ' <span class="contacthub-count">' . esc_html( count( $orders ) ) . '</span></button>';
+		echo '<button type="button" class="contacthub-tab' . ( $show_broadcasts ? '' : ' is-active' ) . '" id="' . esc_attr( $tabs_id . '-notes-tab' ) . '" role="tab" aria-selected="' . ( $show_broadcasts ? 'false' : 'true' ) . '" aria-controls="' . esc_attr( $tabs_id . '-notes' ) . '" tabindex="' . ( $show_broadcasts ? '-1' : '0' ) . '">' . esc_html__( 'Notes', 'contacthub' ) . '</button>';
+		echo '<button type="button" class="contacthub-tab" id="' . esc_attr( $tabs_id . '-orders-tab' ) . '" role="tab" aria-selected="false" aria-controls="' . esc_attr( $tabs_id . '-orders' ) . '" tabindex="-1">' . esc_html__( 'Orders', 'contacthub' ) . ' <span class="contacthub-count">' . esc_html( count( $orders ) ) . '</span></button>';
 		echo '<button type="button" class="contacthub-tab" id="' . esc_attr( $tabs_id . '-addresses-tab' ) . '" role="tab" aria-selected="false" aria-controls="' . esc_attr( $tabs_id . '-addresses' ) . '" tabindex="-1">' . esc_html__( 'Addresses', 'contacthub' ) . '</button>';
 		if ( $events_enabled ) {
 			echo '<button type="button" class="contacthub-tab" id="' . esc_attr( $tabs_id . '-events-tab' ) . '" role="tab" aria-selected="false" aria-controls="' . esc_attr( $tabs_id . '-events' ) . __( '" tabindex="-1">Events <span class="contacthub-count">', 'contacthub' ) . esc_html( count( $events ) ) . '</span></button>';
 		}
 		echo '<button type="button" class="contacthub-tab' . ( $show_broadcasts ? ' is-active' : '' ) . '" id="' . esc_attr( $tabs_id . '-broadcasts-tab' ) . '" role="tab" aria-selected="' . ( $show_broadcasts ? 'true' : 'false' ) . '" aria-controls="' . esc_attr( $tabs_id . '-broadcasts' ) . '" tabindex="' . ( $show_broadcasts ? '0' : '-1' ) . '">' . esc_html__( 'Mailings', 'contacthub' ) . ' <span class="contacthub-count">' . esc_html( count( $broadcasts ) ) . '</span></button>';
-		echo '<button type="button" class="contacthub-tab" id="' . esc_attr( $tabs_id . '-activities-tab' ) . '" role="tab" aria-selected="false" aria-controls="' . esc_attr( $tabs_id . '-activities' ) . __( '" tabindex="-1">Activities</button></div>', 'contacthub' );
-		echo '<div class="contacthub-tab-panel' . ( $show_broadcasts ? '' : ' is-active' ) . '" id="' . esc_attr( $tabs_id . '-orders' ) . '" role="tabpanel" aria-labelledby="' . esc_attr( $tabs_id . '-orders-tab' ) . '"' . ( $show_broadcasts ? ' hidden' : '' ) . '>';
+		echo '</div>';
+		echo '<div class="contacthub-tab-panel' . ( $show_broadcasts ? '' : ' is-active' ) . '" id="' . esc_attr( $tabs_id . '-notes' ) . '" role="tabpanel" aria-labelledby="' . esc_attr( $tabs_id . '-notes-tab' ) . '"' . ( $show_broadcasts ? ' hidden' : '' ) . '>';
+		self::render_contact_activities( $contact_id, false, $editable );
+		echo '</div><div class="contacthub-tab-panel" id="' . esc_attr( $tabs_id . '-orders' ) . '" role="tabpanel" aria-labelledby="' . esc_attr( $tabs_id . '-orders-tab' ) . '" hidden>';
 		self::render_person_orders( $orders, false );
 		echo '</div><div class="contacthub-tab-panel" id="' . esc_attr( $tabs_id . '-addresses' ) . '" role="tabpanel" aria-labelledby="' . esc_attr( $tabs_id . '-addresses-tab' ) . '" hidden>';
 		self::render_customer_addresses( $contact_id, $customer, $contact, false, $editable );
@@ -2821,9 +2848,7 @@ final class ContactHub_Plugin {
 		echo '<div class="contacthub-tab-panel' . ( $show_broadcasts ? ' is-active' : '' ) . '" id="' . esc_attr( $tabs_id . '-broadcasts' ) . '" role="tabpanel" aria-labelledby="' . esc_attr( $tabs_id . '-broadcasts-tab' ) . '"' . ( $show_broadcasts ? '' : ' hidden' ) . '>';
 		self::render_person_broadcasts( $contact_id, $broadcasts );
 		echo '</div>';
-		echo '<div class="contacthub-tab-panel" id="' . esc_attr( $tabs_id . '-activities' ) . '" role="tabpanel" aria-labelledby="' . esc_attr( $tabs_id . '-activities-tab' ) . '" hidden>';
-		self::render_contact_activities( $contact_id, false );
-		echo '</div></section>';
+		echo '</section>';
 	}
 
 	private static function render_person_events( $events ) {
@@ -3334,22 +3359,82 @@ final class ContactHub_Plugin {
 		}
 	}
 
-	private static function render_contact_activities( $contact_id, $standalone = true ) {
+	public static function handle_add_contact_note() {
+		if ( ! current_user_can( self::access_capability() ) ) wp_die( esc_html__( 'You do not have permission.', 'contacthub' ), '', array( 'response' => 403 ) );
+		$contact_id = absint( $_POST['contact_id'] ?? 0 );
+		check_admin_referer( 'contacthub_add_contact_note_' . $contact_id );
+		if ( ! $contact_id || ! self::contact( $contact_id ) ) wp_die( esc_html__( 'The person could not be found.', 'contacthub' ), '', array( 'response' => 404 ) );
+		$type = sanitize_key( wp_unslash( $_POST['note_type'] ?? 'note' ) );
+		$types = self::note_type_labels();
+		if ( ! isset( $types[ $type ] ) ) $type = 'note';
+		$title = sanitize_text_field( wp_unslash( $_POST['note_title'] ?? '' ) );
+		if ( '' === $title ) $title = $types[ $type ];
+		$content = wp_kses_post( wp_unslash( $_POST['note_content'] ?? '' ) );
+		$raw_time = sanitize_text_field( wp_unslash( $_POST['note_time'] ?? '' ) );
+		$date = DateTime::createFromFormat( 'Y-m-d\TH:i', $raw_time, wp_timezone() );
+		$occurred_at = $date && $date->format( 'Y-m-d\TH:i' ) === $raw_time ? $date->format( 'Y-m-d H:i:s' ) : current_time( 'mysql' );
+		if ( '' === trim( wp_strip_all_tags( $content ) ) ) wp_die( esc_html__( 'Enter note content.', 'contacthub' ), '', array( 'response' => 400 ) );
+		if ( ContactHub_Store::standalone() ) {
+			$saved = ContactHub_Store::add_activity( $contact_id, 0, 'note_' . $type, $title, $content, $occurred_at );
+		} elseif ( class_exists( '\\Groundhogg\\Contact' ) ) {
+			try {
+				$groundhogg_contact = new \Groundhogg\Contact( $contact_id );
+				$groundhogg_title = $types[ $type ] === $title ? $title : $types[ $type ] . ': ' . $title;
+				$saved = $groundhogg_contact->add_note( $content, 'user', get_current_user_id(), array( 'summary' => $groundhogg_title, 'date_created' => $occurred_at ) );
+			} catch ( Throwable $error ) {
+				$saved = false;
+			}
+		} else {
+			$saved = false;
+		}
+		set_transient( 'contacthub_note_notice_' . get_current_user_id(), array( 'success' => (bool) $saved, 'message' => $saved ? __( 'The note was saved.', 'contacthub' ) : __( 'The note could not be saved.', 'contacthub' ) ), MINUTE_IN_SECONDS );
+		wp_safe_redirect( admin_url( 'admin.php?page=' . self::people_page_slug() . '&person=' . $contact_id ) );
+		exit;
+	}
+
+	private static function note_type_labels() {
+		return array(
+			'note'     => __( 'General note', 'contacthub' ),
+			'phone'    => __( 'Telephone call', 'contacthub' ),
+			'email'    => __( 'Email', 'contacthub' ),
+			'message'  => __( 'Message', 'contacthub' ),
+			'meeting'  => __( 'Meeting', 'contacthub' ),
+			'callback' => __( 'Callback', 'contacthub' ),
+		);
+	}
+
+	private static function render_contact_activities( $contact_id, $standalone = true, $editable = false ) {
 		if ( ContactHub_Store::standalone() ) {
 			$notes = ContactHub_Store::activities( $contact_id, 0 );
 		} else {
 			$result = self::execute_ability( 'groundhogg/list-contact-notes', array( 'contact_id' => $contact_id, 'limit' => 20, 'offset' => 0 ) );
 			$notes = is_array( $result ) && isset( $result['notes'] ) && is_array( $result['notes'] ) ? $result['notes'] : array();
 		}
+		usort( $notes, static function ( $left, $right ) { return strcmp( (string) self::value( $right, array( 'date_created', 'created_at' ) ), (string) self::value( $left, array( 'date_created', 'created_at' ) ) ); } );
 		if ( $standalone ) {
 			echo '<section class="contacthub-card">';
 		}
-		echo __( '<h2>Activities <span class="contacthub-count">', 'contacthub' ) . esc_html( count( $notes ) ) . '</span></h2><div class="contacthub-timeline">';
+		echo '<div class="contacthub-toolbar"><h2>' . esc_html__( 'Notes', 'contacthub' ) . '</h2><span class="contacthub-count">' . esc_html( count( $notes ) ) . '</span></div>';
+		$notice = get_transient( 'contacthub_note_notice_' . get_current_user_id() );
+		if ( is_array( $notice ) ) { delete_transient( 'contacthub_note_notice_' . get_current_user_id() ); echo '<div class="notice notice-' . ( ! empty( $notice['success'] ) ? 'success' : 'error' ) . ' inline"><p>' . esc_html( $notice['message'] ?? '' ) . '</p></div>'; }
+		if ( $editable ) {
+			echo '<details class="contacthub-note-editor"><summary class="button button-primary">' . esc_html__( 'Add note', 'contacthub' ) . '</summary><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="contacthub-note-form"><input type="hidden" name="action" value="contacthub_add_contact_note"><input type="hidden" name="contact_id" value="' . esc_attr( $contact_id ) . '">';
+			wp_nonce_field( 'contacthub_add_contact_note_' . $contact_id );
+			echo '<label><span>' . esc_html__( 'Type', 'contacthub' ) . '</span><select name="note_type">'; foreach ( self::note_type_labels() as $key => $label ) echo '<option value="' . esc_attr( $key ) . '">' . esc_html( $label ) . '</option>'; echo '</select></label>';
+			echo '<label><span>' . esc_html__( 'Date and time', 'contacthub' ) . '</span><input type="datetime-local" name="note_time" value="' . esc_attr( current_datetime()->format( 'Y-m-d\TH:i' ) ) . '" required></label>';
+			echo '<label class="contacthub-note-title"><span>' . esc_html__( 'Title (optional)', 'contacthub' ) . '</span><input type="text" name="note_title"></label>';
+			echo '<label class="contacthub-note-content"><span>' . esc_html__( 'Note', 'contacthub' ) . '</span><textarea name="note_content" rows="5" required></textarea></label><p><button class="button button-primary">' . esc_html__( 'Save note', 'contacthub' ) . '</button></p></form></details>';
+		}
+		echo '<div class="contacthub-timeline">';
 		if ( ! $notes ) {
-			echo __( '<div><span></span><strong>No contact notes yet</strong><p>Groundhogg currently provides no notes for this person.</p></div>', 'contacthub' );
+			echo '<div><span></span><strong>' . esc_html__( 'No notes yet', 'contacthub' ) . '</strong><p>' . esc_html__( 'Create the first note for this person.', 'contacthub' ) . '</p></div>';
 		} else {
 			foreach ( $notes as $note ) {
-				echo '<div><span></span><strong>' . esc_html( self::value( $note, array( 'summary', 'title' ), __( 'Contact note', 'contacthub' ) ) ) . '</strong><p>' . esc_html( wp_strip_all_tags( self::value( $note, array( 'content', 'note' ) ) ) ) . '</p>';
+				$type = preg_replace( '/^note_/', '', sanitize_key( self::value( $note, array( 'activity_type', 'type' ), 'note' ) ) );
+				$type_labels = self::note_type_labels();
+				echo '<div><span></span><strong>' . esc_html( self::value( $note, array( 'summary', 'title' ), __( 'Contact note', 'contacthub' ) ) ) . '</strong>';
+				if ( isset( $type_labels[ $type ] ) ) echo ' <em class="contacthub-note-type">' . esc_html( $type_labels[ $type ] ) . '</em>';
+				echo '<p>' . nl2br( esc_html( wp_strip_all_tags( self::value( $note, array( 'content', 'note' ) ) ) ) ) . '</p>';
 				$date = self::value( $note, array( 'date_created', 'created_at' ) );
 				if ( $date ) {
 					echo '<small>' . esc_html( $date ) . '</small>';
