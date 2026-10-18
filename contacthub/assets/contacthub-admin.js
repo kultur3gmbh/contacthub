@@ -72,10 +72,19 @@
 		if (button.classList.contains('contacthub-close-user-account')) return toggleLocalModal(button.closest('.contacthub-user-account-modal'), false);
 		if (button.classList.contains('contacthub-save-user-account')) return saveUserAccount(button);
 		if (button.classList.contains('contacthub-tag-suggestion')) return manageTag(button, 'add');
+		if (button.classList.contains('contacthub-tags-summary')) return openTags(button.closest('.contacthub-tags-card'));
+		if (button.classList.contains('contacthub-close-tags')) return closeTags(button.closest('.contacthub-tags-card'));
 		if (button.classList.contains('contacthub-role-suggestion')) return addRole(button);
 		if (button.classList.contains('contacthub-remove-tag')) return manageTag(button, 'remove');
 		if (button.classList.contains('contacthub-remove-role')) return button.closest('.contacthub-role-token').remove();
 		if (button.classList.contains('contacthub-save-address')) return saveAddress(button.closest('.contacthub-address-form'));
+		if (button.classList.contains('contacthub-salutation-value')) return openSalutation(button.closest('.contacthub-salutation-field'));
+		if (button.classList.contains('contacthub-cancel-salutation')) return closeSalutation(button.closest('.contacthub-salutation-field'));
+		if (button.classList.contains('contacthub-add-channel')) return addContactChannel(button.closest('.contacthub-channel-group'));
+		if (button.classList.contains('contacthub-channel-value')) return openContactChannel(button.closest('.contacthub-channel-row'));
+		if (button.classList.contains('contacthub-cancel-channel')) return closeContactChannel(button.closest('.contacthub-channel-row'));
+		if (button.classList.contains('contacthub-save-channel')) return saveContactChannel(button.closest('.contacthub-channel-row'));
+		if (button.classList.contains('contacthub-delete-channel')) return deleteContactChannel(button.closest('.contacthub-channel-row'));
 		if (button.classList.contains('contacthub-edit-address-summary')) {
 			var addressTab = document.querySelector('.contacthub-tab[aria-controls$="-addresses"]');
 			if (addressTab) {
@@ -155,8 +164,126 @@
 		fetch(CONTACTHUB_CONFIG.ajaxUrl, requestOptions(data)).then(parseResponse).then(function (result) {
 			if (!result.success) throw new Error(result.data && result.data.message ? result.data.message : tr('saveFailed', 'Saving failed.'));
 			message.textContent = tr('saved', 'Saved.'); message.classList.add('is-success');
+			var value = field.querySelector('.contacthub-salutation-value');
+			if (value) { value.dataset.value = select.value; value.textContent = result.data.display; }
 			var suggestion = field.querySelector('.contacthub-salutation-suggestion'); if (suggestion) suggestion.remove();
+			closeSalutation(field, true);
 		}).catch(function (error) { message.textContent = error.message; }).finally(function () { select.disabled = false; });
+	}
+
+	function openSalutation(field) {
+		if (!field) return;
+		var editor = field.querySelector('.contacthub-salutation-editor');
+		var value = field.querySelector('.contacthub-salutation-value');
+		if (editor) editor.hidden = false;
+		if (value) value.hidden = true;
+		var select = editor && editor.querySelector('select');
+		if (select) select.focus();
+	}
+
+	function closeSalutation(field, keepValue) {
+		if (!field) return;
+		var editor = field.querySelector('.contacthub-salutation-editor');
+		var value = field.querySelector('.contacthub-salutation-value');
+		var select = editor && editor.querySelector('select');
+		if (editor) editor.hidden = true;
+		if (value) value.hidden = false;
+		if (!keepValue && select && value) select.value = value.dataset.value || '';
+	}
+
+	function openContactChannel(row) {
+		if (!row) return;
+		var editor = row.querySelector('.contacthub-channel-editor');
+		var summary = row.querySelector('.contacthub-channel-summary');
+		if (editor) editor.hidden = false;
+		if (summary) summary.hidden = true;
+		var input = row.querySelector('.contacthub-channel-input, .contacthub-phone-national');
+		if (input) input.focus();
+	}
+
+	function closeContactChannel(row) {
+		if (!row) return;
+		if (row.classList.contains('is-new')) {
+			var list = row.parentNode;
+			row.remove();
+			var empty = list && list.querySelector('.contacthub-channel-empty');
+			if (empty && !list.querySelector('.contacthub-channel-row')) empty.hidden = false;
+			return;
+		}
+		var editor = row.querySelector('.contacthub-channel-editor');
+		var summary = row.querySelector('.contacthub-channel-summary');
+		if (editor) editor.hidden = true;
+		if (summary) summary.hidden = false;
+	}
+
+	function addContactChannel(group) {
+		if (!group || group.querySelector('.contacthub-channel-row.is-new')) return;
+		var template = group.querySelector('.contacthub-channel-template');
+		var list = group.querySelector('.contacthub-channel-list');
+		if (!template || !list) return;
+		var row = template.content.firstElementChild.cloneNode(true);
+		list.appendChild(row);
+		var empty = list.querySelector('.contacthub-channel-empty');
+		if (empty) empty.hidden = true;
+		openContactChannel(row);
+	}
+
+	function saveContactChannel(row) {
+		if (!row) return;
+		var button = row.querySelector('.contacthub-save-channel');
+		var group = row.closest('.contacthub-channel-group');
+		var message = group.querySelector('.contacthub-channel-message');
+		var type = row.dataset.channelType;
+		var data = new URLSearchParams();
+		data.set('action', 'contacthub_save_contact_channel');
+		data.set('nonce', CONTACTHUB_CONFIG.nonce);
+		data.set('contact_id', row.dataset.contact);
+		data.set('channel_id', row.dataset.channelId || '');
+		data.set('channel_type', type);
+		data.set('channel_label', row.querySelector('.contacthub-channel-label-select').value);
+		data.set('value', type === 'phone' ? composePhone(row.querySelector('.contacthub-phone-input-group')) : row.querySelector('.contacthub-channel-input').value);
+		data.set('is_primary', row.querySelector('.contacthub-channel-primary-input').checked ? '1' : '0');
+		button.disabled = true;
+		message.classList.remove('is-success');
+		message.textContent = tr('saving', 'Saving…');
+		fetch(CONTACTHUB_CONFIG.ajaxUrl, requestOptions(data)).then(parseResponse).then(function (result) {
+			if (!result.success) throw new Error(result.data && result.data.message ? result.data.message : tr('saveFailed', 'Saving failed.'));
+			row.dataset.channelId = result.data.id;
+			row.dataset.primary = result.data.is_primary ? '1' : '0';
+			row.classList.remove('is-new');
+			var value = row.querySelector('.contacthub-channel-value');
+			value.dataset.value = result.data.value;
+			value.textContent = result.data.display;
+			row.querySelector('.contacthub-channel-label').textContent = result.data.label_text;
+			if (type === 'email') row.querySelector('.contacthub-channel-marketing').textContent = format(tr('marketingStatus', 'Marketing: %s'), result.data.marketing_label);
+			if (result.data.is_primary) {
+				group.querySelectorAll('.contacthub-channel-row').forEach(function (other) {
+					var own = other === row;
+					other.dataset.primary = own ? '1' : '0';
+					var badge = other.querySelector('.contacthub-primary-badge'); if (badge) badge.hidden = !own;
+					var primary = other.querySelector('.contacthub-channel-primary-input'); if (primary) { primary.checked = own; primary.disabled = own; }
+				});
+			}
+			var deleteButton = row.querySelector('.contacthub-delete-channel');
+			if (deleteButton) deleteButton.hidden = !!result.data.is_primary;
+			button.disabled = false;
+			closeContactChannel(row);
+			message.textContent = tr('saved', 'Saved.'); message.classList.add('is-success');
+			window.setTimeout(function () { message.textContent = ''; message.classList.remove('is-success'); }, 2500);
+		}).catch(function (error) { button.disabled = false; message.textContent = error.message; });
+	}
+
+	function deleteContactChannel(row) {
+		if (!row || !window.confirm(tr('confirmDeleteChannel', 'Remove this contact detail?'))) return;
+		var group = row.closest('.contacthub-channel-group');
+		var message = group.querySelector('.contacthub-channel-message');
+		var data = new URLSearchParams();
+		data.set('action', 'contacthub_delete_contact_channel'); data.set('nonce', CONTACTHUB_CONFIG.nonce);
+		data.set('contact_id', row.dataset.contact); data.set('channel_id', row.dataset.channelId);
+		fetch(CONTACTHUB_CONFIG.ajaxUrl, requestOptions(data)).then(parseResponse).then(function (result) {
+			if (!result.success) throw new Error(result.data && result.data.message ? result.data.message : tr('saveFailed', 'Saving failed.'));
+			row.remove(); message.textContent = result.data.message; message.classList.add('is-success');
+		}).catch(function (error) { message.textContent = error.message; });
 	}
 
 	document.addEventListener('submit', function (event) {
@@ -624,12 +751,52 @@
 				if (!result.success) throw new Error(result.data && result.data.message ? result.data.message : tr('tagActionFailed', 'Tag action failed.'));
 				message.textContent = result.data.message;
 				message.classList.add('is-success');
-				window.setTimeout(function () { window.location.reload(); }, 700);
+				var savedId = String(result.data.tag_id || tagId);
+				var savedName = result.data.tag_name || tagName;
+				var summary = card.querySelector('.contacthub-tags-summary');
+				if (result.data.operation === 'remove') {
+					var managerToken = manager.querySelector('.contacthub-tag[data-tag="' + savedId + '"]'); if (managerToken) managerToken.remove();
+					var summaryToken = summary && summary.querySelector('.contacthub-tag[data-tag="' + savedId + '"]'); if (summaryToken) summaryToken.remove();
+				} else {
+					var inputField = manager.querySelector('.contacthub-token-field');
+					var input = manager.querySelector('.contacthub-tag-input');
+					if (!manager.querySelector('.contacthub-tag[data-tag="' + savedId + '"]')) {
+						var token = document.createElement('span'); token.className = 'contacthub-tag'; token.dataset.tag = savedId; token.appendChild(document.createTextNode(savedName));
+						var remove = document.createElement('button'); remove.type = 'button'; remove.className = 'button-link contacthub-remove-tag'; remove.dataset.tag = savedId; remove.setAttribute('aria-label', tr('removeTag', 'Remove tag from this person')); remove.textContent = '×'; token.appendChild(remove);
+						inputField.insertBefore(token, input);
+					}
+					if (summary) {
+						var muted = summary.querySelector('.contacthub-muted'); if (muted) muted.remove();
+						if (!summary.querySelector('.contacthub-tag[data-tag="' + savedId + '"]')) { var summaryTag = document.createElement('span'); summaryTag.className = 'contacthub-tag'; summaryTag.dataset.tag = savedId; summaryTag.textContent = savedName; summary.appendChild(summaryTag); }
+					}
+				}
+				var tagInput = manager.querySelector('.contacthub-tag-input'); if (tagInput) tagInput.value = '';
+				trigger.disabled = false;
+				if (summary && !summary.querySelector('.contacthub-tag')) { var none = document.createElement('span'); none.className = 'contacthub-muted'; none.textContent = tr('noTags', 'No tags assigned yet.'); summary.appendChild(none); }
+				window.setTimeout(function () { message.textContent = ''; message.classList.remove('is-success'); }, 2000);
 			})
 			.catch(function (error) {
 				trigger.disabled = false;
 				message.textContent = error.message;
 			});
+	}
+
+	function openTags(card) {
+		if (!card) return;
+		var summary = card.querySelector('.contacthub-tags-summary');
+		var manager = card.querySelector('.contacthub-tag-manager');
+		if (summary) summary.hidden = true;
+		if (manager) manager.hidden = false;
+		var input = manager && manager.querySelector('.contacthub-tag-input');
+		if (input) input.focus();
+	}
+
+	function closeTags(card) {
+		if (!card) return;
+		var summary = card.querySelector('.contacthub-tags-summary');
+		var manager = card.querySelector('.contacthub-tag-manager');
+		if (summary) summary.hidden = false;
+		if (manager) manager.hidden = true;
 	}
 
 	function previewBroadcast(button) {

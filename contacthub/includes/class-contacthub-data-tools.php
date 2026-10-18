@@ -111,7 +111,7 @@ final class ContactHub_Data_Tools {
 	private static function render_csv_import( $forced_entity = '', $return_page = '' ) {
 		$token = isset( $_GET['csv_token'] ) ? sanitize_key( wp_unslash( $_GET['csv_token'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- opaque transient reference.
 		$preview = $token ? get_transient( 'contacthub_csv_' . get_current_user_id() . '_' . $token ) : false;
-		echo '<section class="contacthub-card contacthub-settings-card"><h2>' . esc_html__( 'Import CSV data', 'contacthub' ) . '</h2><p>' . esc_html__( 'Import people or companies from a CSV file. The preview and field mapping are shown before anything is saved. Empty CSV values never erase existing data.', 'contacthub' ) . '</p>';
+		echo '<section id="contacthub-import" class="contacthub-card contacthub-settings-card"><h2>' . esc_html__( 'Import CSV data', 'contacthub' ) . '</h2><p>' . esc_html__( 'Import people or companies from a CSV file. The preview and field mapping are shown before anything is saved. Empty CSV values never erase existing data.', 'contacthub' ) . '</p>';
 		$report = get_transient( 'contacthub_csv_report_' . get_current_user_id() );
 		if ( is_array( $report ) ) { delete_transient( 'contacthub_csv_report_' . get_current_user_id() ); echo '<div class="contacthub-migration-report"><h3>' . esc_html__( 'Last CSV import', 'contacthub' ) . '</h3><p>' . esc_html( sprintf( __( '%1$d created, %2$d updated, %3$d skipped, %4$d errors.', 'contacthub' ), $report['created'], $report['updated'], $report['skipped'], count( $report['errors'] ) ) ) . '</p>'; if ( $report['errors'] ) { echo '<details><summary>' . esc_html__( 'Show import errors', 'contacthub' ) . '</summary><ul>'; foreach ( array_slice( $report['errors'], 0, 100 ) as $error ) echo '<li>' . esc_html( $error ) . '</li>'; echo '</ul></details>'; } echo '</div>'; }
 		if ( ! $preview ) {
@@ -318,6 +318,20 @@ final class ContactHub_Data_Tools {
 			elseif ( in_array( $prefix_lower, array( 'familie', 'family' ), true ) ) { $salutation = 'family'; $prefix = ''; }
 			$email = sanitize_email( self::vcard_preferred_value( $item['EMAIL'] ?? array() ) );
 			$phone = preg_replace( '/^tel:/i', '', self::vcard_preferred_value( $item['TEL'] ?? array() ) );
+			$channels = array();
+			foreach ( (array) ( $item['EMAIL'] ?? array() ) as $channel_index => $email_item ) {
+				$channel_value = sanitize_email( $email_item['value'] ?? '' );
+				if ( ! $channel_value ) continue;
+				$params = strtoupper( (string) ( $email_item['params'] ?? '' ) );
+				$channels[] = array( 'id' => 'vcard-' . substr( hash( 'sha256', 'email|' . $channel_index . '|' . strtolower( $channel_value ) ), 0, 20 ), 'type' => 'email', 'label' => false !== strpos( $params, 'WORK' ) ? 'work' : ( false !== strpos( $params, 'HOME' ) ? 'private' : 'other' ), 'value' => $channel_value, 'is_primary' => 0 === strcasecmp( $channel_value, $email ) ? 1 : 0, 'marketing_status' => 'unconfirmed' );
+			}
+			foreach ( (array) ( $item['TEL'] ?? array() ) as $channel_index => $phone_item ) {
+				$channel_value = sanitize_text_field( preg_replace( '/^tel:/i', '', $phone_item['value'] ?? '' ) );
+				if ( ! $channel_value ) continue;
+				$params = strtoupper( (string) ( $phone_item['params'] ?? '' ) );
+				$channel_label = false !== strpos( $params, 'FAX' ) ? 'fax' : ( ( false !== strpos( $params, 'CELL' ) || false !== strpos( $params, 'MOBILE' ) ) ? 'mobile' : ( false !== strpos( $params, 'WORK' ) ? 'work' : ( false !== strpos( $params, 'HOME' ) ? 'private' : 'other' ) ) );
+				$channels[] = array( 'id' => 'vcard-' . substr( hash( 'sha256', 'phone|' . $channel_index . '|' . preg_replace( '/\D+/', '', $channel_value ) ), 0, 20 ), 'type' => 'phone', 'label' => $channel_label, 'value' => $channel_value, 'is_primary' => preg_replace( '/\D+/', '', $channel_value ) === preg_replace( '/\D+/', '', $phone ) ? 1 : 0, 'marketing_status' => '' );
+			}
 			$adr = isset( $item['ADR'][0]['value'] ) ? explode( ';', $item['ADR'][0]['value'] ) : array();
 			$company = isset( $item['ORG'][0]['value'] ) ? explode( ';', $item['ORG'][0]['value'] )[0] : '';
 			$uid = sanitize_text_field( $item['UID'][0]['value'] ?? '' );
@@ -328,7 +342,7 @@ final class ContactHub_Data_Tools {
 				'position' => sanitize_text_field( $item['TITLE'][0]['value'] ?? '' ), 'company' => sanitize_text_field( $company ),
 				'address_1' => sanitize_text_field( $adr[2] ?? '' ), 'address_2' => sanitize_text_field( trim( ( $adr[0] ?? '' ) . ' ' . ( $adr[1] ?? '' ) ) ),
 				'city' => sanitize_text_field( $adr[3] ?? '' ), 'state' => sanitize_text_field( $adr[4] ?? '' ), 'postcode' => sanitize_text_field( $adr[5] ?? '' ), 'country' => sanitize_text_field( $adr[6] ?? '' ),
-				'note' => sanitize_textarea_field( $item['NOTE'][0]['value'] ?? '' ), 'source_id' => 'vcard:' . hash( 'sha256', (string) $identity ),
+				'note' => sanitize_textarea_field( $item['NOTE'][0]['value'] ?? '' ), 'source_id' => 'vcard:' . hash( 'sha256', (string) $identity ), 'contact_channels' => $channels,
 			);
 			if ( ! array_filter( array( $record['first_name'], $record['last_name'], $record['email'], $record['phone'] ) ) ) continue;
 			$records[] = $record;
@@ -368,6 +382,7 @@ final class ContactHub_Data_Tools {
 		if ( ! $current ) $current = ContactHub_Store::contact_by_meta( 'vcard_source_id', $record['source_id'] );
 		if ( $current && 'skip' === $mode ) return 'skipped';
 		$payload = array( 'source' => 'vcard', 'meta' => array( 'vcard_source_id' => $record['source_id'] ) );
+		if ( ! empty( $record['contact_channels'] ) && ( ! $current || 'update' === $mode || empty( $current['meta']['contacthub_contact_channels'] ) ) ) $payload['meta']['contacthub_contact_channels'] = $record['contact_channels'];
 		foreach ( array( 'email', 'first_name', 'last_name', 'position' ) as $field ) if ( ! $current || ( '' !== (string) ( $record[ $field ] ?? '' ) && ( 'update' === $mode || empty( $current[ $field ] ) ) ) ) $payload[ $field ] = $record[ $field ] ?? '';
 		foreach ( array( 'salutation' => 'anrede', 'title_prefix' => 'titel_vorangestellt', 'title_suffix' => 'titel_nachgestellt', 'phone' => 'primary_phone', 'note' => 'vcard_note' ) as $input => $field ) if ( ! empty( $record[ $input ] ) && ( 'update' === $mode || empty( $current['meta'][ $field ] ) ) ) $payload['meta'][ $field ] = $record[ $input ];
 		$id = $current ? absint( $current['id'] ) : ContactHub_Store::create_contact( $payload );

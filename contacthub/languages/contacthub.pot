@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactHub 0.17.15\n"
+"Project-Id-Version: ContactHub 0.18.0\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
-"POT-Creation-Date: 2026-10-18 12:00+0200\n"
+"POT-Creation-Date: 2026-10-18 18:00+0200\n"
 "PO-Revision-Date: 2026-10-16 09:00+0200\n"
 "Last-Translator: Kultur3 GmbH\n"
 "Language-Team: German\n"
@@ -4006,4 +4006,143 @@ msgid "Add company"
 msgstr ""
 
 msgid "Add person"
+msgstr ""
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Add"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Add email address"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Add phone number"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Billing"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Business"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Choose another primary contact detail before removing this one."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Contact detail removed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Done"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Edit tags"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Email addresses"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Fax"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Find duplicates"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Landline"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Marketing: %s"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Mobile"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Newsletter"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "No email address saved."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "No phone number saved."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "No tags assigned yet."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Phone numbers"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Primary"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Private"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Remove"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Remove tag from this person"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Remove this contact detail?"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "The contact detail could not be removed."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "The contact detail could not be saved."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "The contact detail is invalid."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "The contact detail no longer exists."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "The primary contact detail could not be updated in the selected data source."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "This contact detail is already assigned to the person."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "This email address belongs to another person."
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Type"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Use as primary contact detail"
+msgstr ""
+
+#: contacthub/includes/class-contacthub-plugin.php
+msgid "Successfully validated through EU VIES"
 msgstr ""

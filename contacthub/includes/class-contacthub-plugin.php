@@ -13,6 +13,8 @@ final class ContactHub_Plugin {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'disable_groundhogg_email_detector' ), 999 );
 		add_action( 'wp_ajax_contacthub_update_company_field', array( __CLASS__, 'update_company_field' ) );
 		add_action( 'wp_ajax_contacthub_update_contact_field', array( __CLASS__, 'update_contact_field' ) );
+		add_action( 'wp_ajax_contacthub_save_contact_channel', array( __CLASS__, 'save_contact_channel' ) );
+		add_action( 'wp_ajax_contacthub_delete_contact_channel', array( __CLASS__, 'delete_contact_channel' ) );
 		add_action( 'wp_ajax_contacthub_update_marketing_consent', array( __CLASS__, 'update_marketing_consent' ) );
 		add_action( 'wp_ajax_contacthub_bulk_marketing_consent', array( __CLASS__, 'bulk_marketing_consent' ) );
 		add_action( 'wp_ajax_contacthub_create_contact', array( __CLASS__, 'create_contact' ) );
@@ -221,6 +223,8 @@ final class ContactHub_Plugin {
 					'checkingVat'              => __( 'Checking EU VIES…', 'contacthub' ),
 					'saving'                   => __( 'Saving…', 'contacthub' ),
 					'saved'                    => __( 'Saved.', 'contacthub' ),
+					'marketingStatus'          => __( 'Marketing: %s', 'contacthub' ),
+					'confirmDeleteChannel'     => __( 'Remove this contact detail?', 'contacthub' ),
 					'salutationSuggestion'     => __( 'Suggestion: %s', 'contacthub' ),
 					'savingConfirmed'          => __( 'Saving with confirmation…', 'contacthub' ),
 					'bulkEditFailed'           => __( 'Bulk editing failed.', 'contacthub' ),
@@ -228,6 +232,8 @@ final class ContactHub_Plugin {
 					'creatingCompany'          => __( 'Creating company…', 'contacthub' ),
 					'createFailed'             => __( 'Creation failed.', 'contacthub' ),
 					'tagAlreadyAssigned'       => __( 'This tag is already assigned to the person.', 'contacthub' ),
+					'removeTag'                => __( 'Remove tag from this person', 'contacthub' ),
+					'noTags'                   => __( 'No tags assigned yet.', 'contacthub' ),
 					'tagActionFailed'          => __( 'Tag action failed.', 'contacthub' ),
 					'broadcastLoadFailed'      => __( 'The broadcast could not be loaded.', 'contacthub' ),
 					'broadcast'                => __( 'Broadcast', 'contacthub' ),
@@ -418,6 +424,196 @@ final class ContactHub_Plugin {
 
 		$display = 'primary_phone' === $field ? self::format_phone( $value ) : ( 'anrede' === $field ? self::salutation_label( $value ) : ( '' !== $value ? $value : '—' ) );
 		wp_send_json_success( array( 'value' => $value, 'display' => $display, 'salutation' => $automatic_salutation ) );
+	}
+
+	/** Save one email address or telephone number without changing unrelated person data. */
+	public static function save_contact_channel() {
+		self::guard_ajax();
+		$contact_id = isset( $_POST['contact_id'] ) ? absint( $_POST['contact_id'] ) : 0;
+		$channel_id = isset( $_POST['channel_id'] ) ? sanitize_key( wp_unslash( $_POST['channel_id'] ) ) : '';
+		$type = isset( $_POST['channel_type'] ) ? sanitize_key( wp_unslash( $_POST['channel_type'] ) ) : '';
+		$label = isset( $_POST['channel_label'] ) ? sanitize_key( wp_unslash( $_POST['channel_label'] ) ) : '';
+		$value = isset( $_POST['value'] ) ? sanitize_text_field( wp_unslash( $_POST['value'] ) ) : '';
+		$make_primary = isset( $_POST['is_primary'] ) && '1' === (string) $_POST['is_primary'];
+		$contact = $contact_id ? self::contact( $contact_id ) : false;
+		$labels = self::contact_channel_labels( $type );
+		if ( ! $contact || ! in_array( $type, array( 'email', 'phone' ), true ) || ! isset( $labels[ $label ] ) ) {
+			wp_send_json_error( array( 'message' => __( 'The contact detail is invalid.', 'contacthub' ) ), 400 );
+		}
+		if ( 'email' === $type ) {
+			$value = sanitize_email( $value );
+			if ( ! is_email( $value ) ) wp_send_json_error( array( 'message' => __( 'Please enter a valid email address.', 'contacthub' ) ), 400 );
+		} else {
+			$value = self::normalize_phone( $value );
+			if ( ! $value || ! self::phone_country_code( $value ) ) wp_send_json_error( array( 'message' => __( 'Please select a European country calling code.', 'contacthub' ) ), 400 );
+		}
+
+		$channels = self::contact_channels( $contact );
+		$normalized = self::normalize_contact_channel( $type, $value );
+		$editing_index = null;
+		foreach ( $channels as $index => $channel ) {
+			if ( $channel_id && $channel_id === $channel['id'] ) $editing_index = $index;
+			if ( $normalized === self::normalize_contact_channel( $channel['type'], $channel['value'] ) && ( null === $editing_index || $index !== $editing_index ) ) {
+				wp_send_json_error( array( 'message' => __( 'This contact detail is already assigned to the person.', 'contacthub' ) ), 409 );
+			}
+		}
+		$has_type = false;
+		foreach ( $channels as $channel ) if ( $type === $channel['type'] ) $has_type = true;
+		if ( ! $has_type ) $make_primary = true;
+		if ( null === $editing_index ) {
+			$channel_id = 'ch-' . wp_generate_uuid4();
+			$channels[] = array( 'id' => $channel_id, 'type' => $type, 'label' => $label, 'value' => $value, 'is_primary' => $make_primary ? 1 : 0, 'marketing_status' => 'email' === $type ? 'unconfirmed' : '' );
+			$editing_index = count( $channels ) - 1;
+		} else {
+			$channels[ $editing_index ]['label'] = $label;
+			$channels[ $editing_index ]['value'] = $value;
+			if ( $make_primary ) $channels[ $editing_index ]['is_primary'] = 1;
+		}
+		if ( ! empty( $channels[ $editing_index ]['is_primary'] ) ) $make_primary = true;
+
+		if ( $make_primary ) {
+			foreach ( $channels as $index => $channel ) if ( $type === $channel['type'] ) $channels[ $index ]['is_primary'] = $index === $editing_index ? 1 : 0;
+			$result = self::save_primary_contact_channel( $contact_id, $type, $value, $channels[ $editing_index ]['marketing_status'] ?? '' );
+			if ( is_wp_error( $result ) ) wp_send_json_error( array( 'message' => $result->get_error_message() ), 409 );
+		}
+		if ( ! self::persist_contact_channels( $contact_id, $channels ) ) {
+			wp_send_json_error( array( 'message' => __( 'The contact detail could not be saved.', 'contacthub' ) ), 500 );
+		}
+		$channel = $channels[ $editing_index ];
+		wp_send_json_success( self::contact_channel_response( $channel ) );
+	}
+
+	/** Remove only secondary contact details. Primary values remain protected. */
+	public static function delete_contact_channel() {
+		self::guard_ajax();
+		$contact_id = isset( $_POST['contact_id'] ) ? absint( $_POST['contact_id'] ) : 0;
+		$channel_id = isset( $_POST['channel_id'] ) ? sanitize_key( wp_unslash( $_POST['channel_id'] ) ) : '';
+		$contact = $contact_id ? self::contact( $contact_id ) : false;
+		if ( ! $contact || ! $channel_id ) wp_send_json_error( array( 'message' => __( 'The contact detail is invalid.', 'contacthub' ) ), 400 );
+		$channels = self::contact_channels( $contact );
+		$found = false;
+		foreach ( $channels as $channel ) {
+			if ( $channel_id !== $channel['id'] ) continue;
+			$found = true;
+			if ( ! empty( $channel['is_primary'] ) ) wp_send_json_error( array( 'message' => __( 'Choose another primary contact detail before removing this one.', 'contacthub' ) ), 409 );
+		}
+		if ( ! $found ) wp_send_json_error( array( 'message' => __( 'The contact detail no longer exists.', 'contacthub' ) ), 404 );
+		$channels = array_values( array_filter( $channels, static function ( $channel ) use ( $channel_id ) { return $channel_id !== $channel['id']; } ) );
+		if ( ! self::persist_contact_channels( $contact_id, $channels ) ) wp_send_json_error( array( 'message' => __( 'The contact detail could not be removed.', 'contacthub' ) ), 500 );
+		wp_send_json_success( array( 'message' => __( 'Contact detail removed.', 'contacthub' ) ) );
+	}
+
+	private static function save_primary_contact_channel( $contact_id, $type, $value, $marketing_status = '' ) {
+		$status_map = array( '1' => 'unconfirmed', '2' => 'confirmed', '3' => 'unsubscribed', '4' => 'weekly', '5' => 'monthly', '6' => 'hard_bounce', '7' => 'spam', '8' => 'complained', '9' => 'blocked' );
+		$marketing_status = $status_map[ (string) $marketing_status ] ?? sanitize_key( $marketing_status );
+		if ( ContactHub_Store::standalone() ) {
+			if ( 'email' === $type ) {
+				$existing = ContactHub_Store::contact_by_email( $value, true );
+				if ( $existing && absint( $existing['id'] ?? 0 ) !== absint( $contact_id ) ) return new WP_Error( 'contacthub_channel_email_exists', __( 'This email address belongs to another person.', 'contacthub' ) );
+				return ContactHub_Store::update_contact( $contact_id, array( 'email' => $value, 'optin_status' => $marketing_status ?: 'unconfirmed' ) );
+			}
+			return ContactHub_Store::update_contact( $contact_id, array( 'meta' => array( 'primary_phone' => $value ) ) );
+		}
+		$input = array( 'id' => $contact_id );
+		if ( 'email' === $type ) {
+			$input['email'] = $value;
+			$input['optin_status'] = $marketing_status ?: 'unconfirmed';
+		} else {
+			$input['meta'] = array( 'primary_phone' => $value );
+		}
+		return false === self::execute_ability( 'groundhogg/update-contact', $input ) ? new WP_Error( 'contacthub_channel_primary_failed', __( 'The primary contact detail could not be updated in the selected data source.', 'contacthub' ) ) : true;
+	}
+
+	private static function persist_contact_channels( $contact_id, $channels ) {
+		$clean = array();
+		foreach ( (array) $channels as $channel ) {
+			$type = sanitize_key( $channel['type'] ?? '' );
+			$value = 'email' === $type ? sanitize_email( $channel['value'] ?? '' ) : self::normalize_phone( $channel['value'] ?? '' );
+			$labels = self::contact_channel_labels( $type );
+			$label = sanitize_key( $channel['label'] ?? '' );
+			if ( ! $value || ! isset( $labels[ $label ] ) ) continue;
+			$clean[] = array(
+				'id'               => sanitize_key( $channel['id'] ?? ( 'ch-' . wp_generate_uuid4() ) ),
+				'type'             => $type,
+				'label'            => $label,
+				'value'            => $value,
+				'is_primary'       => empty( $channel['is_primary'] ) ? 0 : 1,
+				'marketing_status' => 'email' === $type ? sanitize_key( $channel['marketing_status'] ?? 'unconfirmed' ) : '',
+			);
+		}
+		$input = array( 'id' => absint( $contact_id ), 'meta' => array( 'contacthub_contact_channels' => $clean ) );
+		if ( ContactHub_Store::standalone() ) return ContactHub_Store::update_contact( $contact_id, array( 'meta' => $input['meta'] ) );
+		return false !== self::execute_ability( 'groundhogg/update-contact', $input );
+	}
+
+	private static function contact_channel_response( $channel ) {
+		$type = $channel['type'];
+		$labels = self::contact_channel_labels( $type );
+		$status = sanitize_key( $channel['marketing_status'] ?? '' );
+		return array(
+			'id'               => $channel['id'],
+			'type'             => $type,
+			'label'            => $channel['label'],
+			'label_text'       => $labels[ $channel['label'] ] ?? __( 'Other', 'contacthub' ),
+			'value'            => $channel['value'],
+			'display'          => 'phone' === $type ? self::format_phone( $channel['value'] ) : $channel['value'],
+			'is_primary'       => empty( $channel['is_primary'] ) ? 0 : 1,
+			'marketing_status' => $status,
+			'marketing_label'  => 'email' === $type ? self::status_label( $status ?: 'unconfirmed' ) : '',
+		);
+	}
+
+	private static function normalize_contact_channel( $type, $value ) {
+		return 'email' === $type ? strtolower( sanitize_email( $value ) ) : preg_replace( '/\D+/', '', self::normalize_phone( $value ) );
+	}
+
+	private static function contact_channel_labels( $type ) {
+		if ( 'email' === $type ) {
+			return array( 'private' => __( 'Private', 'contacthub' ), 'work' => __( 'Business', 'contacthub' ), 'billing' => __( 'Billing', 'contacthub' ), 'newsletter' => __( 'Newsletter', 'contacthub' ), 'other' => __( 'Other', 'contacthub' ) );
+		}
+		if ( 'phone' === $type ) {
+			return array( 'mobile' => __( 'Mobile', 'contacthub' ), 'private' => __( 'Private', 'contacthub' ), 'work' => __( 'Business', 'contacthub' ), 'landline' => __( 'Landline', 'contacthub' ), 'fax' => __( 'Fax', 'contacthub' ), 'other' => __( 'Other', 'contacthub' ) );
+		}
+		return array();
+	}
+
+	/** Return saved secondary channels plus the authoritative primary values. */
+	private static function contact_channels( $contact ) {
+		$stored = self::raw_meta( $contact, 'contacthub_contact_channels' );
+		if ( is_string( $stored ) ) {
+			$stored = maybe_unserialize( $stored );
+			if ( is_string( $stored ) && '' !== $stored ) {
+				$decoded = json_decode( $stored, true );
+				if ( is_array( $decoded ) ) $stored = $decoded;
+			}
+		}
+		$channels = array();
+		foreach ( is_array( $stored ) ? $stored : array() as $channel ) {
+			if ( ! is_array( $channel ) || ! in_array( $channel['type'] ?? '', array( 'email', 'phone' ), true ) ) continue;
+			$type = sanitize_key( $channel['type'] );
+			$value = 'email' === $type ? sanitize_email( $channel['value'] ?? '' ) : self::normalize_phone( $channel['value'] ?? '' );
+			$label = sanitize_key( $channel['label'] ?? '' );
+			if ( ! $value || ! isset( self::contact_channel_labels( $type )[ $label ] ) ) continue;
+			$channels[] = array( 'id' => sanitize_key( $channel['id'] ?? ( 'ch-' . wp_generate_uuid4() ) ), 'type' => $type, 'label' => $label, 'value' => $value, 'is_primary' => 0, 'marketing_status' => 'email' === $type ? sanitize_key( $channel['marketing_status'] ?? 'unconfirmed' ) : '' );
+		}
+		$primary_values = array(
+			'email' => sanitize_email( self::value( $contact, array( 'email', 'get_email' ) ) ),
+			'phone' => self::normalize_phone( self::meta( $contact, array( 'primary_phone', 'phone', 'phone_number' ) ) ),
+		);
+		foreach ( $primary_values as $type => $value ) {
+			if ( ! $value ) continue;
+			$found = false;
+			foreach ( $channels as $index => $channel ) {
+				if ( $type === $channel['type'] && self::normalize_contact_channel( $type, $value ) === self::normalize_contact_channel( $type, $channel['value'] ) ) {
+					$channels[ $index ]['value'] = $value;
+					$channels[ $index ]['is_primary'] = 1;
+					if ( 'email' === $type ) $channels[ $index ]['marketing_status'] = sanitize_key( self::optin_status( $contact ) ?: 'unconfirmed' );
+					$found = true;
+				}
+			}
+			if ( ! $found ) $channels[] = array( 'id' => 'primary-' . $type, 'type' => $type, 'label' => 'email' === $type ? 'work' : 'mobile', 'value' => $value, 'is_primary' => 1, 'marketing_status' => 'email' === $type ? sanitize_key( self::optin_status( $contact ) ?: 'unconfirmed' ) : '' );
+		}
+		return $channels;
 	}
 
 	public static function assign_missing_salutations() {
@@ -887,7 +1083,8 @@ final class ContactHub_Plugin {
 			if ( false === $updated ) {
 				wp_send_json_error( array( 'message' => __( 'Groundhogg could not change the tag assignment.', 'contacthub' ) ), 500 );
 			}
-			wp_send_json_success( array( 'message' => 'add' === $operation ? __( 'Tag assigned.', 'contacthub' ) : __( 'Tag removed from this person.', 'contacthub' ) ) );
+			if ( '' === $tag_name ) foreach ( self::all_tags() as $tag ) if ( $tag_id === absint( $tag['id'] ?? 0 ) ) { $tag_name = sanitize_text_field( $tag['name'] ?? '' ); break; }
+			wp_send_json_success( array( 'message' => 'add' === $operation ? __( 'Tag assigned.', 'contacthub' ) : __( 'Tag removed from this person.', 'contacthub' ), 'operation' => $operation, 'tag_id' => $tag_id, 'tag_name' => $tag_name ) );
 		}
 	}
 
@@ -1442,15 +1639,10 @@ final class ContactHub_Plugin {
 		}
 
 		$contact_id = isset( $_GET['person'] ) ? absint( $_GET['person'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only navigation.
-		$section = isset( $_GET['section'] ) && 'import' === sanitize_key( wp_unslash( $_GET['section'] ) ) ? 'import' : 'list'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display routing.
 		echo '<div class="wrap contacthub-wrap">';
 		if ( $contact_id ) {
 			self::render_person( $contact_id );
-		} elseif ( 'import' === $section ) {
-			self::render_entity_navigation( 'contacthub', 'import' );
-			ContactHub_Data_Tools::render_entity_import( 'contacts', 'contacthub' );
 		} else {
-			self::render_entity_navigation( 'contacthub', 'list' );
 			self::render_people_index();
 		}
 		echo '</div>';
@@ -1554,7 +1746,10 @@ final class ContactHub_Plugin {
 			? __( 'Groundhogg contacts, company relationships, and marketing status in one view.', 'contacthub' )
 			: __( 'Groundhogg contacts, orders, and marketing status in one view.', 'contacthub' ) );
 		echo __( '<div class="contacthub-heading"><div><p class="contacthub-eyebrow">CRM</p><h1>People</h1><p>', 'contacthub' ) . esc_html( $heading_text ) . '</p></div><div class="contacthub-heading-actions">';
-		if ( current_user_can( 'manage_options' ) ) echo '<a class="button contacthub-heading-action" href="' . esc_url( admin_url( 'admin.php?page=contacthub&section=import' ) ) . '">' . esc_html__( 'Import', 'contacthub' ) . '</a>';
+		if ( current_user_can( 'manage_options' ) ) {
+			echo '<a class="button contacthub-heading-action" href="' . esc_url( admin_url( 'admin.php?page=contacthub-settings&tab=other&other_section=duplicates' ) ) . '">' . esc_html__( 'Find duplicates', 'contacthub' ) . '</a>';
+			echo '<a class="button contacthub-heading-action" href="' . esc_url( admin_url( 'admin.php?page=contacthub-settings&tab=other&other_section=migration#contacthub-import' ) ) . '">' . esc_html__( 'Import', 'contacthub' ) . '</a>';
+		}
 		echo '<button type="button" class="button button-primary contacthub-heading-action contacthub-open-new-person">' . esc_html__( 'Add person', 'contacthub' ) . '</button></div></div>';
 		echo __( '<section class="contacthub-card"><div class="contacthub-toolbar"><h2>People overview</h2><span class="contacthub-count">', 'contacthub' ) . esc_html( $total ) . __( ' entries</span></div>', 'contacthub' );
 		echo '<form class="contacthub-search" method="get"><input type="hidden" name="page" value="' . esc_attr( self::people_page_slug() ) . '">';
@@ -1607,11 +1802,11 @@ final class ContactHub_Plugin {
 			$status = self::optin_status( $contact );
 			$order_summary = isset( $order_summaries[ $id ] ) ? $order_summaries[ $id ] : self::empty_order_summary();
 			$event_summary = isset( $event_summaries[ $id ] ) ? $event_summaries[ $id ] : array( 'visited' => 0 );
-				$edit_url = add_query_arg( array( 'page' => self::people_page_slug(), 'person' => $id, 'contacthub_list_state' => $list_state ), admin_url( 'admin.php' ) );
+			$edit_url = add_query_arg( array( 'page' => self::people_page_slug(), 'person' => $id, 'contacthub_list_state' => $list_state ), admin_url( 'admin.php' ) );
 			$view_url = add_query_arg( 'ansicht', 'anzeigen', $edit_url );
 			$display_name = trim( $first_name . ' ' . $last_name );
 			echo '<tr class="contacthub-person-data-row"><th class="check-column" scope="row"><input type="checkbox" class="contacthub-person-select" value="' . esc_attr( $id ) . '" aria-label="' . esc_attr( ( $display_name ?: __( 'Unnamed person', 'contacthub' ) ) . __( ' select', 'contacthub' ) ) . '"></th><td class="contacthub-first-name"><strong>' . esc_html( $first_name ?: '—' ) . '</strong></td><td class="contacthub-last-name"><strong>' . esc_html( $last_name ?: '—' ) . '</strong></td>';
-			echo '<td><div class="contacthub-person-actions"><a class="contacthub-person-row-action" href="' . esc_url( $edit_url ) . __( '" aria-label="Edit person" title="Edit person"><span class="dashicons dashicons-edit" aria-hidden="true"></span></a><a class="contacthub-person-row-action" href="', 'contacthub' ) . esc_url( $view_url ) . __( '" aria-label="View person" title="View person"><span class="dashicons dashicons-visibility" aria-hidden="true"></span></a>', 'contacthub' );
+			echo '<td><div class="contacthub-person-actions"><a class="contacthub-person-row-action" href="' . esc_url( $edit_url ) . '" aria-label="' . esc_attr__( 'Edit person', 'contacthub' ) . '" title="' . esc_attr__( 'Edit person', 'contacthub' ) . '"><span class="dashicons dashicons-edit" aria-hidden="true"></span></a><a class="contacthub-person-row-action" href="' . esc_url( $view_url ) . '" aria-label="' . esc_attr__( 'View person', 'contacthub' ) . '" title="' . esc_attr__( 'View person', 'contacthub' ) . '"><span class="dashicons dashicons-visibility" aria-hidden="true"></span></a>';
 			if ( ContactHub_Trash::available() ) {
 				echo self::trash_button_html( 'contacts', $id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper escapes all dynamic values.
 			}
@@ -1736,8 +1931,7 @@ final class ContactHub_Plugin {
 			self::field( __( 'Suffix title', 'contacthub' ), self::meta( $contact, array( 'titel_nachgestellt' ) ) );
 			echo '</div>';
 			self::field( __( 'Salutation', 'contacthub' ), self::salutation_label( self::meta( $contact, array( 'anrede', 'salutation' ) ) ) );
-			self::contact_email_field( __( 'Email address', 'contacthub' ), $email );
-			self::field( __( 'Phone', 'contacthub' ), self::format_phone( self::meta( $contact, array( 'primary_phone' ) ) ) );
+			self::render_contact_channels( $id, $contact, false );
 			self::field( __( 'Address', 'contacthub' ), $primary_address );
 			self::field( __( 'Position / Job title', 'contacthub' ), self::meta( $contact, array( 'berufsbezeichnung', 'job_title', 'position' ) ) );
 			self::field( __( 'Company', 'contacthub' ), implode( ', ', $company_names ) );
@@ -1751,8 +1945,7 @@ final class ContactHub_Plugin {
 			self::contact_editable_field( __( 'Suffix title', 'contacthub' ), self::meta( $contact, array( 'titel_nachgestellt' ) ), 'titel_nachgestellt', $id );
 			echo '</div>';
 			self::salutation_field( self::meta( $contact, array( 'anrede', 'salutation' ) ), $first_name, $id );
-			self::contact_editable_field( __( 'Email address', 'contacthub' ), $email, 'email', $id );
-			self::phone_field( __( 'Phone', 'contacthub' ), self::meta( $contact, array( 'primary_phone' ) ), 'primary_phone', $id, 'contact' );
+			self::render_contact_channels( $id, $contact, true );
 			self::editable_address_summary( __( 'Address', 'contacthub' ), $primary_address );
 			self::contact_editable_field( __( 'Position / Job title', 'contacthub' ), self::meta( $contact, array( 'berufsbezeichnung', 'job_title', 'position' ) ), 'berufsbezeichnung', $id );
 			self::contact_editable_field( __( 'Company', 'contacthub' ), implode( ', ', $company_names ), 'company', $id );
@@ -1770,6 +1963,51 @@ final class ContactHub_Plugin {
 
 		self::render_person_tabs( $id, $customer, $contact, $orders, $events, $events_enabled, $broadcasts, ! $readonly );
 		echo '</main></div>';
+	}
+
+	private static function render_contact_channels( $contact_id, $contact, $editable ) {
+		$channels = self::contact_channels( $contact );
+		foreach ( array( 'email' => __( 'Email addresses', 'contacthub' ), 'phone' => __( 'Phone numbers', 'contacthub' ) ) as $type => $heading ) {
+			echo '<div class="contacthub-channel-group" data-contact="' . esc_attr( $contact_id ) . '" data-channel-type="' . esc_attr( $type ) . '"><div class="contacthub-channel-heading"><span>' . esc_html( $heading ) . '</span>';
+			if ( $editable ) echo '<button type="button" class="button-link contacthub-add-channel">+ ' . esc_html( 'email' === $type ? __( 'Add email address', 'contacthub' ) : __( 'Add phone number', 'contacthub' ) ) . '</button>';
+			echo '</div><div class="contacthub-channel-list">';
+			$type_channels = array_values( array_filter( $channels, static function ( $channel ) use ( $type ) { return $type === $channel['type']; } ) );
+			if ( ! $type_channels ) echo '<span class="contacthub-muted contacthub-channel-empty">' . esc_html( 'email' === $type ? __( 'No email address saved.', 'contacthub' ) : __( 'No phone number saved.', 'contacthub' ) ) . '</span>';
+			foreach ( $type_channels as $channel ) self::render_contact_channel_row( $contact_id, $channel, $editable );
+			echo '</div>';
+			if ( $editable ) {
+				echo '<template class="contacthub-channel-template">';
+				self::render_contact_channel_row( $contact_id, array( 'id' => '', 'type' => $type, 'label' => 'email' === $type ? 'private' : 'mobile', 'value' => '', 'is_primary' => empty( $type_channels ) ? 1 : 0, 'marketing_status' => 'email' === $type ? 'unconfirmed' : '' ), true, true );
+				echo '</template>';
+			}
+			echo '<div class="contacthub-channel-message" aria-live="polite"></div></div>';
+		}
+	}
+
+	private static function render_contact_channel_row( $contact_id, $channel, $editable, $is_new = false ) {
+		$response = self::contact_channel_response( $channel );
+		$type = $response['type'];
+		$primary = ! empty( $response['is_primary'] );
+		echo '<div class="contacthub-channel-row' . ( $is_new ? ' is-new' : '' ) . '" data-contact="' . esc_attr( $contact_id ) . '" data-channel-id="' . esc_attr( $response['id'] ) . '" data-channel-type="' . esc_attr( $type ) . '" data-primary="' . ( $primary ? '1' : '0' ) . '">';
+		echo '<div class="contacthub-channel-summary">';
+		if ( $editable ) echo '<button type="button" class="button-link contacthub-channel-value" data-value="' . esc_attr( $response['value'] ) . '">' . esc_html( $response['display'] ?: __( 'Add', 'contacthub' ) ) . '</button>';
+		else echo '<strong>' . esc_html( $response['display'] ?: '—' ) . '</strong>';
+		echo '<span class="contacthub-channel-label">' . esc_html( $response['label_text'] ) . '</span>';
+		echo '<span class="contacthub-primary-badge"' . ( $primary ? '' : ' hidden' ) . '>' . esc_html__( 'Primary', 'contacthub' ) . '</span>';
+		if ( 'email' === $type ) echo '<span class="contacthub-channel-marketing">' . esc_html( sprintf( __( 'Marketing: %s', 'contacthub' ), $response['marketing_label'] ) ) . '</span>';
+		echo '</div>';
+		if ( $editable ) {
+			echo '<div class="contacthub-channel-editor"' . ( $is_new ? '' : ' hidden' ) . '><label><span>' . esc_html__( 'Type', 'contacthub' ) . '</span><select class="contacthub-channel-label-select">';
+			foreach ( self::contact_channel_labels( $type ) as $key => $label ) echo '<option value="' . esc_attr( $key ) . '"' . selected( $response['label'], $key, false ) . '>' . esc_html( $label ) . '</option>';
+			echo '</select></label><label class="contacthub-channel-value-field"><span>' . esc_html( 'email' === $type ? __( 'Email address', 'contacthub' ) : __( 'Phone number', 'contacthub' ) ) . '</span>';
+			if ( 'phone' === $type ) echo self::phone_input_html( $response['value'] );
+			else echo '<input type="email" class="contacthub-channel-input" value="' . esc_attr( $response['value'] ) . '" autocomplete="email">';
+			echo '</label><label class="contacthub-channel-primary"><input type="checkbox" class="contacthub-channel-primary-input" value="1"' . checked( $primary, true, false ) . ( $primary && ! $is_new ? ' disabled' : '' ) . '> ' . esc_html__( 'Use as primary contact detail', 'contacthub' ) . '</label>';
+			echo '<div class="contacthub-channel-actions"><button type="button" class="button button-primary contacthub-save-channel">' . esc_html__( 'Save', 'contacthub' ) . '</button><button type="button" class="button contacthub-cancel-channel">' . esc_html__( 'Cancel', 'contacthub' ) . '</button>';
+			echo '<button type="button" class="button-link-delete contacthub-delete-channel"' . ( $primary || $is_new ? ' hidden' : '' ) . '>' . esc_html__( 'Remove', 'contacthub' ) . '</button>';
+			echo '</div></div>';
+		}
+		echo '</div>';
 	}
 
 	private static function companies_available() {
@@ -2267,6 +2505,7 @@ final class ContactHub_Plugin {
 			$current = $existing ? self::meta( $existing, array( $key ) ) : '';
 			if ( $value && ( 'update' === $mode || '' === $current ) ) $payload['meta'][ $key ] = $value;
 		}
+		if ( ! empty( $record['contact_channels'] ) && is_array( $record['contact_channels'] ) && ( ! $existing || 'update' === $mode || ! self::raw_meta( $existing, 'contacthub_contact_channels' ) ) ) $payload['meta']['contacthub_contact_channels'] = $record['contact_channels'];
 		if ( $existing ) {
 			$id = absint( self::value( $existing, array( 'id', 'ID', 'get_id' ) ) );
 			$payload['id'] = $id;
@@ -3037,7 +3276,11 @@ final class ContactHub_Plugin {
 			return;
 		}
 
-		echo '<div class="contacthub-tag-manager"><div class="contacthub-token-control"><div class="contacthub-token-entry"><div class="contacthub-token-field">';
+		echo '<button type="button" class="button-link contacthub-tags-summary" aria-label="' . esc_attr__( 'Edit tags', 'contacthub' ) . '">';
+		if ( $tags ) {
+			foreach ( $tags as $tag ) echo '<span class="contacthub-tag" data-tag="' . esc_attr( absint( self::value( $tag, array( 'id', 'tag_id', 'ID' ) ) ) ) . '">' . esc_html( self::value( $tag, array( 'name', 'tag_name' ) ) ) . '</span>';
+		} else echo '<span class="contacthub-muted">' . esc_html__( 'No tags assigned yet.', 'contacthub' ) . '</span>';
+		echo '</button><div class="contacthub-tag-manager" hidden><div class="contacthub-token-control"><div class="contacthub-token-entry"><div class="contacthub-token-field">';
 		foreach ( $tags as $tag ) {
 			$tag_id = absint( self::value( $tag, array( 'id', 'tag_id', 'ID' ) ) );
 			if ( ! $tag_id ) {
@@ -3050,6 +3293,7 @@ final class ContactHub_Plugin {
 			echo '<button type="button" class="button-link contacthub-token-suggestion contacthub-tag-suggestion" role="option" data-tag="' . esc_attr( $tag['id'] ) . '" data-name="' . esc_attr( $tag['name'] ) . '">' . esc_html( $tag['name'] ) . '</button>';
 		}
 		echo __( '</div></div></div><p class="description contacthub-tag-autosave-note">Selecting a tag saves it immediately for this contact. Press Enter to create a new tag.</p>', 'contacthub' );
+		echo '<button type="button" class="button contacthub-close-tags">' . esc_html__( 'Done', 'contacthub' ) . '</button>';
 		echo '<div class="contacthub-tag-message" aria-live="polite"></div></div></section>';
 	}
 
@@ -3885,6 +4129,7 @@ final class ContactHub_Plugin {
 	/** Include historical aliases retained by the local duplicate merge. */
 	private static function contact_emails( $contact ) {
 		$emails = array( self::value( $contact, array( 'email', 'get_email' ) ) );
+		foreach ( self::contact_channels( $contact ) as $channel ) if ( 'email' === $channel['type'] ) $emails[] = $channel['value'];
 		if ( is_array( $contact ) && ! empty( $contact['meta']['merged_email_aliases'] ) && is_array( $contact['meta']['merged_email_aliases'] ) ) {
 			$emails = array_merge( $emails, $contact['meta']['merged_email_aliases'] );
 		}
@@ -4091,6 +4336,15 @@ final class ContactHub_Plugin {
 		return '';
 	}
 
+	/** Read metadata without coercing structured values to strings. */
+	private static function raw_meta( $object, $key ) {
+		if ( is_array( $object ) && isset( $object['meta'] ) && is_array( $object['meta'] ) && array_key_exists( $key, $object['meta'] ) ) {
+			return $object['meta'][ $key ];
+		}
+		if ( is_object( $object ) && method_exists( $object, 'get_meta' ) ) return $object->get_meta( $key );
+		return '';
+	}
+
 	private static function value( $source, $candidates, $default = '' ) {
 		foreach ( $candidates as $candidate ) {
 			if ( is_object( $source ) && method_exists( $source, $candidate ) ) {
@@ -4125,28 +4379,27 @@ final class ContactHub_Plugin {
 	private static function salutation_field( $value, $first_name, $contact_id ) {
 		$suggested = ContactHub_Store::suggested_salutation( $first_name );
 		$value = sanitize_key( $value );
-		echo '<div class="contacthub-field contacthub-salutation-field" data-contact="' . esc_attr( $contact_id ) . '"><span>' . esc_html__( 'Salutation', 'contacthub' ) . '</span><select class="contacthub-salutation-select">';
+		echo '<div class="contacthub-field contacthub-salutation-field" data-contact="' . esc_attr( $contact_id ) . '"><span>' . esc_html__( 'Salutation', 'contacthub' ) . '</span><button type="button" class="button-link contacthub-salutation-value" data-value="' . esc_attr( $value ) . '">' . esc_html( self::salutation_label( $value ) ) . '</button><div class="contacthub-salutation-editor" hidden><select class="contacthub-salutation-select">';
 		echo '<option value=""' . selected( $value, '', false ) . '>' . esc_html__( '--- Please select ---', 'contacthub' ) . '</option>';
 		foreach ( array( 'neutral', 'mr', 'ms', 'family' ) as $option ) echo '<option value="' . esc_attr( $option ) . '"' . selected( $value, $option, false ) . '>' . esc_html( self::salutation_label( $option ) ) . '</option>';
-		echo '</select>';
+		echo '</select><button type="button" class="button contacthub-cancel-salutation">' . esc_html__( 'Cancel', 'contacthub' ) . '</button></div>';
 		if ( $suggested && $suggested !== $value ) echo '<button type="button" class="button-link contacthub-salutation-suggestion" data-value="' . esc_attr( $suggested ) . '">' . esc_html( sprintf( __( 'Suggestion: %s', 'contacthub' ), self::salutation_label( $suggested ) ) ) . '</button>';
 		echo '<div class="contacthub-field-message" aria-live="polite"></div></div>';
 	}
 
 	private static function editable_field( $label, $value, $field, $company_id, $multiline = false ) {
 		echo '<div class="contacthub-field contacthub-editable" data-entity="company" data-company="' . esc_attr( $company_id ) . '" data-field="' . esc_attr( $field ) . '" data-multiline="' . ( $multiline ? '1' : '0' ) . '">';
-		echo '<span>' . esc_html( $label ) . '</span><div class="contacthub-field-row"><strong class="contacthub-field-value" data-value="' . esc_attr( $value ) . '">' . esc_html( '' !== (string) $value ? $value : '—' ) . '</strong>';
-		echo '<button type="button" class="button-link contacthub-edit" aria-label="' . esc_attr( sprintf( __( 'Edit %s', 'contacthub' ), $label ) ) . '"><span class="dashicons dashicons-edit"></span></button></div>';
+		echo '<span>' . esc_html( $label ) . '</span><div class="contacthub-field-row"><button type="button" class="button-link contacthub-edit contacthub-field-value" data-value="' . esc_attr( $value ) . '" aria-label="' . esc_attr( sprintf( __( 'Edit %s', 'contacthub' ), $label ) ) . '">' . esc_html( '' !== (string) $value ? $value : __( 'Add', 'contacthub' ) ) . '</button></div>';
 		echo '<div class="contacthub-field-message" aria-live="polite"></div></div>';
 	}
 
 	private static function contact_editable_field( $label, $value, $field, $contact_id, $multiline = false ) {
 		echo '<div class="contacthub-field contacthub-editable" data-entity="contact" data-contact="' . esc_attr( $contact_id ) . '" data-field="' . esc_attr( $field ) . '" data-multiline="' . ( $multiline ? '1' : '0' ) . '">';
-		echo '<span>' . esc_html( $label ) . '</span><div class="contacthub-field-row"><strong class="contacthub-field-value" data-value="' . esc_attr( $value ) . '">' . esc_html( '' !== (string) $value ? $value : '—' ) . '</strong>';
+		echo '<span>' . esc_html( $label ) . '</span><div class="contacthub-field-row"><button type="button" class="button-link contacthub-edit contacthub-field-value" data-value="' . esc_attr( $value ) . '" aria-label="' . esc_attr( sprintf( __( 'Edit %s', 'contacthub' ), $label ) ) . '">' . esc_html( '' !== (string) $value ? $value : __( 'Add', 'contacthub' ) ) . '</button>';
 		if ( 'email' === $field && is_email( $value ) ) {
 			echo '<a class="button-link contacthub-mail-link" href="mailto:' . esc_attr( $value ) . '" aria-label="' . esc_attr__( 'Send email', 'contacthub' ) . '" title="' . esc_attr__( 'Send email', 'contacthub' ) . '"><span class="dashicons dashicons-email-alt"></span></a>';
 		}
-		echo '<button type="button" class="button-link contacthub-edit" aria-label="' . esc_attr( sprintf( __( 'Edit %s', 'contacthub' ), $label ) ) . '"><span class="dashicons dashicons-edit"></span></button></div>';
+		echo '</div>';
 		echo '<div class="contacthub-field-message" aria-live="polite"></div></div>';
 	}
 
@@ -4159,30 +4412,28 @@ final class ContactHub_Plugin {
 	}
 
 	private static function editable_address_summary( $label, $address ) {
-		echo '<div class="contacthub-field contacthub-address-summary"><span>' . esc_html( $label ) . '</span><div class="contacthub-field-row"><strong class="contacthub-address-summary-value">' . wp_kses( nl2br( esc_html( $address ?: '—' ) ), array( 'br' => array() ) ) . '</strong><button type="button" class="button-link contacthub-edit-address-summary" aria-label="' . esc_attr__( 'Edit address', 'contacthub' ) . '"><span class="dashicons dashicons-edit"></span></button></div><small>' . esc_html__( 'The structured contact address opens for editing.', 'contacthub' ) . '</small></div>';
+		echo '<div class="contacthub-field contacthub-address-summary"><span>' . esc_html( $label ) . '</span><div class="contacthub-field-row"><button type="button" class="button-link contacthub-edit-address-summary contacthub-address-summary-value" aria-label="' . esc_attr__( 'Edit address', 'contacthub' ) . '">' . wp_kses( nl2br( esc_html( $address ?: __( 'Add', 'contacthub' ) ) ), array( 'br' => array() ) ) . '</button></div><small>' . esc_html__( 'The structured contact address opens for editing.', 'contacthub' ) . '</small></div>';
 	}
 
 	private static function phone_field( $label, $value, $field, $id, $entity ) {
 		$value = self::normalize_phone( $value );
 		$id_attr = 'contact' === $entity ? 'data-contact="' . esc_attr( $id ) . '"' : 'data-company="' . esc_attr( $id ) . '"';
 		echo '<div class="contacthub-field contacthub-editable contacthub-phone-field" data-entity="' . esc_attr( $entity ) . '" ' . $id_attr . ' data-field="' . esc_attr( $field ) . '" data-type="phone" data-multiline="0">';
-		echo '<span>' . esc_html( $label ) . '</span><div class="contacthub-field-row"><strong class="contacthub-field-value" data-value="' . esc_attr( $value ) . '">' . esc_html( self::format_phone( $value ) ) . '</strong>';
-		echo '<button type="button" class="button-link contacthub-edit" aria-label="' . esc_attr( sprintf( __( 'Edit %s', 'contacthub' ), $label ) ) . '"><span class="dashicons dashicons-edit"></span></button></div>';
+		echo '<span>' . esc_html( $label ) . '</span><div class="contacthub-field-row"><button type="button" class="button-link contacthub-edit contacthub-field-value" data-value="' . esc_attr( $value ) . '" aria-label="' . esc_attr( sprintf( __( 'Edit %s', 'contacthub' ), $label ) ) . '">' . esc_html( $value ? self::format_phone( $value ) : __( 'Add', 'contacthub' ) ) . '</button></div>';
 		echo '<div class="contacthub-field-message" aria-live="polite"></div></div>';
 	}
 
 	private static function uid_field( $label, $value, $id, $entity, $verified ) {
 		$attr = 'company' === $entity ? 'data-company="' . esc_attr( $id ) . '"' : 'data-contact="' . esc_attr( $id ) . '"';
 		echo '<div class="contacthub-field contacthub-editable contacthub-uid-field" data-entity="' . esc_attr( $entity ) . '" ' . $attr . ' data-field="uid" data-multiline="0" data-verified="' . ( $verified ? '1' : '0' ) . '">';
-		echo '<span>' . esc_html( $label ) . '</span><div class="contacthub-field-row"><div class="contacthub-value-with-status"><strong class="contacthub-field-value" data-value="' . esc_attr( $value ) . '">' . esc_html( '' !== (string) $value ? $value : '—' ) . __( '</strong><span class="contacthub-vat-check" title="Successfully validated through EU VIES"', 'contacthub' ) . ( $verified ? '' : ' hidden' ) . '>✓</span></div>';
-		echo '<button type="button" class="button-link contacthub-edit" aria-label="' . esc_attr( sprintf( __( 'Edit %s', 'contacthub' ), $label ) ) . '"><span class="dashicons dashicons-edit"></span></button></div>';
+		echo '<span>' . esc_html( $label ) . '</span><div class="contacthub-field-row"><div class="contacthub-value-with-status"><button type="button" class="button-link contacthub-edit contacthub-field-value" data-value="' . esc_attr( $value ) . '" aria-label="' . esc_attr( sprintf( __( 'Edit %s', 'contacthub' ), $label ) ) . '">' . esc_html( '' !== (string) $value ? $value : __( 'Add', 'contacthub' ) ) . '</button><span class="contacthub-vat-check" title="' . esc_attr__( 'Successfully validated through EU VIES', 'contacthub' ) . '"' . ( $verified ? '' : ' hidden' ) . '>✓</span></div></div>';
 		echo '<div class="contacthub-field-message" aria-live="polite"></div></div>';
 	}
 
 	private static function readonly_uid_field( $label, $value, $verified ) {
 		echo '<div class="contacthub-field"><span>' . esc_html( $label ) . '</span><div class="contacthub-value-with-status"><strong>' . esc_html( '' !== (string) $value ? $value : '—' ) . '</strong>';
 		if ( $verified ) {
-			echo __( '<span class="contacthub-vat-check" title="Successfully validated through EU VIES">✓</span>', 'contacthub' );
+			echo '<span class="contacthub-vat-check" title="' . esc_attr__( 'Successfully validated through EU VIES', 'contacthub' ) . '">✓</span>';
 		}
 		echo '</div></div>';
 	}

@@ -71,19 +71,27 @@ final class ContactHub_Store {
 	public static function duplicate_candidates( $limit = 50 ) {
 		global $wpdb;
 		$tables = ContactHub_Schema::table_names();
-		$rows = (array) $wpdb->get_results( "SELECT id, wp_user_id, first_name, last_name FROM `{$tables['contacts']}` WHERE deleted_at IS NULL ORDER BY id ASC LIMIT 5000", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
-		$meta_rows = (array) $wpdb->get_results( "SELECT contact_id, meta_key, meta_value FROM `{$tables['contactmeta']}` WHERE meta_key IN ('primary_phone','billing_phone','phone','postcode','billing_postcode')", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+		$rows = (array) $wpdb->get_results( "SELECT id, wp_user_id, email, first_name, last_name FROM `{$tables['contacts']}` WHERE deleted_at IS NULL ORDER BY id ASC LIMIT 5000", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+		$meta_rows = (array) $wpdb->get_results( "SELECT contact_id, meta_key, meta_value FROM `{$tables['contactmeta']}` WHERE meta_key IN ('primary_phone','billing_phone','phone','postcode','billing_postcode','contacthub_contact_channels')", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
 		$meta = array();
 		foreach ( $meta_rows as $item ) $meta[ absint( $item['contact_id'] ) ][ $item['meta_key'] ] = maybe_unserialize( $item['meta_value'] );
 		$seen = array(); $pairs = array();
 		foreach ( $rows as $row ) {
 			$id = absint( $row['id'] );
-			$phone = preg_replace( '/\D+/', '', (string) ( $meta[ $id ]['primary_phone'] ?? $meta[ $id ]['billing_phone'] ?? $meta[ $id ]['phone'] ?? '' ) );
+			$phones = array( preg_replace( '/\D+/', '', (string) ( $meta[ $id ]['primary_phone'] ?? $meta[ $id ]['billing_phone'] ?? $meta[ $id ]['phone'] ?? '' ) ) );
+			$emails = array( strtolower( sanitize_email( $row['email'] ?? '' ) ) );
+			$channels = $meta[ $id ]['contacthub_contact_channels'] ?? array();
+			foreach ( is_array( $channels ) ? $channels : array() as $channel ) {
+				if ( ! is_array( $channel ) ) continue;
+				if ( 'phone' === ( $channel['type'] ?? '' ) ) $phones[] = preg_replace( '/\D+/', '', (string) ( $channel['value'] ?? '' ) );
+				if ( 'email' === ( $channel['type'] ?? '' ) ) $emails[] = strtolower( sanitize_email( $channel['value'] ?? '' ) );
+			}
 			$postcode = preg_replace( '/\s+/', '', strtolower( (string) ( $meta[ $id ]['postcode'] ?? $meta[ $id ]['billing_postcode'] ?? '' ) ) );
 			$name = trim( strtolower( remove_accents( (string) $row['first_name'] . '|' . (string) $row['last_name'] ) ) );
 			$keys = array();
 			if ( ! empty( $row['wp_user_id'] ) ) $keys['wordpress'] = 'u:' . absint( $row['wp_user_id'] );
-			if ( strlen( $phone ) >= 7 ) $keys[ __( 'Phone number', 'contacthub' ) ] = 'p:' . $phone;
+			foreach ( array_unique( array_filter( $phones ) ) as $phone ) if ( strlen( $phone ) >= 7 ) $keys[ __( 'Phone number', 'contacthub' ) . ':' . $phone ] = 'p:' . $phone;
+			foreach ( array_unique( array_filter( $emails ) ) as $email ) $keys[ __( 'Email address', 'contacthub' ) . ':' . $email ] = 'e:' . $email;
 			if ( '|' !== $name && $postcode ) $keys[ __( 'Name and postal code', 'contacthub' ) ] = 'n:' . $name . '|' . $postcode;
 			foreach ( $keys as $reason => $key ) {
 				if ( isset( $seen[ $key ] ) ) {
@@ -92,7 +100,7 @@ final class ContactHub_Store {
 						'left_id' => $left['id'], 'right_id' => $id,
 						'left_first_name' => $left['first_name'], 'left_last_name' => $left['last_name'],
 						'right_first_name' => $row['first_name'], 'right_last_name' => $row['last_name'],
-						'reason' => 'wordpress' === $reason ? __( 'Same WordPress account', 'contacthub' ) : $reason,
+						'reason' => 'wordpress' === $reason ? __( 'Same WordPress account', 'contacthub' ) : preg_replace( '/:.+$/', '', $reason ),
 					);
 					if ( count( $pairs ) >= absint( $limit ) ) return array_values( $pairs );
 				} else {
@@ -508,7 +516,47 @@ final class ContactHub_Store {
 				if ( $best_status ) self::set_contact_meta( $primary_id, 'optin_status', $best_status );
 				$primary_meta = self::contact_meta( $primary_id );
 				$aliases = array();
-				foreach ( $rows as $row ) if ( ! empty( $row['email'] ) ) $aliases[] = strtolower( sanitize_email( $row['email'] ) );
+				$merged_channels = array();
+				foreach ( $rows as $row ) {
+					$row_id = absint( $row['id'] );
+					$source_meta = self::contact_meta( $row_id );
+					$core_email = strtolower( sanitize_email( $row['email'] ?? '' ) );
+					if ( $core_email ) {
+						$aliases[] = $core_email;
+						$key = 'email:' . $core_email;
+						if ( ! isset( $merged_channels[ $key ] ) ) {
+							$merged_channels[ $key ] = array(
+								'id'               => 'merged-email-' . $row_id,
+								'type'             => 'email',
+								'label'            => 'work',
+								'value'            => $core_email,
+								'is_primary'       => 0,
+								'marketing_status' => sanitize_key( $source_meta['optin_status'] ?? 'unconfirmed' ),
+							);
+						}
+					}
+					$core_phone = sanitize_text_field( $source_meta['primary_phone'] ?? $source_meta['billing_phone'] ?? $source_meta['phone'] ?? '' );
+					if ( $core_phone ) {
+						$key = 'phone:' . preg_replace( '/\D+/', '', $core_phone );
+						if ( ! isset( $merged_channels[ $key ] ) ) {
+							$merged_channels[ $key ] = array(
+								'id'               => 'merged-phone-' . $row_id,
+								'type'             => 'phone',
+								'label'            => 'mobile',
+								'value'            => $core_phone,
+								'is_primary'       => 0,
+								'marketing_status' => '',
+							);
+						}
+					}
+					foreach ( is_array( $source_meta['contacthub_contact_channels'] ?? null ) ? $source_meta['contacthub_contact_channels'] : array() as $channel ) {
+						if ( ! is_array( $channel ) || ! in_array( $channel['type'] ?? '', array( 'email', 'phone' ), true ) ) continue;
+						$key = sanitize_key( $channel['type'] ) . ':' . strtolower( preg_replace( '/\s+/', '', (string) ( $channel['value'] ?? '' ) ) );
+						if ( ! isset( $merged_channels[ $key ] ) ) { $channel['is_primary'] = 0; $merged_channels[ $key ] = $channel; }
+						if ( 'email' === ( $channel['type'] ?? '' ) && ! empty( $channel['value'] ) ) $aliases[] = strtolower( sanitize_email( $channel['value'] ) );
+					}
+				}
+				if ( $merged_channels ) self::set_contact_meta( $primary_id, 'contacthub_contact_channels', array_values( $merged_channels ) );
 				foreach ( $donors as $donor ) {
 					foreach ( self::contact_meta( $donor ) as $key => $value ) if ( ! array_key_exists( 'meta__' . $key, $resolved ) && ( ! isset( $primary_meta[ $key ] ) || '' === (string) $primary_meta[ $key ] ) ) self::set_contact_meta( $primary_id, $key, $value );
 					$wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO `{$tables['contact_tags']}` (contact_id,tag_id,assigned_at,assigned_by,source) SELECT %d,tag_id,assigned_at,assigned_by,source FROM `{$tables['contact_tags']}` WHERE contact_id=%d", $primary_id, $donor ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
